@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" aria-label="ホーム">
+  <path d="M10 30.5 L32 12 L54 30.5" fill="none" stroke="#3F5B4B" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M16 28.5 V50 C16 52.2 17.8 54 20 54 H44 C46.2 54 48 52.2 48 50 V28.5" fill="#F5EEDC" stroke="#3F5B4B" stroke-width="4.5" stroke-linejoin="round"/>
+  <rect x="27" y="38" width="10" height="16" rx="2" fill="#CDBFA8" stroke="#2E4136" stroke-width="2"/>
+  <path d="M22 22.5 H42" stroke="#CDBFA8" stroke-width="2.5" stroke-linecap="round" opacity="0.85"/>
+</svg>

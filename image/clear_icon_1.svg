@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="arrowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 円弧 -->
+  <path d="M50 32a18 18 0 1 1-6-13" fill="none" stroke="url(#arrowGrad)" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- 矢印 -->
+  <path d="M44 14 L44 26 L32 26" fill="none" stroke="url(#arrowGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

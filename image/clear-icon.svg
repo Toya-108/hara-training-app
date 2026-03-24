@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="512" height="512">
+  <path d="M56 10
+           A40 40 0 1 1 18 35"
+        fill="none"
+        stroke="#4B6653"
+        stroke-width="10"
+        stroke-linecap="round"/>
+  <polygon points="40,10 56,2 56,18"
+           fill="#4B6653"/>
+</svg>

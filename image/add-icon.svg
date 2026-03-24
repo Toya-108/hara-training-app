@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="マスタ追加ボタン">
+  <!-- master/list card -->
+  <rect x="24" y="28" width="58" height="68" rx="10" fill="white" stroke="#4B6653" stroke-width="5"/>
+
+  <!-- list rows -->
+  <circle cx="38" cy="46" r="4" fill="#4B6653"/>
+  <path d="M49 46 H70" stroke="#4B6653" stroke-width="5" stroke-linecap="round"/>
+
+  <circle cx="38" cy="62" r="4" fill="#4B6653"/>
+  <path d="M49 62 H70" stroke="#4B6653" stroke-width="5" stroke-linecap="round"/>
+
+  <circle cx="38" cy="78" r="4" fill="#4B6653"/>
+  <path d="M49 78 H64" stroke="#4B6653" stroke-width="5" stroke-linecap="round"/>
+
+  <!-- add badge -->
+  <circle cx="90" cy="82" r="18" fill="#E8F0E7" stroke="#4B6653" stroke-width="5"/>
+  <path d="M90 70 V94" stroke="#4B6653" stroke-width="7" stroke-linecap="round"/>
+  <path d="M78 82 H102" stroke="#4B6653" stroke-width="7" stroke-linecap="round"/>
+
+  <!-- subtle corner fold-like cue -->
+  <path d="M72 28 h8 a6 6 0 0 1 6 6 v8" fill="none" stroke="#4B6653" stroke-width="4" stroke-linecap="round"/>
+</svg>

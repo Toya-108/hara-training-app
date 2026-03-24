@@ -1,23 +1,97 @@
 body {
-  font-family: sans-serif;
-  margin: 40px;
-  background-color: #f7f7f7;
-  color: #333;
+  margin: 0;
+  background: #f3f4f6;
+  font-family: "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
 }
 
-h1 {
-  color: #2c3e50;
+/* ===== ヘッダー ===== */
+.app-header {
+  height: 64px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background-color: #F7F1E3;
+  border-bottom: 1px solid #CDBFA8;
 }
 
-button {
-  padding: 10px 16px;
-  border: none;
-  background-color: #3498db;
-  color: white;
-  border-radius: 6px;
+.header-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f3b57;
+}
+
+.header-left {
+  position: absolute;
+  left: 20px;
+  top: 4%;
+  transform: translateY(-50%);
+  min-width: 40px;
+}
+
+.header-actions {
+  position: absolute;
+  right: 20px;
+  top: 4%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 30px;
+}
+
+.header-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 0px solid #CDBFA8;
+  background-color:transparent;
+  color: #2E4136;
+  font-size: 18px;
   cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
 }
 
-button:hover {
-  opacity: 0.9;
+.header-btn:hover {
+  background-color: #F5EEDC;
+}
+
+.header-btn img {
+  width: 20px;
+  height: 20px;
+  display: block;
+  transform: scale(2.5); /* 画像だけ大きくしたりするのに有効 */
+}
+
+
+.page {
+  padding: 24px;
+}
+
+.sort_btn {
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 6px;
+  cursor: pointer;
+  vertical-align: middle;
+  transform: translateY(1px);
+}
+
+.sort_btn img {
+  width: 20px;
+  height: 20px;
+  display: block;
+  transform: scale(1.8); /* 画像だけ大きくしたりするのに有効 */
+  transform-origin: center;
+}
+
+.clear_btn img{
+  transform: scale(0.7);
 }

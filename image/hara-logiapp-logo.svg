@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">Hara LogiApp Logo</title>
+  <desc id="desc">Rounded square dark green app icon with a cream letter H and a sweeping curve in the lower right.</desc>
+
+  <!-- Background -->
+  <rect x="0" y="0" width="1024" height="1024" rx="170" fill="#365347"/>
+
+  <!-- H mark -->
+  <rect x="210" y="345" width="126" height="510" fill="#E7E1D3"/>
+  <rect x="640" y="345" width="126" height="510" fill="#E7E1D3"/>
+  <rect x="336" y="510" width="304" height="112" fill="#E7E1D3"/>
+
+  <!-- Lower-right sweep accent -->
+  <path d="M575 740
+           C710 742, 834 714, 931 651
+           C972 624, 1001 598, 1024 568
+           L1024 665
+           C932 748, 800 812, 627 815
+           Z"
+        fill="#E7E1D3" opacity="0.96"/>
+
+  <!-- subtle cut/split on the right leg to echo the reference -->
+  <path d="M640 345
+           L766 345
+           L766 855
+           L705 855
+           C714 811, 714 763, 706 716
+           C700 680, 691 650, 676 622
+           C663 598, 651 575, 640 553
+           Z"
+        fill="#EEE8DB" opacity="0.35"/>
+</svg>

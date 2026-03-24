@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="エクスポートボタン">
+  <!-- tray open on top -->
+  <path d="M36 84 V92 C36 98 41 102 47 102 H81 C87 102 92 98 92 92 V84"
+        fill="none" stroke="#4B6653" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- arrow stem -->
+  <path d="M64 78 V34" stroke="#4B6653" stroke-width="8" stroke-linecap="round"/>
+
+  <!-- arrow head -->
+  <path d="M48 50 L64 34 L80 50" fill="none" stroke="#4B6653" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

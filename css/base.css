@@ -1,0 +1,1058 @@
+@charset "UTF-8";
+/* CSS Document */
+
+        
+html,body{padding: 0;margin: 0;}
+body {
+  font-size: 13px;
+  width: 100%;
+  height: 100vh;
+  /* overflow: hidden; */
+  background: rgb(255, 255, 255);
+  /* background: linear-gradient(0deg, rgb(255, 255, 255) 0%, rgba(245,245,235,1) 100%); */
+  background: linear-gradient(to bottom,  #eafcff 0%,#99f3ff 50%,#39bdff 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  font-family: "Helvetica Neue",
+  Arial,
+  "Hiragino Kaku Gothic ProN",
+  "Hiragino Sans",
+  Meiryo,
+  sans-serif;
+  color: #5e5e5e;
+}
+.wrap{
+  width: 95%;
+  margin: 0 auto;
+}
+
+ul,ul li{ 
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+a:link {color:#000;text-decoration:none;}
+a:visited {color:#000;text-decoration:none;}
+a:active {color:#000;text-decoration:none;}
+a:hover {color:#000;text-decoration:none;}
+
+
+/* 一時的にフォントサイズを15pxに変更 */
+/* body,div,ul li,table th,table td,span,input,select{ font-size:15px;} */
+
+textarea{font-size: 13px;}
+
+/* --------------------- SVGアイコンCSS--------------------- */
+.l_icon{
+  width: 16px;
+  height: 16px;
+  fill: rgb(118, 177, 217);
+}
+.l_icon:hover{opacity: 0.5;}
+
+/* 検索・検索クリアアイコン */
+.search_icon {
+  width: 24px;
+  height: 24px;
+  fill: rgb(0, 102, 170);
+  vertical-align: middle;
+}
+.search_icon:hover{opacity: 0.5;}
+
+.left_icon{
+  position: absolute;
+  left: 10px;
+  top:7px;
+}
+
+.h_icon_w {
+  width: 24px;
+  height: 46px;
+  /*SVG縦中央位置に揃える為に、ヘッダー高さとline-heightを指定する*/
+  line-height: 1.5;
+  fill: rgb(255, 255, 255);
+}
+
+
+
+
+/*-------------- table CSS 共通--------------*/
+table{
+  border-collapse: collapse;
+  border:none;
+  font-size: 13px;
+}
+table th{
+  font-weight: normal;
+}
+
+table th img{
+  height: 18px;
+  vertical-align: middle;
+}
+
+/* jsでテーブルAppend用アイコン */
+table td img{
+  height: 18px;
+  vertical-align: middle;
+}
+
+
+
+/*----------------------------------------------------------------
+           一覧テーブル（縦スクロール ヘッダ固定）
+----------------------------------------------------------------*/
+.list_table_wrap {
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  /* background: rgba(255, 255, 255, 0.7); */
+}
+
+.list_table_wrap table {
+  width: 100%;
+  position: relative;
+  border-collapse: collapse;
+}
+
+.list_table_wrap table th, .list_table_wrap table td {
+  padding:0.4em;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+.list_table_wrap table th a:hover, .list_table_wrap table td a:hover {
+  opacity: 0.6;
+}  
+.list_table_wrap table thead th {
+  line-height: 1.3;
+  color: #747474;
+  background: rgb(229, 254, 220);
+  border-right: #beedf7 1px dotted;
+  text-align: center;
+  position: -webkit-sticky;
+  position: sticky;
+  top: -1px;
+  z-index: 1; /* 上段 */
+}
+
+.list_table_wrap table thead tr:nth-child(2) th {
+  border-right: #beedf7 1px dotted;
+  border-top: #beedf7 1px solid;
+  position: -webkit-sticky;
+  position: sticky;
+  /* top: 2.3rem; */
+  z-index: 0; /* 下段 */
+}
+
+.list_table_wrap_th_gray table thead th {
+  background:rgb(235, 235, 235);
+}
+
+.list_table_wrap table thead th img {
+  height: 18px;
+  vertical-align: middle;
+}
+
+.list_table_wrap table tbody tr {
+  background: #fff;
+}
+
+.list_table_wrap table tbody td {
+  /* background: #fff; */
+  border-top: rgb(110, 220, 240) 1px solid;
+  border-right: #78e7fd 1px dotted;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  z-index: -1;
+}
+
+/* 小計 */
+.list_table_wrap table tbody th {
+  line-height: 1.3;
+  color: #747474;
+  /* background: rgb(229, 254, 220); */
+  background: rgb(240, 240, 240);
+  border-top: rgb(110, 220, 240) 1px solid;
+  border-right: #beedf7 1px dotted;
+  text-align: center;
+}
+
+.list_table_wrap table th:last-child,.list_table_wrap table td:last-child{
+  border-right: none;
+}
+
+
+/* トータル行 */
+.list_table_wrap table thead td {
+  background: rgba(245, 245, 245, 1.00);
+  text-align: right;
+  z-index: -1;
+}
+
+
+
+/*----------------------------------------------------------------
+    一覧テーブル（縦横スクロール ヘッダ、左のカラム固定 セルの幅指定あり）
+----------------------------------------------------------------*/
+.list_table_xy_wrap {
+  max-width: 100%;
+  overflow: scroll;
+  background: rgba(255, 255, 255, 0.7);
+	filter: drop-shadow(0px 5px 2px rgba(207, 206, 194, 0.233));
+}
+
+.list_table_xy_wrap table {
+  position: relative;
+  border-collapse: collapse;
+}
+
+.list_table_xy_wrap table th, .list_table_xy_wrap table td {
+  padding:0.4em;
+  white-space: nowrap;
+}
+
+.list_table_xy_wrap table thead th {
+  line-height: 1.3;
+  color: #747474;
+  background: rgb(229, 254, 220);
+  border-right: #beedf7 1px dotted;
+  text-align: center;
+  position: -webkit-sticky;
+  position: sticky;
+  top: -1px;
+  z-index: 1;  
+}
+
+.list_table_xy_wrap table thead th img {
+  height: 18px;
+  vertical-align: middle;
+}
+
+.list_table_xy_wrap table tbody td {
+  background: #fff;
+  border-top: rgb(110, 220, 240) 1px solid;
+  border-right: #78e7fd 1px dotted;
+}
+.list_table_xy_wrap table tbody td a:hover img{opacity: 0.6;}
+  
+.list_table_xy_wrap table th:last-child,.list_table_wrap table td:last-child{
+  border-right: none;
+  text-align: center;
+}
+  
+
+/*1項目固定*/
+.list_table_xy_wrap_col1 table th:first-of-type {
+  left: 0;
+  z-index: 3;
+}
+.list_table_xy_wrap_col1 table tbody tr td:first-of-type {
+  /*最初の要素を固定する*/
+  background-color: rgba(255, 255, 245, 1.00);
+  position: -webkit-sticky;
+  position: sticky;
+  left: -1px;
+  text-align: left;
+}
+
+/*4項目固定*/
+.list_table_xy_wrap_col4 table th:nth-child(-n+4) {
+  left: 0;
+  z-index: 3;
+}
+.list_table_xy_wrap_col4 table tbody tr td:nth-child(-n+4) {
+  /*最初の要素を固定する*/
+  background-color: rgba(255, 255, 245, 1.00);
+  position: -webkit-sticky;
+  position: sticky;
+  left: -1px;
+  text-align: left;
+}
+
+
+/* トータル行 */
+.list_table_xy_wrap table thead td {
+  background: rgba(245, 245, 245, 1.00);
+  text-align: right;
+  z-index: 0;
+}
+
+.list_table_xy_wrap_col1 table thead tr td:first-of-type {
+  background: rgba(255, 255, 222, 1.00);
+  position: -webkit-sticky;
+  position: sticky;
+  left: -1px;
+  text-align: left;
+}
+
+.list_table_xy_wrap_col4 table thead tr td:nth-child(-n+4) {
+  background: rgba(255, 255, 222, 1.00);
+  position: -webkit-sticky;
+  position: sticky;
+  left: -1px;
+  text-align: left;
+}
+
+
+/*----------------------------------------------------------------
+    一覧テーブル（インポート用 縦横スクロール　ヘッダ固定  セルの幅指定なし）
+----------------------------------------------------------------*/
+.list_table_import_wrap {
+  max-width: 100%;
+  max-height: 630px;
+  overflow: scroll;
+  background: rgba(255, 255, 255, 0.7);
+	filter: drop-shadow(0px 5px 2px rgba(207, 206, 194, 0.233));
+}
+
+.list_table_import_wrap table {
+  position: relative;
+  border-collapse: collapse;
+}
+
+.list_table_import_wrap table tr {
+  border: 1px solid rgba(156, 253, 241, 1.00);
+}
+
+.list_table_import_wrap table th, .list_table_import_wrap table td {
+  padding:0.4em;
+  white-space: nowrap;
+  width: 100px;
+}
+
+.list_table_import_wrap table th {
+  line-height: 1.3;
+  color: #747474;
+  background: rgb(229, 254, 220);
+  border-right: #beedf7 1px dotted;
+  text-align: center;
+  position: -webkit-sticky;
+  position: sticky;
+  top: -1px;
+  z-index: 0;
+}
+
+.list_table_xy_wrap table thead th img {
+  height: 18px;
+  vertical-align: middle;
+}
+
+.list_table_import_wrap table td {
+  background: #fff;
+  border-top: #b4e4edff 1px solid;
+  border-right: #c3e5ec 1px dotted;
+  text-align: left;
+  z-index: -1;
+  white-space: nowrap;
+  width: 100px;
+}
+
+.list_table_import_wrap table th:last-child,.list_tlist_table_import_wrapable_wrap table td:last-child{
+  border-right: none;
+}
+
+
+/*----------------------------------------------------------------
+    明細テーブル
+----------------------------------------------------------------*/
+.inbound_dt_table{
+  /* width:100%; */
+  margin:20px auto 20px 0;
+}
+.inbound_dt_table thead th{
+  line-height: 1.3;
+  color: #747474;
+  background:rgb(229, 254, 220);
+  padding:5px 0px;
+  border-bottom: #beedf7 1px dotted;
+  border-right: #beedf7 1px dotted;
+  text-align: center;
+}
+.inbound_dt_table tbody tr {
+  background: #fff;
+}
+.inbound_dt_table tbody tr:first-child td{
+  border-top:none;
+}
+.inbound_dt_table tbody td{
+  padding:5px 10px;
+  background:white;
+  border-top: rgb(110, 220, 240) 1px solid;
+  border-right: #78e7fd 1px dotted;
+}
+
+
+
+
+/* 未確定の背景色 */
+.mikakutei_bg {
+  background: rgb(251, 238, 238);
+}
+/* 未入荷の背景色 */
+.minyuka_bg {
+  background: rgb(251, 238, 238)!important;
+}
+/* 仕分け完了の背景色 */
+.per100_bg {
+  background: rgb(251, 238, 238);
+}
+/* 未仕分けの背景色 */
+.per0_bg {
+  background: rgb(100, 238, 238);
+}
+/* 仕分け途中の背景色 */
+.perXXX_bg {
+  background: rgb(251, 100, 238);
+}
+/* 仕分け中断の背景色 */
+.stop_bg {
+  background: rgb(251, 238, 100);
+}
+/* 赤背景色 */
+.red_bg {
+  background: #FFE9E0;
+}
+/* 青背景色 */
+.blue_bg {
+  background: #E3F3FF;
+}
+/* 緑背景色 */
+.green_bg {
+  background:#E6FEDD;
+}
+/* 白背景色 */
+.white_bg {
+  background: rgb(255, 255, 255);
+}
+/* オレンジ背景 */
+.orange_bg {
+  background: rgb(255, 244, 234)!important;
+}
+/* 黄色背景 */
+.yellow_bg {
+  background: rgb(255, 255, 224)!important;
+}
+/* ピンク */
+.pink_bg {
+  background: rgb(255, 224, 239)!important;
+}
+
+
+
+/* ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+     ↓プログラム用
+   ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ */
+/* -----------------------------------------------------------
+  使用可
+----------------------------------------------------------- */
+.p-enabled {
+  opacity: 1.0;
+  filter: alpha(opacity=100);
+  -moz-opacity: 1.0;
+}
+
+.p-enabled-btn {
+  opacity: 1.0;
+  filter: alpha(opacity=100);
+  -moz-opacity: 1.0;
+  cursor: pointer;
+  cursor: hand;
+}
+
+
+/* -----------------------------------------------------------
+  使用不可
+----------------------------------------------------------- */
+.p-disabled {
+  opacity: 0.3;
+  filter: alpha(opacity=30);
+  -moz-opacity: 0.3;
+}
+
+.p-disabled-btn {
+  /* opacity: 0.3;
+  filter: alpha(opacity=30);
+  -moz-opacity: 0.3; */
+  cursor: wait;
+}
+
+
+/* -----------------------------------------------------------
+  必須項目
+----------------------------------------------------------- */
+.p-required-entry{
+  background-color:##f3a68c;
+  color:black;
+}
+
+
+/* -----------------------------------------------------------
+  ロードする際にhiddenにする（ダイアログで使用）
+----------------------------------------------------------- */
+.p-hidden-on-loading {
+  display: none;
+}
+
+
+/* -----------------------------------------------------------
+  ダイアログ
+----------------------------------------------------------- */
+.ui-dialog-titlebar {
+  display: none;
+}
+
+.ui-dialog {
+  position: fixed !important;
+}
+
+.ui-widget-content:not(.p-progressbar, .ui-datepicker) {
+	border: none;
+	background: none;
+	color: #222222;
+  padding: 20px;
+}
+
+.ui-dialog .ui-dialog-content {
+  margin: 0 auto;
+  padding: 15px 20px 0px 20px;
+  background: white;
+  border-radius: 12px;
+  color: rgb(121, 121, 121);
+  box-shadow: 0 0 15px 0 rgba(141, 120, 80, 0.253);
+}
+.ui-dialog .ui-dialog-content p{
+  margin: 0 !important;
+  padding:5px 0px;
+}
+.ui-dialog .ui-dialog-content table{
+  width: 100%;
+  /* margin:0 auto; */
+}
+.ui-dialog .ui-dialog-content table th{
+  border:rgb(235, 229, 210) 1px solid;  
+  background:rgb(235, 229, 210);
+  padding: 5px 0;
+}
+.ui-dialog .ui-dialog-content table td:first-child{text-align: center;}
+.ui-dialog .ui-dialog-content table tbody tr{
+  background: #fff;
+}
+.ui-dialog .ui-dialog-content table td{
+  padding:5px;
+  border:none;
+  /* border: #cecece 1px solid; */
+  border-top: #cecece 1px solid; 
+  border-bottom: #cecece 1px solid; 
+  border-right: #cecece 1px dotted; 
+}
+.ui-dialog .ui-dialog-content table td:last-child{
+  border-right: none; 
+}
+.holiday_set_table td{text-align: center;padding: 10px 5px !important;}
+/* .holiday_set_table td label span{ padding-left:12px;} */
+
+.flex_iconBox{
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+.flex_iconBox div svg{
+  cursor:pointer;
+}
+.ui-dialog .ui-dialog-content img:hover {
+  cursor: pointer;
+}
+.dialog_icon {
+  width: 24px;
+  height: 24px;
+  fill: rgb(197, 197, 197);
+}
+.dialog_icon:hover {opacity: 0.6;}
+
+.dialog_text {
+  font-size: 13px;
+  color: rgba(110, 102, 85, 1.00);
+}
+.dialog_msg_text{
+  margin:0;
+  color: rgb(214, 97, 97);
+  font-size: 0.9em;
+  padding: 5px 10px !important;
+  
+}
+
+
+/* -----------------------------------------------------------
+  カレンダー年／月ドロップダウンリストボックス
+----------------------------------------------------------- */
+.ui-datepicker-year {
+  width: 70px!important;
+  padding: 3px 5px!important;
+  margin-right: 10px!important;
+}
+.ui-datepicker-month {
+  width: 65px!important;
+  padding: 3px 5px!important;
+  margin-left: 10px!important;
+}
+
+
+/* -----------------------------------------------------------
+  プログレスバー
+----------------------------------------------------------- */
+.p-progressbar {
+  width: 100%;
+  height: 10px;
+}
+
+
+.p-cursor-pointer{
+  cursor:pointer;
+}
+
+
+/* ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+     ↑プログラム用
+   ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ */
+
+
+
+
+
+::placeholder {
+  color: rgb(185, 185, 185);
+}
+
+.p-search::placeholder {
+  font-size: 12px;
+}
+
+
+
+
+/* --------------パスワード設定画面CSS-------------- */
+.setPassword_form_box{
+  /* position:absolute; */
+  /* width: 40%;
+  margin:160px auto; */
+  /* left:0;
+  right:0;
+  z-index:200; */
+  /* text-align:center; */
+}	
+/* --------------パスワード設定画面CSS　スマホ用-------------- */
+@media(max-width:480px){
+.setPassword_form_box{width: 90%;}
+}
+
+.password_list li{
+  padding: 5px 0 0;
+}
+.password_list li span{
+  color:rgb(0, 58, 140);
+  font-size:14px;
+  display:inline-block;
+  padding-bottom:10px;
+}
+.password_list li p{
+  color:rgb(221, 109, 44);
+  margin:7px 0 0;
+  font-size:0.85em;
+}
+
+.password_list li input{
+  width: 100%;
+  font-size: 13px;
+  padding: 12px;
+}
+
+input:-webkit-autofill {
+  background-color: rgb(219, 241, 255);
+}
+
+/* -------------- ボタンCSS -------------- */
+.box_input_password {
+  outline: none;
+  list-style: none;
+  color: #5e5e5e;
+  padding: 3px 5px;
+  transition: 0.3s;
+  background: rgb(250, 250, 250);
+  border: rgb(226, 226, 226) solid 1px;
+  width: 30%;
+}
+
+.box_input_password:focus {
+  background: rgb(252, 250, 231);
+}
+
+.password_button{
+  border: none;
+  font-size: 14px;
+  padding: 12px;
+  background: rgb(222, 213, 186);
+  box-shadow: 0px 15px 8px rgba(214, 208, 184, 0.4);
+  color: rgb(128, 123, 110);
+  transition: 0.5s;
+}
+.password_button:hover{
+  background: rgb(180, 170, 138);
+  box-shadow: 0px 5px 10px rgba(119, 116, 101, 0.4);
+  color: rgb(242, 239, 231);
+  transition: 0.5s;
+  margin-top: 10px;
+}
+
+
+
+
+
+
+/*-------------- input　入力フォーム CSS 共通--------------*/		
+  .box_input {
+    -webkit-border-radius: 0 !important;
+    -moz-border-radius: 0 !important;
+    border-radius: 0!important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+    outline: none;
+    list-style: none;
+    font-size: 13px;
+    color: #5e5e5e;
+    padding: 5px;
+    transition: 0.3s;
+    background: rgb(255, 255, 255);
+    border: thin solid rgb(210, 225, 235);
+  }
+  .box_input:focus {
+    background: rgb(254, 255, 224);
+  }
+
+  /* 日付用（中央揃え カレンダーなし） */
+  .box_input_date {
+    -webkit-border-radius: 0 !important;
+    -moz-border-radius: 0 !important;
+    border-radius: 0!important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+    outline: none;
+    list-style: none;
+    font-size: 13px;
+    color: #5e5e5e;
+    text-align: center;
+    width: 90px;
+    padding: 5px 0px !important;
+    transition: 0.3s;
+    background: rgb(255, 255, 255);
+    border:thin solid rgb(210, 225, 235);
+  }
+  .box_input_date:focus {
+    background: rgb(254, 255, 224);
+  }
+
+  /* 日付用（カレンダーあり） */
+  .box_input_date_calendar {
+    -webkit-border-radius: 0 !important;
+    -moz-border-radius: 0 !important;
+    border-radius: 0!important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+    outline: none;
+    list-style: none;
+    font-size: 13px;
+    color: #5e5e5e;
+    background: rgb(255, 255, 255);
+    border: thin solid rgb(210, 225, 235);
+    background-image: url('../images/svg/calender_b.svg');
+    background-size:16px;
+    background-position: right 10px center;  /* アイコンを右隅に配置 */
+    background-repeat: no-repeat;
+    padding: 5px 35px 5px 10px;
+    width: 90px;
+    cursor:pointer;
+  }
+  .box_input_date_calendar:focus {
+    background-color: rgb(254, 255, 224);
+  }
+
+
+  .dt_input{
+    border:solid 1px rgb(199, 199, 199);
+    padding:3px 5px;
+    margin:0 0 2px;
+    border-radius:3px;
+  }
+  .dt_input:focus {
+    outline:none;
+          color: #3d3d3d;
+          border: rgb(76, 146, 252) solid 1px;
+      background:rgb(241, 251, 255);
+          }
+  
+
+
+
+/* ---------------------　検索条件　------------------- */
+.search_param_box{
+  display:flex; 
+  margin-top:12px;
+  align-items: center;
+  /* justify-content: space-between; */
+  justify-content:flex-start;
+}
+.search_param_box div:not(:last-child){margin-right:20px;}
+.search_param_box div{color:rgb(0, 102, 170);}
+
+.search_param_text_box{
+  margin-top:12px;
+  color: rgb(0, 72, 198);
+}
+
+.search_param_text_box span{
+  /* text-align:right; */
+}
+/* ---------------------　チェックボックス CSS 共通　------------------- */
+.check_box01{
+  display: none;
+}
+.check_box01_text{
+  /* padding-left: 20px; */
+  /* position:relative; */
+  position: absolute;
+  /* margin-right: 20px; */
+  /* left:8px; */
+}
+.check_box01_text::before{
+  content: "";
+  display: block;
+  position: absolute;
+  top: -20px;
+  left: -20px !important;
+  width: 13px;
+  height: 13px;
+  border: 1px solid rgb(85, 116, 185);
+  border-radius: 3px;
+  background: white;
+}
+
+.check_box01:checked + .check_box01_text{
+  color: #2b5cab;
+}
+.check_box01:checked + .check_box01_text::after{
+  content: "";
+  display: block;
+  position: absolute;
+  top: -23px;
+left: -14px !important;
+  width: 5px;
+  height: 12px;
+  transform: rotate(40deg);
+  border-bottom: 2px solid #4fa9dd;
+  border-right: 2px solid #4c8ac8;
+}
+
+
+
+.check_box02 {
+  position: relative;
+  padding-left: 16px;
+}
+
+/*inputを非表示にする*/
+.check_box02 input {
+  position: absolute;
+  z-index: -1;
+  opacity: 0;
+}
+
+/*選択されてない時のチェックボックス背景 */
+.check_box02_bg {
+  position: absolute;
+  left: 0;
+  top:3;
+  height: 16px;
+  width: 16px;
+  background: rgb(234, 251, 255);
+  border: rgb(170, 201, 255) solid 1px;
+  border-radius:3px;
+}
+
+.check_box02:hover input~.check_box02_bg,
+.check_box02 input:focus~.check_box02_bg {
+    /* background: rgb(65, 135, 255); */
+  border: rgb(143, 184, 255) solid 2px;
+  cursor: pointer;
+}
+
+/*選択時のチェックボックス背景色 */
+.check_box02 input:checked~.check_box02_bg {
+  background: rgb(228, 245, 255);
+}
+
+/*チェックされてない時は見えないように非表示する。  */
+.check_box02_bg:after{
+  content: '';
+  position: absolute;
+  display: none;
+}
+
+/*  チェックボックスを選択した時のチェック部分をブロック化して見せる*/
+.check_box02 input:checked~.check_box02_bg:after {
+  display: block;
+}
+
+/*チェック部分*/
+.check_box02_bg:after {
+  left: 5px;
+  top: 1px;
+  width: 3px;
+  height:10px;
+  border: solid #004dd3;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* チェックを押された後のボックス枠 */
+.check_box02 input:checked~.check_box02_bg{
+  border: rgb(143, 184, 255) solid 2px;
+}
+
+
+
+
+/* ---------------------　Safariブラウザ用　css　------------------- */
+::-webkit-full-page-media, :future, :root
+.check_box01_text::before{
+  left: 10px;}
+  ::-webkit-full-page-media, :future, :root
+.check_box01:checked + .check_box01_text::after{left:16px;}
+
+
+
+/* ---------------------　ラジオボタン CSS 共通　------------------- */
+.radio_box {
+  display: block;
+  position: relative;
+  padding-left: 27px;
+  /*円と文字の隙間*/
+}
+.radio_box input{
+  position: absolute;
+  z-index: -10;
+  opacity: 0;
+}
+.radio_box_out_circle {
+  position: absolute;
+  top: 8px;
+  left: 0;
+  height: 20px;
+  width: 20px;
+  background: #ffffff;
+  border: 1px solid rgb(210, 225, 235);
+}
+.radio_box_out_circle,.radio_box_out_circle:after  {border-radius: 50%;}
+.radio_box input:checked ~ .radio_box_out_circle {background:rgb(105, 192, 255);border-color: white;}
+.radio_box_out_circle:after {
+  content: '';
+  position: absolute;
+  display: none;
+}	
+.radio_box input:checked ~ .radio_box_out_circle:after {display: block;}
+.radio_box_out_circle:after {
+  left: 7px;
+  top: 7px;
+  height: 6px;
+  width: 6px;
+  background: #fff;
+}
+.side{display: inline-block !important; }/*横並びにする時はこちらを追加*/
+.side:not(:first-child){margin-left: 10px;}
+
+
+/* ---------------------　ドロップダウンリストボックス CSS 共通　------------------- */
+.drop_list01 {
+  margin: 0;
+  padding: 0;
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border-radius: 0;
+  background-color: white;
+  border:thin solid rgb(210, 225, 235);
+  background-image: url("../images/svg/top_arrow1.svg");
+  background-repeat: no-repeat;
+  background-size: 12px 10px;
+  background-position: right 10px center;
+  background-color: rgba(255, 255, 255, 1.00);
+  color: rgba(100, 100, 100, 1.00);
+  display: inline-block;
+  padding: 5px 25px 5px 8px;
+  box-sizing: border-box;
+  /*font-size: 14px!important;*/
+}
+.drop_list01:focus {
+  background-color: rgb(224, 254, 255);
+}
+
+
+
+
+
+/* 顔写真ファイルドラッグ&ドロップエリア */
+.face_drop_area {
+   background-color: #efefef;
+   border: 2px dotted #aeaeae;
+   color: #aeaeae;
+   text-align: left; 
+   height: 170px;       
+   width: 170px;
+   padding:20px;
+   background-repeat:no-repeat;
+}
+
+/* 顔写真用枠 */
+.face_image_container {
+    width: 200px;
+    height: 200px;
+    overflow: hidden;
+}
+
+.face_image_container img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+	/* --- ポップアップウインドウcss ---  */
+	.popup_content{
+		width:75%;
+		height:70%;
+		display:none;
+		position:fixed;
+		inset: 0;
+		margin: auto;
+		background:rgb(195 248 255);;
+		z-index: 1000;
+		padding: 20px 25px;
+		border-radius:12px;
+		box-shadow: 0px 3px 10px 0 rgb(37 33 99 / 41%);
+    transition: all 0.3s;
+	}
+	.popup_content_header{display:flex;}
+  .popup_content_header div:not(:first-child){margin-left: 20px;}
+	.popup_content_header div span{
+	color: rgb(0, 102, 170);
+	padding-right:5px;
+	}
+	.popup_content_box{
+		overflow:auto;
+		height:60vh;
+		width:100%;
+		margin-top:15px;
+		}
+
+    

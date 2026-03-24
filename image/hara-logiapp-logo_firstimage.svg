@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="240" viewBox="0 0 800 240" role="img" aria-labelledby="title desc">
+  <title id="title">Hara LogiApp Logo</title>
+  <desc id="desc">Cream and dark green logistics app logo with HL monogram and Hara LogiApp text.</desc>
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F7F1E3"/>
+      <stop offset="100%" stop-color="#EDE2C7"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3F5B4B"/>
+      <stop offset="100%" stop-color="#2E4136"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="240" fill="#ffffff"/>
+
+  <g transform="translate(24,24)">
+    <rect x="0" y="0" width="192" height="192" rx="36" fill="url(#bgGrad)" stroke="#CDBFA8" stroke-width="4"/>
+    <rect x="26" y="26" width="140" height="140" rx="28" fill="url(#accentGrad)"/>
+
+    <path d="M58 74 H76 V102 H116 V74 H134 V146 H116 V118 H76 V146 H58 Z" fill="#F7F1E3"/>
+    <path d="M146 58 V146 H106 V130 H128 V58 Z" fill="#F7F1E3" opacity="0.98"/>
+    <path d="M108 146 C139 144 156 133 166 118 L166 141 C155 154 136 163 108 164 Z" fill="#F7F1E3" opacity="0.88"/>
+  </g>
+
+  <g transform="translate(248,56)">
+    <text x="0" y="58" font-family="Arial, Helvetica, sans-serif" font-size="58" font-weight="700" fill="#2E4136" letter-spacing="1">Hara LogiApp</text>
+    <text x="2" y="102" font-family="Arial, Helvetica, sans-serif" font-size="20" fill="#645B50" letter-spacing="4">LOGISTICS WORKFLOW SYSTEM</text>
+    <rect x="0" y="126" width="318" height="12" rx="6" fill="#3F5B4B" opacity="0.18"/>
+    <circle cx="340" cy="132" r="8" fill="#3F5B4B"/>
+    <circle cx="368" cy="132" r="8" fill="#CDBFA8"/>
+  </g>
+</svg>
