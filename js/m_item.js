@@ -380,7 +380,7 @@ function escapeHtml(value) {
     .replace(/'/g, "&#39;");
 }
 
-const backButton = document.getElementById('back-btn')
+const backButton = document.getElementById('home-btn')
 
 backButton.addEventListener('click', function(){
   location.href = 'menu.cfm'

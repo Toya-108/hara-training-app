@@ -1,8 +1,8 @@
 <cfinclude template="init.cfm">
 
 <cfset pageTitle = "商品マスタ一覧">
-<cfset showBackButton = true>
-<cfset showNewButton = true>
+<cfset showHomeButton = true>
+<cfset showNewButton = false>
 <!--- <cfset showImportButton = true> --->
 <cfset showExportButton = true>
 
@@ -212,17 +212,17 @@
           <div class="search_area" style="display:flex;margin-top:30px;">
             <div class="search_item">
               <label for="search_product_code">商品コード</label>
-              <input type="text" id="search_product_code" name="search_product_code" placeholder="商品コードを入力">
+              <input type="text" id="search_product_code" name="search_product_code" placeholder="商品コード">
             </div>
 
             <div class="search_item">
               <label for="search_jan_code">JAN</label>
-              <input type="text" id="search_jan_code" name="search_jan_code" placeholder="JANを入力">
+              <input type="text" id="search_jan_code" name="search_jan_code" placeholder="JAN">
             </div>
 
             <div class="search_item">
               <label for="search_product_name">商品名</label>
-              <input type="text" id="search_product_name" name="search_product_name" placeholder="商品名を入力">
+              <input type="text" id="search_product_name" name="search_product_name" placeholder="商品名">
             </div>
 
             <div class="search_btn_area" style="display:flex;">

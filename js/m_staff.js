@@ -4,7 +4,7 @@ let totalPage = 1;
 
 const baseUrl = "/training/hara";
 let sortField = "";
-let sortOrder = ""; // "asc" or "desc"
+let sortOrder = "";
 
 document.addEventListener("DOMContentLoaded", function () {
   bindSearchEvents();
@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
   bindSortEvents();
   bindHeaderNewButtonEvent();
   bindBackButtonEvent();
-  loadSupplierList(currentPage);
+  loadStaffList(currentPage);
 });
 
 function bindSearchEvents() {
@@ -23,20 +23,22 @@ function bindSearchEvents() {
   if (searchBtn) {
     searchBtn.addEventListener("click", function () {
       currentPage = 1;
-      loadSupplierList(currentPage);
+      loadStaffList(currentPage);
     });
   }
 
   if (clearBtn) {
     clearBtn.addEventListener("click", function () {
-      setValue("search_supplier_code", "");
-      setValue("search_supplier_name", "");
-      setValue("search_delivery_company", "");
+      setValue("search_staff_code", "");
+      setValue("search_staff_name", "");
+      setValue("search_mail_address", "");
+      setValue("search_authority_level", "");
       setValue("search_use_flag", "");
 
-      setValue("return_search_supplier_code", "");
-      setValue("return_search_supplier_name", "");
-      setValue("return_search_delivery_company", "");
+      setValue("return_search_staff_code", "");
+      setValue("return_search_staff_name", "");
+      setValue("return_search_mail_address", "");
+      setValue("return_search_authority_level", "");
       setValue("return_search_use_flag", "");
 
       sortField = "";
@@ -44,12 +46,12 @@ function bindSearchEvents() {
       resetSortIcons();
 
       currentPage = 1;
-      loadSupplierList(currentPage);
+      loadStaffList(currentPage);
     });
   }
 
   const searchInputs = document.querySelectorAll(
-    "#search_supplier_code, #search_supplier_name, #search_delivery_company, #search_use_flag"
+    "#search_staff_code, #search_staff_name, #search_mail_address, #search_authority_level, #search_use_flag"
   );
 
   searchInputs.forEach(function (input) {
@@ -63,9 +65,10 @@ function bindSearchEvents() {
 
 function bindEnterMoveEvents() {
   const searchFields = [
-    document.getElementById("search_supplier_code"),
-    document.getElementById("search_supplier_name"),
-    document.getElementById("search_delivery_company"),
+    document.getElementById("search_staff_code"),
+    document.getElementById("search_staff_name"),
+    document.getElementById("search_mail_address"),
+    document.getElementById("search_authority_level"),
     document.getElementById("search_use_flag")
   ].filter(Boolean);
 
@@ -95,7 +98,7 @@ function bindPagingEvents() {
   if (firstBtn) {
     firstBtn.addEventListener("click", function () {
       if (currentPage > 1) {
-        loadSupplierList(1);
+        loadStaffList(1);
       }
     });
   }
@@ -103,7 +106,7 @@ function bindPagingEvents() {
   if (prevBtn) {
     prevBtn.addEventListener("click", function () {
       if (currentPage > 1) {
-        loadSupplierList(currentPage - 1);
+        loadStaffList(currentPage - 1);
       }
     });
   }
@@ -111,7 +114,7 @@ function bindPagingEvents() {
   if (nextBtn) {
     nextBtn.addEventListener("click", function () {
       if (currentPage < totalPage) {
-        loadSupplierList(currentPage + 1);
+        loadStaffList(currentPage + 1);
       }
     });
   }
@@ -119,7 +122,7 @@ function bindPagingEvents() {
   if (lastBtn) {
     lastBtn.addEventListener("click", function () {
       if (currentPage < totalPage) {
-        loadSupplierList(totalPage);
+        loadStaffList(totalPage);
       }
     });
   }
@@ -149,7 +152,7 @@ function bindSortEvents() {
 
       updateSortIcons();
       currentPage = 1;
-      loadSupplierList(currentPage);
+      loadStaffList(currentPage);
     });
   });
 }
@@ -168,16 +171,18 @@ function moveToAddByPost() {
   const form = document.getElementById("master_form");
   if (!form) return;
 
-  setValue("detail_supplier_code", "");
+  setValue("detail_staff_id", "");
+  setValue("detail_return_staff_id", "");
   setValue("detail_display_mode", "add");
 
-  setValue("return_search_supplier_code", getValue("search_supplier_code"));
-  setValue("return_search_supplier_name", getValue("search_supplier_name"));
-  setValue("return_search_delivery_company", getValue("search_delivery_company"));
+  setValue("return_search_staff_code", getValue("search_staff_code"));
+  setValue("return_search_staff_name", getValue("search_staff_name"));
+  setValue("return_search_mail_address", getValue("search_mail_address"));
+  setValue("return_search_authority_level", getValue("search_authority_level"));
   setValue("return_search_use_flag", getValue("search_use_flag"));
 
   form.method = "post";
-  form.action = "m_supplier_dt.cfm";
+  form.action = "m_staff_dt.cfm";
   form.submit();
 }
 
@@ -225,8 +230,8 @@ function resetSortIcons() {
   });
 }
 
-function loadSupplierList(page) {
-  const supplierTableBody = document.getElementById("supplier_table_body");
+function loadStaffList(page) {
+  const staffTableBody = document.getElementById("staff_table_body");
   const pageStatus = document.getElementById("page_status");
   const pageNumberText = document.getElementById("page_number_text");
   const loadingIndicator = document.getElementById("loading_indicator");
@@ -234,9 +239,10 @@ function loadSupplierList(page) {
   const requestBody = {
     page: page,
     pageSize: pageSize,
-    search_supplier_code: getValue("search_supplier_code"),
-    search_supplier_name: getValue("search_supplier_name"),
-    search_delivery_company: getValue("search_delivery_company"),
+    search_staff_code: getValue("search_staff_code"),
+    search_staff_name: getValue("search_staff_name"),
+    search_mail_address: getValue("search_mail_address"),
+    search_authority_level: getValue("search_authority_level"),
     search_use_flag: getValue("search_use_flag"),
     sortField: sortField,
     sortOrder: sortOrder
@@ -246,15 +252,15 @@ function loadSupplierList(page) {
     loadingIndicator.classList.add("is-visible");
   }
 
-  if (supplierTableBody) {
-    supplierTableBody.innerHTML = `
+  if (staffTableBody) {
+    staffTableBody.innerHTML = `
       <tr>
-        <td colspan="6" class="loading_text">読み込み中です...</td>
+        <td colspan="9" class="loading_text">読み込み中です...</td>
       </tr>
     `;
   }
 
-  fetch(baseUrl + "/m_supplier.cfc?method=getSupplierList&returnformat=json", {
+  fetch(baseUrl + "/m_staff.cfc?method=getStaffList&returnformat=json", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -268,8 +274,8 @@ function loadSupplierList(page) {
       return response.json();
     })
     .then(function (data) {
-      if (!data || Number(data.status) !== 1) {
-        throw new Error(data && data.message ? data.message : "取引先一覧の取得に失敗しました。");
+      if (!data || Number(data.status) !== 0) {
+        throw new Error(data && data.message ? data.message : "社員一覧の取得に失敗しました。");
       }
 
       const results = data.results || [];
@@ -278,7 +284,7 @@ function loadSupplierList(page) {
       currentPage = Number(paging.page || 1);
       totalPage = Number(paging.totalPage || 1);
 
-      renderSupplierTable(results);
+      renderStaffTable(results);
       updatePagingArea(currentPage, totalPage, Number(paging.totalCount || 0));
 
       if (pageStatus) {
@@ -290,12 +296,12 @@ function loadSupplierList(page) {
       }
     })
     .catch(function (error) {
-      console.error("取引先一覧取得エラー:", error);
+      console.error("社員一覧取得エラー:", error);
 
-      if (supplierTableBody) {
-        supplierTableBody.innerHTML = `
+      if (staffTableBody) {
+        staffTableBody.innerHTML = `
           <tr>
-            <td colspan="6" class="error_text">取引先一覧の取得に失敗しました。</td>
+            <td colspan="9" class="error_text">社員一覧の取得に失敗しました。</td>
           </tr>
         `;
       }
@@ -315,14 +321,14 @@ function loadSupplierList(page) {
     });
 }
 
-function renderSupplierTable(list) {
-  const supplierTableBody = document.getElementById("supplier_table_body");
-  if (!supplierTableBody) return;
+function renderStaffTable(list) {
+  const staffTableBody = document.getElementById("staff_table_body");
+  if (!staffTableBody) return;
 
   if (!list || list.length === 0) {
-    supplierTableBody.innerHTML = `
+    staffTableBody.innerHTML = `
       <tr>
-        <td colspan="6" class="loading_text">該当データがありません。</td>
+        <td colspan="9" class="loading_text">該当データがありません。</td>
       </tr>
     `;
     return;
@@ -331,14 +337,20 @@ function renderSupplierTable(list) {
   let html = "";
 
   list.forEach(function (row) {
+    const authorityInfo = getAuthorityInfo(row.authority_level);
     const useFlagClass = String(row.use_flag) === "1" ? "use_flag_on" : "use_flag_off";
-    const useFlagText = String(row.use_flag) === "1" ? "有効" : "無効";
+    const useFlagText = String(row.use_flag) === "1" ? "使用中" : "停止";
 
     html += `
-      <tr class="supplier_row" data-supplier-code="${escapeHtml(row.supplier_code || "")}">
-        <td>${escapeHtml(row.supplier_code || "")}</td>
-        <td>${escapeHtml(row.supplier_name || "")}</td>
-        <td>${escapeHtml(row.delivery_company || "")}</td>
+      <tr class="staff_row" data-staff-id="${escapeHtml(row.staff_id || "")}">
+        <td>${escapeHtml(row.staff_code || "")}</td>
+        <td>${escapeHtml(row.staff_name || "")}</td>
+        <td>
+          <span class="authority_badge ${authorityInfo.className}">
+            ${authorityInfo.label}
+          </span>
+        </td>
+        <td>${escapeHtml(row.mail_address || "")}</td>
         <td>
           <span class="use_flag_badge ${useFlagClass}">
             ${useFlagText}
@@ -350,12 +362,26 @@ function renderSupplierTable(list) {
     `;
   });
 
-  supplierTableBody.innerHTML = html;
+  staffTableBody.innerHTML = html;
   bindDetailRowEvents();
 }
 
+function getAuthorityInfo(authorityLevel) {
+  const level = String(authorityLevel || "");
+
+  if (level === "9") {
+    return { label: "管理者", className: "authority_admin" };
+  }
+
+  if (level === "2") {
+    return { label: "責任者", className: "authority_manager" };
+  }
+
+  return { label: "一般", className: "authority_general" };
+}
+
 function bindDetailRowEvents() {
-  const rows = document.querySelectorAll(".supplier_row");
+  const rows = document.querySelectorAll(".staff_row");
 
   rows.forEach(function (row) {
     row.addEventListener("click", function () {
@@ -368,20 +394,23 @@ function moveToDetailByPost(row) {
   const form = document.getElementById("master_form");
   if (!form) return;
 
-  const supplierCode = row.dataset.supplierCode || "";
+  const staffId = row.dataset.staffId || "";
 
-  setValue("detail_supplier_code", supplierCode);
+  setValue("detail_staff_id", staffId);
+  setValue("detail_return_staff_id", staffId);
   setValue("detail_display_mode", "view");
 
-  setValue("return_search_supplier_code", getValue("search_supplier_code"));
-  setValue("return_search_supplier_name", getValue("search_supplier_name"));
-  setValue("return_search_delivery_company", getValue("search_delivery_company"));
+  setValue("return_search_staff_code", getValue("search_staff_code"));
+  setValue("return_search_staff_name", getValue("search_staff_name"));
+  setValue("return_search_mail_address", getValue("search_mail_address"));
+  setValue("return_search_authority_level", getValue("search_authority_level"));
   setValue("return_search_use_flag", getValue("search_use_flag"));
 
   form.method = "post";
-  form.action = "m_supplier_dt.cfm";
+  form.action = "m_staff_dt.cfm";
   form.submit();
 }
+
 
 function updatePagingArea(current, total, totalCount) {
   const firstBtn = document.getElementById("first_page_btn");
@@ -402,11 +431,12 @@ function updatePagingArea(current, total, totalCount) {
 
 function bindBackButtonEvent() {
   const backButton = document.getElementById("back-btn");
-  if (!backButton) return;
 
-  backButton.addEventListener("click", function () {
-    location.href = "menu.cfm";
-  });
+  if (backButton) {
+    backButton.addEventListener("click", function () {
+      location.href = "menu.cfm";
+    });
+  }
 }
 
 function getValue(id) {
@@ -417,7 +447,7 @@ function getValue(id) {
 function setValue(id, value) {
   const element = document.getElementById(id);
   if (element) {
-    element.value = value == null ? "" : String(value);
+    element.value = value == null ? "" : value;
   }
 }
 

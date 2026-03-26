@@ -6,6 +6,42 @@
 <!--- <cfset showImportButton = true> --->
 <cfset showExportButton = true>
 
+<!--- =========================
+      配送業者マスタ取得
+      ========================= --->
+<cfquery name="qDeliveryCompany">
+    SELECT
+        delivery_company_code,
+        delivery_company_name
+    FROM
+        m_delivery_company
+    WHERE
+        use_flag = 1
+    ORDER BY
+        delivery_company_name ASC
+</cfquery>
+
+<cfset formSearchSupplierCode = "">
+<cfif StructKeyExists(Form, "search_supplier_code")>
+    <cfset formSearchSupplierCode = Trim(Form.search_supplier_code)>
+</cfif>
+
+<cfset formSearchSupplierName = "">
+<cfif StructKeyExists(Form, "search_supplier_name")>
+    <cfset formSearchSupplierName = Trim(Form.search_supplier_name)>
+</cfif>
+
+<!--- delivery_company_code を持つ --->
+<cfset formSearchDeliveryCompany = "">
+<cfif StructKeyExists(Form, "search_delivery_company")>
+    <cfset formSearchDeliveryCompany = Trim(Form.search_delivery_company)>
+</cfif>
+
+<cfset formSearchUseFlag = "">
+<cfif StructKeyExists(Form, "search_use_flag") AND (Form.search_use_flag eq "0" OR Form.search_use_flag eq "1")>
+    <cfset formSearchUseFlag = Form.search_use_flag>
+</cfif>
+
 <html lang="ja">
     <head>
     <meta charset="UTF-8">
@@ -234,6 +270,14 @@
         background-color: #FDECEC;
         color: #C62828;
         }
+
+        .supplier_table_body .supplier_row {
+            cursor: pointer;
+        }
+
+        .supplier_table_body .supplier_row:hover {
+            background-color: #FFFCF4;
+        }
     </style>
     </head>
     <body>
@@ -241,32 +285,47 @@
 
     <cfinclude template="header.cfm">
 
-    <form action="" method="post" class="search_form">
+    <form id="master_form" method="post" class="search_form">
+
+        <input type="hidden" id="detail_supplier_code" name="supplier_code" value="">
+        <input type="hidden" id="detail_display_mode" name="display_mode" value="view">
+
+        <input type="hidden" id="return_search_supplier_code" name="return_search_supplier_code" value="#HTMLEditFormat(formSearchSupplierCode)#">
+        <input type="hidden" id="return_search_supplier_name" name="return_search_supplier_name" value="#HTMLEditFormat(formSearchSupplierName)#">
+        <input type="hidden" id="return_search_delivery_company" name="return_search_delivery_company" value="#HTMLEditFormat(formSearchDeliveryCompany)#">
+        <input type="hidden" id="return_search_use_flag" name="return_search_use_flag" value="#HTMLEditFormat(formSearchUseFlag)#">
 
         <div class="wrap">
 
         <div class="search_area" style="display:flex; margin-top:30px; flex-wrap:wrap;">
             <div class="search_item">
             <label for="search_supplier_code">取引先コード</label>
-            <input type="text" id="search_supplier_code" name="search_supplier_code" placeholder="取引先コードを入力">
+            <input type="text" id="search_supplier_code" name="search_supplier_code" placeholder="取引先コードを入力" value="#HTMLEditFormat(formSearchSupplierCode)#">
             </div>
 
             <div class="search_item">
             <label for="search_supplier_name">取引先名</label>
-            <input type="text" id="search_supplier_name" name="search_supplier_name" placeholder="取引先名を入力">
+            <input type="text" id="search_supplier_name" name="search_supplier_name" placeholder="取引先名を入力" value="#HTMLEditFormat(formSearchSupplierName)#" style="width:250px;">
             </div>
 
             <div class="search_item">
-            <label for="search_delivery_company">配送業者名</label>
-            <input type="text" id="search_delivery_company" name="search_delivery_company" placeholder="配送業者名を入力">
+            <label for="search_delivery_company">配送業者</label>
+            <select id="search_delivery_company" name="search_delivery_company" style="width:200px;">
+                <option value="">すべて</option>
+                <cfloop query="qDeliveryCompany">
+                    <option value="#HTMLEditFormat(qDeliveryCompany.delivery_company_code)#"<cfif formSearchDeliveryCompany eq qDeliveryCompany.delivery_company_code> selected</cfif>>
+                        #HTMLEditFormat(qDeliveryCompany.delivery_company_name)#
+                    </option>
+                </cfloop>
+            </select>
             </div>
 
             <div class="search_item">
             <label for="search_use_flag">使用区分</label>
             <select id="search_use_flag" name="search_use_flag" style="width:120px;">
                 <option value="">すべて</option>
-                <option value="1">有効</option>
-                <option value="0">無効</option>
+                <option value="1"<cfif formSearchUseFlag eq "1"> selected</cfif>>有効</option>
+                <option value="0"<cfif formSearchUseFlag eq "0"> selected</cfif>>無効</option>
             </select>
             </div>
 
@@ -275,7 +334,7 @@
                 <img src="#Application.asset_url#/image/search-icon.svg" alt="検索">
             </button>
             <button type="button" id="clear_btn" class="icon_btn search_btn clear_btn" title="クリア">
-                <img src="#Application.asset_url#/image/clear-icon.svg" alt="クリア"> 
+                <img src="#Application.asset_url#/image/clear-icon.svg" alt="クリア">
             </button>
             </div>
         </div>
@@ -351,7 +410,7 @@
         </div>
     </form>
 
-    <script src="#Application.asset_url#/js/m_supplier.js?20260324_1"></script>
+    <script src="#Application.asset_url#/js/m_supplier.js?20260325_6"></script>
     </cfoutput>
     </body>
 </html>

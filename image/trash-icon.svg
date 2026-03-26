@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64" height="64" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <!-- trash can lid -->
+  <rect x="38" y="34" width="52" height="8" rx="4" fill="#4B6653"/>
+  <rect x="54" y="26" width="20" height="8" rx="4" fill="#4B6653"/>
+
+  <!-- trash can body -->
+  <path d="M42 46C42 44 44 42 46 42H82C84 42 86 44 86 46V88C86 95 81 100 74 100H54C47 100 42 95 42 88V46Z" fill="#4B6653"/>
+
+  <!-- inner lines -->
+  <rect x="53" y="55" width="4" height="28" rx="2" fill="white"/>
+  <rect x="62" y="55" width="4" height="28" rx="2" fill="white"/>
+  <rect x="71" y="55" width="4" height="28" rx="2" fill="white"/>
+</svg>

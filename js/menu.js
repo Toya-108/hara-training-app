@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var logoutButton = document.getElementById('logout-button');
     var itemMasterButton = document.getElementById('item-master-button');
     var supplierMasterButton = document.getElementById('supplier-master-button');
+    var staffMasterButton = document.getElementById('staff-master-button');
     var addSlipButton = document.getElementById('add_slip_button');
 
     detailButton.addEventListener('click', function () {
@@ -43,6 +44,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     supplierMasterButton.addEventListener('click', function(){
         location.href = 'm_supplier.cfm';
+    });
+
+    staffMasterButton.addEventListener('click', function(){
+        location.href = 'm_staff.cfm';
     });
 
 

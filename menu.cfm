@@ -295,6 +295,9 @@
                     <button type="button" class="master-button" id="supplier-master-button">
                         取引先マスタ
                     </button>
+                    <button type="button" class="master-button" id="staff-master-button">
+                        社員マスタ
+                    </button>
 
                     <button type="button" class="close-button" id="close_modal_button">
                         閉じる
@@ -303,7 +306,7 @@
             </div>
         </div>
 
-        <script src="#application.asset_url#/js/menu.js?20260319_1"></script>
+        <script src="#application.asset_url#/js/menu.js?20260325_1"></script>
     </body>
 </cfoutput>
 </html>

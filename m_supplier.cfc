@@ -11,7 +11,7 @@
 
         <cfset var sortField = "">
         <cfset var sortOrder = "">
-        <cfset var orderBySql = "supplier_code ASC">
+        <cfset var orderBySql = "s.supplier_code ASC">
 
         <cfset var searchSupplierCode = "">
         <cfset var searchSupplierName = "">
@@ -34,7 +34,6 @@
         <cftry>
             <cfset requestData = DeserializeJSON(ToString(GetHttpRequestData().content))>
 
-            <!--- ページ情報取得 --->
             <cfif StructKeyExists(requestData, "page")>
                 <cfset page = Val(requestData.page)>
             </cfif>
@@ -51,7 +50,6 @@
                 <cfset sortOrder = LCase(Trim(requestData.sortOrder))>
             </cfif>
 
-            <!--- 検索条件取得 --->
             <cfif StructKeyExists(requestData, "search_supplier_code")>
                 <cfset searchSupplierCode = Trim(requestData.search_supplier_code)>
             </cfif>
@@ -86,23 +84,23 @@
 
             <!--- ソート条件作成 --->
             <cfif sortField eq "supplier_code">
-                <cfset orderBySql = "supplier_code">
+                <cfset orderBySql = "s.supplier_code">
             <cfelseif sortField eq "supplier_name">
-                <cfset orderBySql = "supplier_name">
+                <cfset orderBySql = "s.supplier_name">
             <cfelseif sortField eq "supplier_name_kana">
-                <cfset orderBySql = "supplier_name_kana">
+                <cfset orderBySql = "s.supplier_name_kana">
             <cfelseif sortField eq "tel">
-                <cfset orderBySql = "tel">
+                <cfset orderBySql = "s.tel">
             <cfelseif sortField eq "delivery_company">
-                <cfset orderBySql = "delivery_company">
+                <cfset orderBySql = "d.delivery_company_name">
             <cfelseif sortField eq "use_flag">
-                <cfset orderBySql = "use_flag">
+                <cfset orderBySql = "s.use_flag">
             <cfelseif sortField eq "create_datetime">
-                <cfset orderBySql = "create_datetime">
+                <cfset orderBySql = "s.create_datetime">
             <cfelseif sortField eq "update_datetime">
-                <cfset orderBySql = "update_datetime">
+                <cfset orderBySql = "s.update_datetime">
             <cfelse>
-                <cfset orderBySql = "supplier_code">
+                <cfset orderBySql = "s.supplier_code">
             </cfif>
 
             <cfif sortOrder eq "desc">
@@ -115,25 +113,27 @@
             <cfset filtering = "">
 
             <cfif searchSupplierCode neq "">
-                <cfset filtering = filtering & " AND supplier_code LIKE '%" & searchSupplierCode & "%'">
+                <cfset filtering = filtering & " AND s.supplier_code LIKE '%" & searchSupplierCode & "%'">
             </cfif>
 
             <cfif searchSupplierName neq "">
-                <cfset filtering = filtering & " AND (supplier_name LIKE '%" & searchSupplierName & "%' OR supplier_name_kana LIKE '%" & searchSupplierName & "%')">
+                <cfset filtering = filtering & " AND (s.supplier_name LIKE '%" & searchSupplierName & "%' OR s.supplier_name_kana LIKE '%" & searchSupplierName & "%')">
             </cfif>
 
             <cfif searchDeliveryCompany neq "">
-                <cfset filtering = filtering & " AND delivery_company LIKE '%" & searchDeliveryCompany & "%'">
+                <cfset filtering = filtering & " AND d.delivery_company_code = '" & searchDeliveryCompany & "'">
             </cfif>
 
             <cfif searchUseFlag eq "0" or searchUseFlag eq "1">
-                <cfset filtering = filtering & " AND use_flag = " & Val(searchUseFlag)>
+                <cfset filtering = filtering & " AND s.use_flag = " & Val(searchUseFlag)>
             </cfif>
 
             <!--- 件数取得 --->
             <cfquery name="qGetCount">
                 SELECT COUNT(*) AS total_count
-                FROM m_supplier
+                FROM m_supplier s
+                LEFT OUTER JOIN m_delivery_company d
+                    ON s.delivery_company_code = d.delivery_company_code
                 WHERE 1 = 1
                 #preserveSingleQuotes(filtering)#
             </cfquery>
@@ -154,28 +154,31 @@
             <!--- 一覧取得 --->
             <cfquery name="qGetSupplierList">
                 SELECT
-                    supplier_id,
-                    supplier_code,
-                    supplier_name,
-                    supplier_name_kana,
-                    zip_code,
-                    prefecture,
-                    address1,
-                    address2,
-                    tel,
-                    fax,
-                    delivery_company,
-                    note,
-                    use_flag,
-                    create_datetime,
-                    create_staff_code,
-                    create_staff_name,
-                    DATE_FORMAT(create_datetime, '%Y/%m/%d') AS create_datetime_disp,
-                    update_datetime,
-                    update_staff_code,
-                    update_staff_name,
-                    DATE_FORMAT(update_datetime, '%Y/%m/%d') AS update_datetime_disp
-                FROM m_supplier
+                    s.supplier_id,
+                    s.supplier_code,
+                    s.supplier_name,
+                    s.supplier_name_kana,
+                    s.zip_code,
+                    s.prefecture_code,
+                    s.address1,
+                    s.address2,
+                    s.tel,
+                    s.fax,
+                    s.delivery_company_code,
+                    d.delivery_company_name,
+                    s.note,
+                    s.use_flag,
+                    s.create_datetime,
+                    s.create_staff_code,
+                    s.create_staff_name,
+                    DATE_FORMAT(s.create_datetime, '%Y/%m/%d') AS create_datetime_disp,
+                    s.update_datetime,
+                    s.update_staff_code,
+                    s.update_staff_name,
+                    DATE_FORMAT(s.update_datetime, '%Y/%m/%d') AS update_datetime_disp
+                FROM m_supplier s
+                LEFT OUTER JOIN m_delivery_company d
+                    ON s.delivery_company_code = d.delivery_company_code
                 WHERE 1 = 1
                 #preserveSingleQuotes(filtering)#
                 ORDER BY #preserveSingleQuotes(orderBySql)#
@@ -193,12 +196,13 @@
                     "supplier_name" = qGetSupplierList.supplier_name,
                     "supplier_name_kana" = qGetSupplierList.supplier_name_kana,
                     "zip_code" = qGetSupplierList.zip_code,
-                    "prefecture" = qGetSupplierList.prefecture,
+                    "prefecture" = qGetSupplierList.prefecture_code,
                     "address1" = qGetSupplierList.address1,
                     "address2" = qGetSupplierList.address2,
                     "tel" = qGetSupplierList.tel,
                     "fax" = qGetSupplierList.fax,
-                    "delivery_company" = qGetSupplierList.delivery_company,
+                    "delivery_company_code" = qGetSupplierList.delivery_company_code,
+                    "delivery_company" = qGetSupplierList.delivery_company_name,
                     "note" = qGetSupplierList.note,
                     "use_flag" = qGetSupplierList.use_flag,
                     "create_datetime" = qGetSupplierList.create_datetime,
@@ -210,7 +214,7 @@
                     "update_staff_name" = qGetSupplierList.update_staff_name,
                     "update_datetime_disp" = qGetSupplierList.update_datetime_disp
                 })>
-            </cfloop>
+            </cfloop>result
 
             <cfset result["paging"]["page"] = page>
             <cfset result["paging"]["pageSize"] = pageSize>
@@ -220,7 +224,7 @@
             <cfset result["paging"]["hasNext"] = (page lt totalPage)>
 
             <cfcatch>
-                <cflog file="HARA_TRAINING_APP" type="Error" text="商品一覧取得エラー #cfcatch.sql#　#cfcatch.queryError#">
+                <cflog file="HARA_TRAINING_APP" type="Error" text="取引先一覧取得エラー #cfcatch.message# #cfcatch.detail#">
                 <cfset result["status"] = 0>
                 <cfset result["message"] = "取引先一覧の取得中にエラーが発生しました。">
             </cfcatch>
