@@ -286,8 +286,6 @@
         <div class="dt_card" id="dt_card">
             <div class="dt_header_row">
                 <div class="dt_title_area">
-                    <h2 class="dt_title">#HTMLEditFormat(pageHeading)#</h2>
-                    <span id="mode_badge" class="mode_badge"></span>
                 </div>
 
                 <div class="meta_box">
@@ -355,7 +353,7 @@
                     <div class="form_item">
                         <div class="form_label">権限レベル</div>
                         <div class="form_value">
-                            <select id="authority_level" name="authority_level">
+                            <select id="authority_level" name="authority_level" class="form-control form-select">
                                 <option value="1"<cfif displayAuthorityLevel eq "1"> selected</cfif>>一般</option>
                                 <option value="9"<cfif displayAuthorityLevel eq "9"> selected</cfif>>管理者</option>
                             </select>
@@ -379,7 +377,7 @@
                     <div class="form_item">
                         <div class="form_label">使用区分</div>
                         <div class="form_value">
-                            <select id="use_flag" name="use_flag">
+                            <select id="use_flag" name="use_flag" class="form-control form-select">
                                 <option value="1"<cfif displayUseFlag eq "1"> selected</cfif>>使用中</option>
                                 <option value="0"<cfif displayUseFlag eq "0"> selected</cfif>>停止</option>
                             </select>

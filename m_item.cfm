@@ -2,9 +2,13 @@
 
 <cfset pageTitle = "商品マスタ一覧">
 <cfset showHomeButton = true>
-<cfset showNewButton = false>
+<cfset showNewButton = true>
 <!--- <cfset showImportButton = true> --->
 <cfset showExportButton = true>
+
+<cfparam name="Form.search_product_code" default="">
+<cfparam name="Form.search_jan_code" default="">
+<cfparam name="Form.search_product_name" default="">
 
 <html lang="ja">
     <head>
@@ -23,7 +27,7 @@
         }
 
         .search_area {
-          margin-left:60px;
+          margin-left: 60px;
         }
 
         .search_item {
@@ -39,7 +43,6 @@
           color: #2E4136;
         }
 
-        /* ===== 検索入力 ===== */
         .search_item input {
           height: 34px;
           padding: 0 14px;
@@ -118,7 +121,6 @@
           color: #2F2A24;
         }
 
-        /* ===== ページング ===== */
         .paging_info_area {
           margin: 24px 80px 0;
           display: flex;
@@ -197,32 +199,50 @@
 
         .loading_indicator.is-visible {
           display: block;
-        }      
+        }
       </style>
     </head>
     <body>
     <cfoutput>
 
       <cfinclude template="header.cfm">
-      
-      <form action="" method="post" class="search_form">
 
+      <form action="" method="post" id="master_form" class="search_form">
         <div class="wrap">
 
           <div class="search_area" style="display:flex;margin-top:30px;">
             <div class="search_item">
               <label for="search_product_code">商品コード</label>
-              <input type="text" id="search_product_code" name="search_product_code" placeholder="商品コード">
+              <input
+                type="text"
+                id="search_product_code"
+                name="search_product_code"
+                placeholder="商品コードを入力"
+                value="#HTMLEditFormat(Form.search_product_code)#"
+              >
             </div>
 
             <div class="search_item">
               <label for="search_jan_code">JAN</label>
-              <input type="text" id="search_jan_code" name="search_jan_code" placeholder="JAN">
+              <input
+                type="text"
+                id="search_jan_code"
+                name="search_jan_code"
+                placeholder="JANを入力"
+                value="#HTMLEditFormat(Form.search_jan_code)#"
+              >
             </div>
 
             <div class="search_item">
               <label for="search_product_name">商品名</label>
-              <input type="text" id="search_product_name" name="search_product_name" placeholder="商品名">
+              <input
+                type="text"
+                id="search_product_name"
+                name="search_product_name"
+                placeholder="商品名を入力"
+                value="#HTMLEditFormat(Form.search_product_name)#"
+                style="width:300px;"
+              >
             </div>
 
             <div class="search_btn_area" style="display:flex;">
@@ -275,15 +295,15 @@
                           <img src="#Application.asset_url#/image/sort_default.svg" alt="ソート">
                         </span>
                       </th>
-                      <th style="width:250px;">
-                        商品名(カナ)
-                        <span class="sort_btn" data-field="item_category" data-sort="none">
+                      <th style="width:180px;">
+                        作成日時
+                        <span class="sort_btn" data-field="create_datetime" data-sort="none">
                           <img src="#Application.asset_url#/image/sort_default.svg" alt="ソート">
                         </span>
                       </th>
-                      <th style="width:80px;">
-                        原価
-                        <span class="sort_btn" data-field="cost_price" data-sort="none">
+                      <th style="width:180px;">
+                        更新日時
+                        <span class="sort_btn" data-field="update_datetime" data-sort="none">
                           <img src="#Application.asset_url#/image/sort_default.svg" alt="ソート">
                         </span>
                       </th>
@@ -300,7 +320,7 @@
         </div>
       </form>
 
-      <script src="#Application.asset_url#/js/m_item.js?20260318_1"></script>
+      <script src="#Application.asset_url#/js/m_item.js?20260326_fix_2"></script>
     </cfoutput>
     </body>
 </html>

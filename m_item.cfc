@@ -32,7 +32,6 @@
         <cftry>
             <cfset requestData = DeserializeJSON(ToString(GetHttpRequestData().content))>
 
-            <!--- ページ情報取得 --->
             <cfif StructKeyExists(requestData, "page")>
                 <cfset page = Val(requestData.page)>
             </cfif>
@@ -49,7 +48,6 @@
                 <cfset sortOrder = LCase(Trim(requestData.sortOrder))>
             </cfif>
 
-            <!--- 検索条件取得 --->
             <cfif StructKeyExists(requestData, "search_product_code")>
                 <cfset searchProductCode = Trim(requestData.search_product_code)>
             </cfif>
@@ -62,8 +60,6 @@
                 <cfset searchProductName = Trim(requestData.search_product_name)>
             </cfif>
 
-            <cfset sleep(100)>
-
             <cfif page lte 0>
                 <cfset page = 1>
             </cfif>
@@ -74,17 +70,16 @@
 
             <cfset startRow = (page - 1) * pageSize>
 
-            <!--- ソート条件作成 --->
             <cfif sortField eq "item_code">
                 <cfset orderBySql = "item_code">
             <cfelseif sortField eq "jan_code">
                 <cfset orderBySql = "jan_code">
-            <cfelseif sortField eq "item_category">
-                <cfset orderBySql = "item_name_kana">
             <cfelseif sortField eq "item_name">
                 <cfset orderBySql = "item_name">
-            <cfelseif sortField eq "cost_price">
-                <cfset orderBySql = "gentanka">
+            <cfelseif sortField eq "create_datetime">
+                <cfset orderBySql = "create_datetime">
+            <cfelseif sortField eq "update_datetime">
+                <cfset orderBySql = "update_datetime">
             <cfelse>
                 <cfset orderBySql = "item_code">
             </cfif>
@@ -95,11 +90,10 @@
                 <cfset orderBySql = orderBySql & " ASC">
             </cfif>
 
-            <!--- filtering 作成 --->
             <cfset filtering = "">
 
             <cfif searchProductCode neq "">
-              <cfset filtering = filtering & " AND item_code = '#searchProductCode#'">
+                <cfset filtering = filtering & " AND item_code = '#searchProductCode#'">
             </cfif>
 
             <cfif searchJanCode neq "">
@@ -110,7 +104,6 @@
                 <cfset filtering = filtering & " AND (item_name LIKE '%" & searchProductName & "%' OR item_name_kana LIKE '%" & searchProductName & "%')">
             </cfif>
 
-            <!--- 件数取得 --->
             <cfquery name="qGetCount">
                 SELECT COUNT(*) AS total_count
                 FROM m_item
@@ -131,14 +124,13 @@
                 <cfset startRow = (page - 1) * pageSize>
             </cfif>
 
-            <!--- 一覧取得 --->
             <cfquery name="qGetItemList">
                 SELECT
                     item_code,
                     jan_code,
-                    item_name_kana,
                     item_name,
-                    gentanka
+                    DATE_FORMAT(create_datetime, '%Y/%m/%d %H:%i:%s') AS create_datetime_disp,
+                    DATE_FORMAT(update_datetime, '%Y/%m/%d %H:%i:%s') AS update_datetime_disp
                 FROM m_item
                 WHERE 1 = 1
                 #preserveSingleQuotes(filtering)#
@@ -154,9 +146,9 @@
                 <cfset ArrayAppend(result["results"], {
                     "item_code" = qGetItemList.item_code,
                     "jan_code" = qGetItemList.jan_code,
-                    "item_name_kana" = qGetItemList.item_name_kana,
                     "item_name" = qGetItemList.item_name,
-                    "gentanka" = qGetItemList.gentanka
+                    "create_datetime" = qGetItemList.create_datetime_disp,
+                    "update_datetime" = qGetItemList.update_datetime_disp
                 })>
             </cfloop>
 
@@ -168,10 +160,10 @@
             <cfset result["paging"]["hasNext"] = (page lt totalPage)>
 
             <cfcatch>
-              <cflog file="HARA_TRAINING_APP" type="Error" text="商品一覧取得エラー #cfcatch.sql#　#cfcatch.queryError#">
-              <cfset result["status"] = 0>
-              <cfset result["message"] = "商品一覧の取得中にエラーが発生しました。">
-          </cfcatch>
+                <cflog file="HARA_TRAINING_APP" type="Error" text="商品一覧取得エラー #cfcatch.message# #cfcatch.detail#">
+                <cfset result["status"] = 0>
+                <cfset result["message"] = "商品一覧の取得中にエラーが発生しました。">
+            </cfcatch>
         </cftry>
 
         <cfreturn result>

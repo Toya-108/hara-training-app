@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
   bindPagingEvents();
   bindSortEvents();
   bindHeaderNewButtonEvent();
+  bindHeaderExportButtonEvent();
   bindBackButtonEvent();
   loadSupplierList(currentPage);
 });
@@ -162,6 +163,29 @@ function bindHeaderNewButtonEvent() {
     event.preventDefault();
     moveToAddByPost();
   });
+}
+
+function bindHeaderExportButtonEvent() {
+  document.addEventListener("click", function (event) {
+    const exportButton = event.target.closest("#export-button");
+    if (!exportButton) return;
+
+    event.preventDefault();
+    exportSupplierCsv();
+  });
+}
+
+function exportSupplierCsv() {
+  const params = new URLSearchParams({
+    search_supplier_code: getValue("search_supplier_code"),
+    search_supplier_name: getValue("search_supplier_name"),
+    search_delivery_company: getValue("search_delivery_company"),
+    search_use_flag: getValue("search_use_flag"),
+    sortField: sortField,
+    sortOrder: sortOrder
+  });
+
+  window.location.href = "m_supplier_export.cfm?" + params.toString();
 }
 
 function moveToAddByPost() {

@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
   bindPagingEvents();
   bindSortEvents();
   bindHeaderNewButtonEvent();
+  bindHeaderExportButtonEvent();
   bindBackButtonEvent();
   loadStaffList(currentPage);
 });
@@ -165,6 +166,30 @@ function bindHeaderNewButtonEvent() {
     event.preventDefault();
     moveToAddByPost();
   });
+}
+
+function bindHeaderExportButtonEvent() {
+  document.addEventListener("click", function (event) {
+    const exportButton = event.target.closest("#export-button");
+    if (!exportButton) return;
+
+    event.preventDefault();
+    exportStaffCsv();
+  });
+}
+
+function exportStaffCsv() {
+  const params = new URLSearchParams({
+    search_staff_code: getValue("search_staff_code"),
+    search_staff_name: getValue("search_staff_name"),
+    search_mail_address: getValue("search_mail_address"),
+    search_authority_level: getValue("search_authority_level"),
+    search_use_flag: getValue("search_use_flag"),
+    sortField: sortField,
+    sortOrder: sortOrder
+  });
+
+  window.location.href = "m_staff_export.cfm?" + params.toString();
 }
 
 function moveToAddByPost() {
@@ -410,7 +435,6 @@ function moveToDetailByPost(row) {
   form.action = "m_staff_dt.cfm";
   form.submit();
 }
-
 
 function updatePagingArea(current, total, totalCount) {
   const firstBtn = document.getElementById("first_page_btn");

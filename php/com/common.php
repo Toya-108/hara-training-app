@@ -1,56 +1,37 @@
 <?php
-
-$config = require __DIR__ . '/../config/config.php';
-
-// 文字コード
-mb_internal_encoding($config['page_encoding']);
-mb_http_output($config['page_encoding']);
-
-// タイムゾーン
-date_default_timezone_set('Asia/Tokyo');
-
-// セッション設定
-session_name($config['session']['name']);
-session_set_cookie_params([
-    'lifetime' => $config['session']['lifetime'],
-    'path' => '/',
-    'httponly' => true,
-    'secure' => true,
-    'samesite' => 'Lax',
-]);
-
 if (session_status() === PHP_SESSION_NONE) {
+    session_name('php_study_app');
     session_start();
 }
 
-// アプリ共通値
-$GLOBALS['app'] = $config;
+mb_internal_encoding('UTF-8');
 
-function db(): PDO
+$GLOBALS['app'] = [
+    'name' => 'PHP Study App',
+
+    // Dockerローカル環境では http://localhost:8080/ がルートなので空文字
+    'asset_url' => '',
+
+    // docker-compose の db サービスへ接続する
+    'db_host' => 'db',
+    'db_port' => '3306',
+    'db_name' => 'sample',
+    'db_user' => 'app',
+    'db_password' => 'apppass',
+    'db_charset' => 'utf8mb4',
+
+    'log_file' => __DIR__ . '/../logs/php_study_app.log'
+];
+
+function h($text)
 {
-    static $pdo = null;
+    return htmlspecialchars((string)$text, ENT_QUOTES, 'UTF-8');
+}
 
-    if ($pdo === null) {
-        $config = $GLOBALS['app']['database'];
-
-        $dsn = sprintf(
-            'mysql:host=%s;port=%d;dbname=%s;charset=%s',
-            $config['host'],
-            $config['port'],
-            $config['dbname'],
-            $config['charset']
-        );
-
-        $pdo = new PDO(
-            $dsn,
-            $config['username'],
-            $config['password'],
-            [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            ]
-        );
-    }
-
-    return $pdo;
+function write_app_log($message)
+{
+    $app = $GLOBALS['app'];
+    $date_time = date('Y-m-d H:i:s');
+    $log_text = '[' . $date_time . '] ' . $message . PHP_EOL;
+    error_log($log_text, 3, $app['log_file']);
 }

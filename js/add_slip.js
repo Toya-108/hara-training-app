@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var itemTableBody = document.getElementById("item_table_body");
     var messageArea = document.getElementById("form_message");
 
-    var backButton = document.getElementById('back-btn');
+    var homeButton = document.getElementById('home-btn');
 
     // 取引先モーダル関連
     var supplierModal = document.getElementById("supplier_modal");
@@ -771,7 +771,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    backButton.addEventListener('click', function(){
+    homeButton.addEventListener('click', function(){
         location.href = 'menu.cfm';
     })
 

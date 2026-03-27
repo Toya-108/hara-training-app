@@ -13,8 +13,45 @@ document.addEventListener("DOMContentLoaded", function () {
   bindSortEvents();
   bindSearchEvents();
   bindEnterMoveEvents();
+  bindHeaderButtons();
   loadItemList(currentPage);
 });
+
+function bindHeaderButtons() {
+  const homeBtn = document.getElementById("home-btn");
+  const addBtn = document.getElementById("add-button");
+  const exportBtn = document.getElementById("export-button");
+
+  if (homeBtn) {
+    homeBtn.addEventListener("click", function () {
+      location.href = "menu.cfm";
+    });
+  }
+
+  if (addBtn) {
+    addBtn.addEventListener("click", function () {
+      moveToAddByPost();
+    });
+  }
+
+  if (exportBtn) {
+    exportBtn.addEventListener("click", function () {
+      exportItemCsv();
+    });
+  }
+}
+
+function exportItemCsv() {
+  const params = new URLSearchParams({
+    search_product_code: getValue("search_product_code"),
+    search_jan_code: getValue("search_jan_code"),
+    search_product_name: getValue("search_product_name"),
+    sortField: sortField,
+    sortOrder: sortOrder
+  });
+
+  window.location.href = "m_item_export.cfm?" + params.toString();
+}
 
 function bindPagingEvents() {
   const firstBtn = document.getElementById("first_page_btn");
@@ -115,8 +152,7 @@ function bindSearchEvents() {
 
   if (searchBtn) {
     searchBtn.addEventListener("click", function () {
-      currentPage = 1;
-      loadItemList(currentPage);
+      executeSearch();
     });
   }
 
@@ -137,7 +173,6 @@ function bindEnterMoveEvents() {
 
   inputs.forEach(function (input, index) {
     input.addEventListener("keydown", function (e) {
-      // 日本語変換中のEnterは無視
       if (e.isComposing || e.keyCode === 229) {
         return;
       }
@@ -167,27 +202,17 @@ function clearSearchConditions() {
   const janCode = document.getElementById("search_jan_code");
   const productName = document.getElementById("search_product_name");
 
-  if (productCode) {
-    productCode.value = "";
-  }
-
-  if (janCode) {
-    janCode.value = "";
-  }
-
-  if (productName) {
-    productName.value = "";
-  }
+  if (productCode) productCode.value = "";
+  if (janCode) janCode.value = "";
+  if (productName) productName.value = "";
 }
 
 async function loadItemList(page) {
-
-  if(isLoading){
+  if (isLoading) {
     return;
   }
 
   setLoadingState(true);
-
   renderLoadingRow();
 
   const requestInfo = createRequestInfo(page);
@@ -212,7 +237,7 @@ async function loadItemList(page) {
   } catch (error) {
     console.error("商品一覧取得エラー:", error);
     renderErrorRow("商品一覧の取得に失敗しました。");
-  }finally{
+  } finally {
     setLoadingState(false);
   }
 }
@@ -269,17 +294,24 @@ function renderItemTable(responseData) {
 
   itemList.forEach(function (item) {
     html += `
-      <tr>
+      <tr class="item_row" data-item-code="${escapeHtml(item.item_code)}" style="cursor:pointer;">
         <td>${escapeHtml(item.item_code)}</td>
         <td>${escapeHtml(item.jan_code || "")}</td>
         <td>${escapeHtml(item.item_name || "")}</td>
-        <td>${escapeHtml(item.item_name_kana || "")}</td>
-        <td style="text-align:right;">${formatPrice(item.gentanka)}</td>
+        <td>${escapeHtml(item.create_datetime || "")}</td>
+        <td>${escapeHtml(item.update_datetime || "")}</td>
       </tr>
     `;
   });
 
   tableBody.innerHTML = html;
+
+  const rows = tableBody.querySelectorAll(".item_row");
+  rows.forEach(function (row) {
+    row.addEventListener("click", function () {
+      moveToDetailByPost(this.dataset.itemCode);
+    });
+  });
 }
 
 function updatePagingInfo(responseData) {
@@ -324,10 +356,7 @@ function updatePagingInfo(responseData) {
 
 function renderLoadingRow() {
   const tableBody = document.getElementById("item_table_body");
-
-  if (!tableBody) {
-    return;
-  }
+  if (!tableBody) return;
 
   tableBody.innerHTML = `
     <tr>
@@ -338,10 +367,7 @@ function renderLoadingRow() {
 
 function renderErrorRow(message) {
   const tableBody = document.getElementById("item_table_body");
-
-  if (!tableBody) {
-    return;
-  }
+  if (!tableBody) return;
 
   tableBody.innerHTML = `
     <tr>
@@ -350,21 +376,66 @@ function renderErrorRow(message) {
   `;
 }
 
-function formatPrice(value) {
-  if (value === null || value === undefined || value === "") {
-    return "";
-  }
+function moveToDetailByPost(itemCode) {
+  const form = document.createElement("form");
+  form.method = "post";
+  form.action = "m_item_dt.cfm";
+  form.style.display = "none";
 
-  const numberValue = Number(value);
+  const params = {
+    item_code: itemCode,
+    return_item_code: itemCode,
+    display_mode: "view",
+    return_search_product_code: getValue("search_product_code"),
+    return_search_jan_code: getValue("search_jan_code"),
+    return_search_product_name: getValue("search_product_name")
+  };
 
-  if (Number.isNaN(numberValue)) {
-    return value;
-  }
-
-  return numberValue.toLocaleString("ja-JP", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
+  Object.keys(params).forEach(function (key) {
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = key;
+    input.value = params[key] == null ? "" : String(params[key]);
+    form.appendChild(input);
   });
+
+  document.body.appendChild(form);
+  form.submit();
+}
+
+function moveToAddByPost() {
+  const form = document.createElement("form");
+  form.method = "post";
+  form.action = "m_item_dt.cfm";
+  form.style.display = "none";
+
+  const params = {
+    item_code: "",
+    return_item_code: "",
+    display_mode: "add",
+    return_search_product_code: getValue("search_product_code"),
+    return_search_jan_code: getValue("search_jan_code"),
+    return_search_product_name: getValue("search_product_name")
+  };
+
+  Object.keys(params).forEach(function (key) {
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = key;
+    input.value = params[key] == null ? "" : String(params[key]);
+    form.appendChild(input);
+  });
+
+  document.body.appendChild(form);
+  form.submit();
+}
+
+function getValue(id, trimFlag = true) {
+  const element = document.getElementById(id);
+  if (!element) return "";
+
+  const value = element.value == null ? "" : String(element.value);
+  return trimFlag ? value.trim() : value;
 }
 
 function escapeHtml(value) {
@@ -380,17 +451,6 @@ function escapeHtml(value) {
     .replace(/'/g, "&#39;");
 }
 
-const backButton = document.getElementById('home-btn')
-
-backButton.addEventListener('click', function(){
-  location.href = 'menu.cfm'
-});
-
-function executeSearch() {
-  currentPage = 1;
-  loadItemList(currentPage);
-}
-
 function setLoadingState(flag) {
   isLoading = flag;
 
@@ -402,7 +462,8 @@ function setLoadingState(flag) {
     "first_page_btn",
     "prev_page_btn",
     "next_page_btn",
-    "last_page_btn"
+    "last_page_btn",
+    "export-button"
   ];
 
   buttonIds.forEach(function (id) {

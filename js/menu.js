@@ -1,61 +1,87 @@
-document.addEventListener('DOMContentLoaded', function () {
-    var detailButton = document.getElementById('detail_button');
-    var userMenu = document.getElementById('user_menu');
-    var masterButton = document.getElementById('master_button');
-    var masterModal = document.getElementById('master_modal');
-    var closeModalButton = document.getElementById('close_modal_button');
-    var logoutButton = document.getElementById('logout-button');
-    var itemMasterButton = document.getElementById('item-master-button');
-    var supplierMasterButton = document.getElementById('supplier-master-button');
-    var staffMasterButton = document.getElementById('staff-master-button');
-    var addSlipButton = document.getElementById('add_slip_button');
+document.addEventListener("DOMContentLoaded", function () {
+    const detailButton = document.getElementById("detail_button");
+    const userMenu = document.getElementById("user_menu");
+    const arrowIcon = detailButton ? detailButton.querySelector(".arrow-icon") : null;
+    const logoutButton = document.getElementById("logout-button");
 
-    detailButton.addEventListener('click', function () {
-        if (userMenu.classList.contains('is-open')) {
-            userMenu.classList.remove('is-open');
-            detailButton.textContent = 'v';
-        } else {
-            userMenu.classList.add('is-open');
-            detailButton.textContent = '∧'
-        }
-    });
+    const addSlipButton = document.getElementById("add_slip_button");
+    const masterButton = document.getElementById("master_button");
+    const masterModal = document.getElementById("master_modal");
+    const closeModalButton = document.getElementById("close_modal_button");
 
-    masterButton.addEventListener('click', function () {
-        masterModal.classList.add('is-open');
-    });
+    const itemMasterButton = document.getElementById("item-master-button");
+    const supplierMasterButton = document.getElementById("supplier-master-button");
+    const staffMasterButton = document.getElementById("staff-master-button");
 
-    closeModalButton.addEventListener('click', function () {
-        masterModal.classList.remove('is-open');
-    });
+    if (detailButton && userMenu && arrowIcon) {
+        detailButton.addEventListener("click", function () {
+            if (userMenu.classList.contains("is-open")) {
+                userMenu.classList.remove("is-open");
+                arrowIcon.src = arrowIcon.dataset.down;
+                arrowIcon.classList.remove("arrow-up-icon");
+                arrowIcon.classList.add("arrow-down-icon");
+            } else {
+                userMenu.classList.add("is-open");
+                arrowIcon.src = arrowIcon.dataset.up;
+                arrowIcon.classList.remove("arrow-down-icon");
+                arrowIcon.classList.add("arrow-up-icon");
+            }
+        });
+    }
 
-    masterModal.addEventListener('click', function (event) {
-        if (event.target === masterModal) {
-            masterModal.classList.remove('is-open');
-        }
-    });
+    if (logoutButton) {
+        logoutButton.addEventListener("click", function () {
+            location.href = "login.cfm";
+        });
+    }
 
-    logoutButton.addEventListener('click', function(){
-        location.href = 'login.cfm';
-    });
+    if (addSlipButton) {
+        addSlipButton.addEventListener("click", function () {
+            location.href = "add_slip.cfm";
+        });
+    }
 
-    itemMasterButton.addEventListener('click', function(){
-        location.href = 'm_item.cfm';
-    });
+    if (masterButton && masterModal) {
+        masterButton.addEventListener("click", function (e) {
+            if (masterButton.classList.contains("disabled-button")) {
+                e.preventDefault();
+                e.stopPropagation();
+                return;
+            }
 
-    supplierMasterButton.addEventListener('click', function(){
-        location.href = 'm_supplier.cfm';
-    });
+            masterModal.classList.add("is-open");
+        });
+    }
 
-    staffMasterButton.addEventListener('click', function(){
-        location.href = 'm_staff.cfm';
-    });
+    if (closeModalButton && masterModal) {
+        closeModalButton.addEventListener("click", function () {
+            masterModal.classList.remove("is-open");
+        });
+    }
 
+    if (masterModal) {
+        masterModal.addEventListener("click", function (e) {
+            if (e.target === masterModal) {
+                masterModal.classList.remove("is-open");
+            }
+        });
+    }
 
-    addSlipButton.addEventListener('click', function(){
-        location.href = 'add_slip.cfm';
-    });
+    if (itemMasterButton) {
+        itemMasterButton.addEventListener("click", function () {
+            location.href = "m_item.cfm";
+        });
+    }
 
+    if (supplierMasterButton) {
+        supplierMasterButton.addEventListener("click", function () {
+            location.href = "m_supplier.cfm";
+        });
+    }
 
-
-
+    if (staffMasterButton) {
+        staffMasterButton.addEventListener("click", function () {
+            location.href = "m_staff.cfm";
+        });
+    }
 });

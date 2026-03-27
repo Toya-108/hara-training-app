@@ -300,17 +300,17 @@
         <div class="search_area" style="display:flex; margin-top:30px; flex-wrap:wrap;">
             <div class="search_item">
                 <label for="search_staff_code">社員コード</label>
-                <input type="text" id="search_staff_code" name="search_staff_code" placeholder="社員コード" value="#HTMLEditFormat(formSearchStaffCode)#" style="width:120px;">
+                <input type="text" id="search_staff_code" name="search_staff_code" placeholder="社員コードを入力" value="#HTMLEditFormat(formSearchStaffCode)#" style="width:180px;">
             </div>
 
             <div class="search_item">
                 <label for="search_staff_name">社員名</label>
-                <input type="text" id="search_staff_name" name="search_staff_name" placeholder="社員名" value="#HTMLEditFormat(formSearchStaffName)#" style="width:250px;">
+                <input type="text" id="search_staff_name" name="search_staff_name" placeholder="社員名を入力" value="#HTMLEditFormat(formSearchStaffName)#" style="width:250px;">
             </div>
 
             <div class="search_item">
                 <label for="search_mail_address">メールアドレス</label>
-                <input type="text" id="search_mail_address" name="search_mail_address" placeholder="メールアドレス" value="#HTMLEditFormat(formSearchMailAddress)#" style="width:300px;">
+                <input type="text" id="search_mail_address" name="search_mail_address" placeholder="メールアドレスを入力" value="#HTMLEditFormat(formSearchMailAddress)#" style="width:300px;">
             </div>
 
             <div class="search_item">

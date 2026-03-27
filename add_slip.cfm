@@ -1,7 +1,7 @@
 <cfinclude template="init.cfm">
 
 <cfset pageTitle = "伝票登録">
-<cfset showBackButton = true>
+<cfset showHomeButton = true>
 <cfset showNewButton = false>
 <cfset showImportButton = false>
 <cfset showExportButton = false>
@@ -514,7 +514,7 @@
                                 発注日
                                 <span class="required">※必須</span>
                             </label>
-                            <input type="text" id="slip_date" name="slip_date" class="form-input js-required js-date-picker" data-label="発注日">
+                            <input type="text" id="slip_date" name="slip_date" class="form-input js-required js-date-picker" data-label="発注日" placeholder="発注日を選択">
                             <div class="field-error" data-for="slip_date"></div>
                         </div>
 
@@ -529,7 +529,7 @@
                               id="supplier_display"
                               class="form-input js-required supplier-open-trigger"
                               data-label="取引先"
-                              placeholder="クリックして選択"
+                              placeholder="取引先を選択"
                               readonly
                           >
 
@@ -545,7 +545,7 @@
                                 納品日
                                 <span class="required">※必須</span>
                             </label>
-                            <input type="text" id="delivery_date" name="delivery_date" class="form-input js-required js-date-picker" data-label="納品日">
+                            <input type="text" id="delivery_date" name="delivery_date" class="form-input js-required js-date-picker" data-label="納品日" placeholder="納品日を選択">
                             <div class="field-error" data-for="delivery_date"></div>
                           </div>
 

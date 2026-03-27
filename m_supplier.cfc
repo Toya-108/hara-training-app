@@ -113,7 +113,7 @@
             <cfset filtering = "">
 
             <cfif searchSupplierCode neq "">
-                <cfset filtering = filtering & " AND s.supplier_code LIKE '%" & searchSupplierCode & "%'">
+                <cfset filtering = filtering & " AND s.supplier_code = '" & searchSupplierCode & "'">
             </cfif>
 
             <cfif searchSupplierName neq "">

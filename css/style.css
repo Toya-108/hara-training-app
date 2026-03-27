@@ -95,3 +95,92 @@ body {
 .clear_btn img{
   transform: scale(0.7);
 }
+
+/* ===== 共通入力部品 ===== */
+.form-control {
+  width: 100%;
+  height: 40px;
+  padding: 8px 12px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #2E4136;
+  background-color: #F8F4EC;
+  border: 1px solid #C8B79C;
+  border-radius: 8px;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.form-control:focus {
+  border-color: #4B6653;
+  box-shadow: 0 0 0 2px rgba(75, 102, 83, 0.12);
+  background-color: #FCFAF6;
+}
+
+/* ===== 共通 ===== */
+.form-control {
+  width: 100%;
+  height: 40px;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #2E4136;
+  background-color: #F8F4EC;
+  border: 1px solid #C8B79C;
+  border-radius: 8px;
+  box-sizing: border-box;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+/* ===== select（目立たせ版） ===== */
+.form-select {
+  appearance: none;
+  padding-right: 44px;
+  cursor: pointer;
+
+  /* ←ここが重要：少し濃く */
+  background-color: #EDE5D6;
+
+  /* 枠を強める */
+  border: 1px solid #9FAE9F;
+
+  /* ▼アイコン（強化版） */
+  background-image:
+    linear-gradient(45deg, transparent 50%, #2E4136 50%),
+    linear-gradient(135deg, #2E4136 50%, transparent 50%);
+  background-position:
+    calc(100% - 20px) calc(50% - 3px),
+    calc(100% - 12px) calc(50% - 3px);
+  background-size: 8px 8px, 8px 8px;
+  background-repeat: no-repeat;
+}
+
+/* hoverでさらにわかりやすく */
+.form-select:hover {
+  background-color: #E3D9C6;
+  border-color: #4B6653;
+}
+
+/* フォーカス */
+.form-select:focus {
+  border-color: #4B6653;
+  box-shadow: 0 0 0 2px rgba(75, 102, 83, 0.2);
+  background-color: #E8DECC;
+}
+
+/* ===== view時 ===== */
+.view_mode .form-select {
+  background-color: #EEE7DC;
+  border-color: #D4C6AF;
+
+  /* ▼は残すが薄く */
+  background-image:
+    linear-gradient(45deg, transparent 50%, #7C8C82 50%),
+    linear-gradient(135deg, #7C8C82 50%, transparent 50%);
+}
+
+.menu-button.disabled-button {
+    background-color: rgba(63, 91, 75, 0.4) !important;
+    cursor: default;
+}

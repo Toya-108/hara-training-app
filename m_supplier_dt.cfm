@@ -529,8 +529,6 @@
         <div class="dt_card" id="dt_card">
             <div class="dt_header_row">
                 <div class="dt_title_area">
-                    <h2 class="dt_title">#HTMLEditFormat(pageHeading)#</h2>
-                    <span id="mode_badge" class="mode_badge"></span>
                 </div>
 
                 <div class="meta_box">
@@ -651,7 +649,7 @@
                     <div class="form_item">
                         <div class="form_label">配送業者</div>
                         <div class="form_value">
-                            <select id="delivery_company_code" name="delivery_company_code">
+                            <select id="delivery_company_code" name="delivery_company_code" class="form-control form-select">
                                 <option value="">選択してください</option>
                                 <cfloop query="qDeliveryCompany">
                                     <option value="#HTMLEditFormat(qDeliveryCompany.delivery_company_code)#"<cfif displayDeliveryCompanyCode eq qDeliveryCompany.delivery_company_code> selected</cfif>>
@@ -665,7 +663,7 @@
                     <div class="form_item">
                         <div class="form_label">使用区分</div>
                         <div class="form_value">
-                            <select id="use_flag" name="use_flag">
+                            <select id="use_flag" name="use_flag" class="form-control form-select">
                                 <option value="1"<cfif displayUseFlag eq "1"> selected</cfif>>有効</option>
                                 <option value="0"<cfif displayUseFlag eq "0"> selected</cfif>>無効</option>
                             </select>

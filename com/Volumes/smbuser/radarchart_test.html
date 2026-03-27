@@ -1,0 +1,69 @@
+﻿data:text/html,
+<html>
+  <body>
+    <div>
+      setUserDataが実行されると、FMから受け取ったデータがこの下に表示されます。<br><br>
+    </div>
+    <div id="fm_data_div">
+
+    </div>
+  </body>
+
+</html>
+<script>
+var ctx = document.getElementById("myRadarChart");
+//JSON.parse(jsonobject);
+function setUserData(fm_data){
+
+  var obj = JSON.parse(fm_data);
+  var title = obj["title"];
+  var min = obj["minmax"][0];
+  var max = obj["minmax"][1];
+  var labels = obj["labels"];
+  var data = obj["data"];
+
+  var html = "";
+  var label_arr = "[";
+  var data_arr = "[";
+  html += "FMからのデータ:" + "<br>"
+  html += "Title:" + title + "<br>"
+  html += "Min:" + min + "<br>"
+  html += "Max:" + max + "<br>";
+  
+
+  for (let i = 0; i < labels.length; ++i) {
+    label_arr += labels[i];
+    if(i != +labels.length -1){
+      label_arr += ",";
+    }
+  }
+  label_arr += "]";
+  html += "Labels:" + label_arr + "<br>";
+
+  for (let i = 0; i < data.length; ++i) {
+    data_arr += data[i];
+    if(i != +data.length -1){
+      data_arr += ",";
+    }
+  }
+  data_arr += "]";
+  html += "Data:" + data_arr + "<br>";
+
+  document.getElementById("fm_data_div").innerHTML = html
+  
+
+
+}
+// var fm_data = {   
+//     "title":"Aの成績",
+//     "minmax":[0,100],
+// 	"labels":["国語","算数","理科"],
+// 	"data":["80","40","30"]
+// }
+// fm_data = JSON.stringify(fm_data)
+
+// setUserData(fm_data);
+
+
+</script>
+

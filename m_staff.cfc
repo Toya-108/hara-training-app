@@ -107,7 +107,7 @@
                 FROM m_staff
                 WHERE 1 = 1
                 <cfif searchStaffCode neq "">
-                    AND staff_code LIKE <cfqueryparam value="%#searchStaffCode#%" cfsqltype="cf_sql_varchar">
+                    AND staff_code = <cfqueryparam value="#searchStaffCode#" cfsqltype="cf_sql_varchar">
                 </cfif>
                 <cfif searchStaffName neq "">
                     AND (
@@ -162,7 +162,7 @@
                     m_staff
                 WHERE 1 = 1
                 <cfif searchStaffCode neq "">
-                    AND staff_code LIKE <cfqueryparam value="%#searchStaffCode#%" cfsqltype="cf_sql_varchar">
+                    AND staff_code = <cfqueryparam value="#searchStaffCode#" cfsqltype="cf_sql_varchar">
                 </cfif>
                 <cfif searchStaffName neq "">
                     AND (
