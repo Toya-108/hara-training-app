@@ -6,26 +6,28 @@
 
 `slip_list` は、伝票の一覧表示を行う画面である。
 
-この画面の役割は以下の3つ。
+この画面の役割は以下の4つ。
 
 1. 伝票を条件検索して一覧表示する  
 2. 一覧をページング・ソートしながら確認する  
-3. 一覧行クリックで詳細画面へ遷移する（状態を保持）
+3. 一覧行クリックで詳細画面へ遷移する（状態を保持）  
+4. 検索条件をもとにCSVエクスポートを行う  
 
 本READMEは以下を目的とする。
 
-- 新規参入者が見ても理解できること
-- AI（ChatGPT等）がこれだけ見れば同じ仕様を再現できること
+- 新規参入者が見ても理解できること  
+- AI（ChatGPT等）がこれだけ見れば同じ仕様を再現できること  
 
 ---
 
 ## 2. 対象ファイル構成
 
-本画面は以下の3ファイルで構成する。
+本画面は以下の4ファイルで構成する。
 
 - slip_list.cfm（画面）
 - slip_list.cfc（API）
 - slip_list.js（制御）
+- slip_list_export.cfm（CSV出力）
 
 ---
 
@@ -46,19 +48,19 @@
 
 ### 3.2 表示しない項目
 
-- 更新日時
-- 詳細ボタン
+- 更新日時  
+- 詳細ボタン  
 
-※ 行クリックで詳細へ遷移するため不要
+※ 行クリックで詳細へ遷移するため不要  
 
 ---
 
 ### 3.3 取引先表示
 
-取引先は1列で表示する
+取引先は1列で表示する  
 
-例：
-SUP001　山田商事
+例：  
+SUP001　山田商事  
 
 ---
 
@@ -67,17 +69,17 @@ SUP001　山田商事
 ### 4.1 レイアウト
 
 #### 1行目
-- 伝票番号
-- 発注日（From / To）
-- 納品日（From / To）
+- 伝票番号  
+- 発注日（From / To）  
+- 納品日（From / To）  
 
 #### 2行目
-- 取引先（ドロップダウン）
-- 取引先あいまい検索（ラベルなし）
-- 商品検索
-- 状態
-- 検索ボタン
-- クリアボタン
+- 取引先（ドロップダウン）  
+- 取引先あいまい検索（ラベルなし）  
+- 商品検索  
+- 状態  
+- 検索ボタン  
+- クリアボタン  
 
 ---
 
@@ -117,28 +119,16 @@ ORDER BY supplier_code ASC
 
 #### ■ 取引先あいまい検索
 
-※「取引先名」というラベルは表示しない  
-※ドロップダウンの補助入力として扱う  
-
 m_supplier.supplier_name LIKE '%入力値%'  
 
 ---
 
 #### ■ 商品検索
 
-対象：
-
-- 商品コード
-- JANコード
-- 商品名
-- 商品名（カナ）
-
-EXISTS構文で検索する
-
 EXISTS (
   SELECT 1
   FROM t_slip_detail
-  INNER JOIN m_item
+  LEFT OUTER JOIN m_item
     ON m_item.item_code = t_slip_detail.item_code
   WHERE t_slip_detail.slip_no = t_slip.slip_no
     AND (
@@ -153,13 +143,13 @@ EXISTS (
 
 #### ■ 状態
 
+t_slip.status = 入力値  
+
 | 値 | 内容 |
 |----|------|
 | 1 | 登録 |
 | 2 | 確定 |
 | 3 | 削除 |
-
-t_slip.status = 入力値
 
 ---
 
@@ -169,66 +159,66 @@ t_slip.status = 入力値
 
 ### 正しい挙動
 
-- Enter → 次の項目へフォーカス移動
-- 最後の項目 → 何もしない
+- Enter → 次の項目へフォーカス移動  
+- 最後の項目 → 何もしない  
 
 ### NG
 
-- Enterで検索実行
-- form submit
+- Enterで検索実行  
+- form submit  
 
 ### 実装
 
-if (event.key === "Enter") {
-  event.preventDefault();
-  次の項目へfocus();
-}
+if (event.key === "Enter") {  
+  event.preventDefault();  
+  次の項目へfocus();  
+}  
 
 ---
 
 ## 6. 日付入力
 
-flatpickrを使用する
+flatpickrを使用する  
 
-flatpickr(".js-date-picker", {
-  locale: "ja",
-  dateFormat: "Y-m-d",
-  altInput: true,
-  altFormat: "Y / m / d",
-  allowInput: false,
-  disableMobile: true
-});
+flatpickr(".js-date-picker", {  
+  locale: "ja",  
+  dateFormat: "Y-m-d",  
+  altInput: true,  
+  altFormat: "Y / m / d",  
+  allowInput: false,  
+  disableMobile: true  
+});  
 
 ---
 
 ## 7. ページング
 
 ### 件数
-1ページ = 50件
+1ページ = 50件  
 
-const pageSize = 50;
+const pageSize = 50;  
 
 ---
 
 ### ボタン
 
-- TOP
-- Prev
-- Next
-- END
+- TOP  
+- Prev  
+- Next  
+- END  
 
 ---
 
 ### 表示
 
-1 / 5 ページ（全 200 件）
+1 / 5 ページ（全 200 件）  
 
 ---
 
 ### 制御
 
-- 1ページ → Prev / TOP 無効
-- 最終ページ → Next / END 無効
+- 1ページ → Prev / TOP 無効  
+- 最終ページ → Next / END 無効  
 
 ---
 
@@ -236,26 +226,26 @@ const pageSize = 50;
 
 ### 対象列
 
-- 伝票番号
-- 発注日
-- 納品日
-- 取引先
-- 合計数量
-- 状態
+- 伝票番号  
+- 発注日  
+- 納品日  
+- 取引先  
+- 合計数量  
+- 状態  
 
 ---
 
 ### 挙動
 
-なし → asc → desc → なし
+なし → asc → desc → なし  
 
 ---
 
 ## 9. 詳細画面遷移
 
-一覧行クリックで遷移する
+一覧行クリックで遷移する  
 
-slip_list_dt.cfm
+slip_list_dt.cfm  
 
 ---
 
@@ -268,15 +258,15 @@ detail_display_mode = view
 
 ## 10. 状態保持（重要）
 
-一覧 → 詳細 → 戻る で状態を保持する
+一覧 → 詳細 → 戻る で状態を保持する  
 
 ---
 
 ### 保持対象
 
-- 検索条件
-- ページ番号
-- ソート条件
+- 検索条件  
+- ページ番号  
+- ソート条件  
 
 ---
 
@@ -299,9 +289,9 @@ return_sort_order
 
 ### 遷移処理
 
-submitPost("slip_list_dt.cfm", {
-  上記すべて
-});
+submitPost("slip_list_dt.cfm", {  
+  上記すべて  
+});  
 
 ---
 
@@ -316,21 +306,158 @@ OK： t_slip.slip_no
 
 ### JOIN
 
-LEFT OUTER JOIN で統一
+LEFT OUTER JOIN で統一  
 
 ---
 
 ## 12. UIルール
 
-- 検索ボタンは状態のすぐ右
-- 右端に寄せない
-- 2行構成にする
-- 取引先名ラベルは表示しない
-- Enterは検索実行しない
+- 検索ボタンは状態のすぐ右  
+- 右端に寄せない  
+- 2行構成にする  
+- 取引先名ラベルは表示しない  
+- Enterは検索実行しない  
 
 ---
 
-## 13. 全体フロー
+## 13. エクスポート機能
+
+### 概要
+
+検索条件・ソート条件をそのまま使用し、CSVをダウンロードする  
+
+---
+
+### 実行方法
+
+ヘッダのエクスポートボタン押下  
+
+showExportButton = true  
+
+---
+
+### JS処理
+
+window.location.href = "slip_list_export.cfm?パラメータ"  
+
+---
+
+### パラメータ
+
+- 検索条件すべて  
+- sortField  
+- sortOrder  
+
+---
+
+### CFM処理
+
+1. URLパラメータ取得  
+2. filtering生成  
+3. SQL生成  
+4. CSV作成  
+5. download.cfmへ遷移  
+
+---
+
+### 出力内容
+
+#### ヘッダ情報
+
+- 伝票番号  
+- 発注日  
+- 納品日  
+- 状態  
+- 状態名  
+- 取引先コード  
+- 取引先名  
+- 合計数量  
+- 合計金額  
+- 備考  
+- 作成・更新情報  
+
+---
+
+#### 明細情報
+
+- 行番号  
+- 商品コード  
+- JANコード  
+- 商品名  
+- 数量（qty）  
+- 単価（unit_price）  
+- 金額（amount）  
+- 明細備考  
+
+---
+
+### 出力形式
+
+1明細 = 1行  
+
+---
+
+### 使用テーブル
+
+- t_slip  
+- t_slip_detail  
+- m_supplier  
+
+---
+
+### JOIN
+
+LEFT OUTER JOIN  
+
+---
+
+### ファイル名
+
+伝票一覧_YYYYMMDD_HHMMSS.csv  
+
+---
+
+### 文字コード
+
+shift_jis  
+
+---
+
+### 出力方式
+
+export_db.expDb を使用  
+
+---
+
+### ダウンロード
+
+download.cfm 経由  
+
+---
+
+### 処理フロー
+
+ボタン押下  
+↓  
+JSでURL遷移  
+↓  
+CFMでCSV生成  
+↓  
+download.cfm  
+↓  
+ダウンロード  
+
+---
+
+### 注意点
+
+- 件数が多いと重くなる  
+- 明細で行数が増える  
+- LIKE検索は負荷が高い  
+
+---
+
+## 14. 全体フロー
 
 画面表示  
 ↓  
@@ -349,17 +476,19 @@ LEFT OUTER JOIN で統一
 戻る  
 ↓  
 状態復元  
+↓  
+エクスポート  
 
 ---
 
-## 14. ゴール
+## 15. ゴール
 
-このREADMEを見れば
+このREADMEを見れば  
 
-- 新規メンバーが理解できる
-- AIが同じ画面を再現できる
+- 新規メンバーが理解できる  
+- AIが同じ画面を再現できる  
 
-状態になっていること
+状態になっていること  
 
 ---
 

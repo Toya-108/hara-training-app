@@ -5,7 +5,7 @@
 <cfset showBackButton = false>
 <cfset showNewButton = false>
 <cfset showImportButton = false>
-<cfset showExportButton = false>
+<cfset showExportButton = true>
 
 <cfset initSearchSlipNo = "">
 <cfset initSearchOrderDateFrom = "">

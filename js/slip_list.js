@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
   bindEnterMoveEvents();
   bindPagingEvents();
   bindSortEvents();
+  bindHeaderExportButtonEvent();
   bindBackButtonEvent();
   applyReturnState();
   loadSlipList(currentPage);
@@ -205,6 +206,34 @@ function bindSortEvents() {
       loadSlipList(currentPage);
     });
   });
+}
+
+function bindHeaderExportButtonEvent() {
+  document.addEventListener("click", function (event) {
+    const exportButton = event.target.closest("#export-button");
+    if (!exportButton) return;
+
+    event.preventDefault();
+    exportSlipCsv();
+  });
+}
+
+function exportSlipCsv() {
+  const params = new URLSearchParams({
+    search_slip_no: getValue("search_slip_no"),
+    search_order_date_from: getValue("search_order_date_from"),
+    search_order_date_to: getValue("search_order_date_to"),
+    search_delivery_date_from: getValue("search_delivery_date_from"),
+    search_delivery_date_to: getValue("search_delivery_date_to"),
+    search_supplier_code: getValue("search_supplier_code"),
+    search_supplier_keyword: getValue("search_supplier_keyword"),
+    search_item_keyword: getValue("search_item_keyword"),
+    search_status: getValue("search_status"),
+    sortField: sortField,
+    sortOrder: sortOrder
+  });
+
+  window.location.href = "slip_list_export.cfm?" + params.toString();
 }
 
 function updateSortIcons() {
