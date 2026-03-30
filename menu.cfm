@@ -328,6 +328,11 @@
                         <span class="menu-text">伝票登録</span>
                     </button>
 
+                    <button type="button" class="menu-button" id="slip_list_button">
+                        <img src="#Application.asset_url#/image/slip-list-icon.svg" alt="伝票一覧" class="menu-icon">
+                        <span class="menu-text">伝票一覧</span>
+                    </button>
+
                     <cfset disabled_btn = "">
 
                     <cfif session.authorityLevel eq 1>

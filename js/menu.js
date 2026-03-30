@@ -13,6 +13,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const supplierMasterButton = document.getElementById("supplier-master-button");
     const staffMasterButton = document.getElementById("staff-master-button");
 
+    const slipListButton = document.getElementById('slip_list_button');
+
     if (detailButton && userMenu && arrowIcon) {
         detailButton.addEventListener("click", function () {
             if (userMenu.classList.contains("is-open")) {
@@ -38,6 +40,12 @@ document.addEventListener("DOMContentLoaded", function () {
     if (addSlipButton) {
         addSlipButton.addEventListener("click", function () {
             location.href = "add_slip.cfm";
+        });
+    }
+
+    if (slipListButton) {
+        slipListButton.addEventListener("click", function () {
+            location.href = "slip_list.cfm";
         });
     }
 
