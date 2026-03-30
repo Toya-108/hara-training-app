@@ -42,6 +42,8 @@
 
 <cfinclude template="header.cfm">
 
+<title>伝票明細</title>
+
 <cfoutput>
     <link rel="icon" href="#Application.asset_url#/image/hara-logiapp-logo.ico">
     <link rel="stylesheet" href="#Application.asset_url#/css/style.css">
