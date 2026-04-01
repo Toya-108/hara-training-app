@@ -9,6 +9,7 @@
 
     <cfoutput>
         <link rel="icon" href="#Application.asset_url#/image/hara-logiapp-logo.ico">
+        <link rel="stylesheet" href="#Application.asset_url#/css/style.css">
     </cfoutput>
 
     <title>メニュー</title>
@@ -16,14 +17,6 @@
     <style>
         * {
             box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            min-height: 100vh;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Yu Gothic", sans-serif;
-            background-color: #F7F1E3;
-            color: #2F2A24;
         }
 
         .page {
@@ -35,7 +28,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 48px;
+            margin-bottom: 40px;
+            flex-direction: row;
         }
 
         .logo-area {
@@ -71,6 +65,8 @@
             background-color: #F5EEDC;
             border: 1px solid #E0D5C3;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            margin-left: auto;
+            height: 56px;
         }
 
         .staff-name {
@@ -109,12 +105,12 @@
             position: absolute;
             top: calc(100% + 8px);
             right: 0;
-            width: 160px;
-            padding: 8px;
-            background-color: #FFFFFF;
+            width: 140px;
+            padding: 6px;
+            background-color: #F5EEDC;
             border: 1px solid #E0D5C3;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            border-radius: 14px;
+            box-shadow: 0 8px 20px rgba(46, 65, 54, 0.10);
             opacity: 0;
             transform: translateY(-8px);
             transition: all 0.2s ease;
@@ -129,25 +125,25 @@
 
         .logout-button {
             width: 100%;
-            padding: 10px;
+            padding: 12px 14px;
             border: none;
-            border-radius: 8px;
-            background-color: transparent;
+            border-radius: 10px;
+            background-color: #F7F1E3;
             color: #2E4136;
             font-size: 14px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
-            text-align: left;
+            text-align: center;
             transition: all 0.15s ease;
         }
 
         .logout-button:hover {
-            background-color: #F5EEDC;
+            background-color: #EDE3CF;
             color: #1E2F26;
         }
 
         .main {
-            max-width: 900px;
+            max-width: 1180px;
             margin: 0 auto;
         }
 
@@ -156,11 +152,12 @@
             justify-content: center;
             gap: 24px;
             flex-wrap: wrap;
+            margin-bottom: 36px;
         }
 
         .menu-button {
-            width: 300px;
-            height: 220px;
+            width: 210px;
+            height: 180px;
             border: none;
             border-radius: 16px;
             background-color: #3F5B4B;
@@ -171,17 +168,14 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
-            transition: opacity 0.15s ease;
+            transition: opacity 0.15s ease, transform 0.15s ease;
+            border-radius: 14px;
+            box-shadow: 0 8px 18px rgba(46, 65, 54, 0.10);
         }
 
         .menu-button:hover {
-            opacity: 0.9;
-        }
-
-        .menu-icon {
-            width: 72px;
-            height: 72px;
-            margin-bottom: 16px;
+            opacity: 0.92;
+            transform: translateY(-2px);
         }
 
         .menu-button.disabled-button {
@@ -191,12 +185,183 @@
 
         .menu-button.disabled-button:hover {
             opacity: 0.55 !important;
+            transform: none;
+        }
+
+        .menu-icon {
+            width: 72px;
+            height: 72px;
+            margin-bottom: 16px;
         }
 
         .menu-text {
             font-size: 28px;
             font-weight: bold;
             line-height: 1.2;
+        }
+
+        .dashboard {
+            margin-top: 8px;
+        }
+
+        .dashboard-title {
+            margin: 0 0 18px 0;
+            font-size: 24px;
+            color: #2E4136;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .kpi-card {
+            background-color: #FFFDF8;
+            border: 1px solid #E0D5C3;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(46, 65, 54, 0.05);
+        }
+
+        .kpi-label {
+            margin: 0 0 12px 0;
+            font-size: 14px;
+            color: #645B50;
+        }
+
+        .kpi-value {
+            margin: 0;
+            font-size: 32px;
+            font-weight: bold;
+            color: #2E4136;
+            line-height: 1.2;
+        }
+
+        .dashboard-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 16px;
+        }
+
+        .panel {
+            background-color: #FFFDF8;
+            border: 1px solid #E0D5C3;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(46, 65, 54, 0.05);
+        }
+
+        .panel-title {
+            margin: 0 0 16px 0;
+            font-size: 18px;
+            color: #2E4136;
+        }
+
+        .info-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 16px;
+            border-radius: 12px;
+            background-color: #F9F4E8;
+            border: 1px solid #E8DDCA;
+        }
+
+        .info-item-left {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .info-main {
+            font-size: 15px;
+            font-weight: bold;
+            color: #2E4136;
+        }
+
+        .info-sub {
+            font-size: 13px;
+            color: #645B50;
+        }
+
+        .status-badge {
+            min-width: 72px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            background-color: #EAE4D6;
+            color: #4E463C;
+        }
+
+        .status-1 {
+            background-color: #FCE7A8;
+            color: #6B5300;
+        }
+
+        .status-2 {
+            background-color: #CFE8D7;
+            color: #1F5A34;
+        }
+
+        .status-3 {
+            background-color: #E5D8D8;
+            color: #6A4B4B;
+        }
+
+        .summary-box {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .summary-item {
+            padding: 16px;
+            border-radius: 12px;
+            background-color: #F9F4E8;
+            border: 1px solid #E8DDCA;
+        }
+
+        .summary-label {
+            margin: 0 0 8px 0;
+            font-size: 14px;
+            color: #645B50;
+        }
+
+        .summary-value {
+            margin: 0;
+            font-size: 28px;
+            font-weight: bold;
+            color: #2E4136;
+        }
+
+        .loading-text,
+        .empty-text,
+        .error-text {
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .loading-text {
+            color: #645B50;
+        }
+
+        .empty-text {
+            color: #645B50;
+        }
+
+        .error-text {
+            color: #B42318;
+            font-weight: bold;
         }
 
         .modal-bg {
@@ -207,10 +372,7 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.35);
-        }
-
-        .modal-bg.is-open {
-            display: block;
+            z-index: 100;
         }
 
         .modal-box {
@@ -253,121 +415,140 @@
             cursor: pointer;
         }
 
-        @media (max-width: 640px) {
-            .page {
-                padding: 16px;
-            }
-
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 16px;
-            }
-
-            .user-area {
-                align-self: flex-end;
-            }
-
-            .menu-button {
-                width: 100%;
-                max-width: 320px;
-                height: 180px;
-            }
-
-            .menu-icon {
-                width: 60px;
-                height: 60px;
-            }
-
-            .menu-text {
-                font-size: 24px;
-            }
+        .modal-bg.is-open {
+            display: block;
         }
-    </style>
+
+            </style>
 </head>
 
 <cfoutput>
-    <body>
-        <div class="page">
+<body>
+    <div class="page">
 
-            <header class="header">
-                <div class="logo-area">
-                    <img src="#Application.asset_url#/image/hara-logiapp-logo.svg" alt="Hara LogiApp ロゴ">
-                    <div>
-                        <h1 class="app-name">Hara LogiApp</h1>
-                        <p class="app-text">物流・業務管理アプリケーション</p>
-                    </div>
+        <header class="header">
+            <div class="logo-area">
+                <img src="#Application.asset_url#/image/hara-logiapp-logo.svg" alt="Hara LogiApp ロゴ">
+                <div>
+                    <h1 class="app-name">Hara LogiApp</h1>
+                    <p class="app-text">物流・業務管理アプリケーション</p>
                 </div>
+            </div>
 
-                <div class="user-area">
-                    <div class="staff-name">
-                        #session.staffName#
-                    </div>
+            <div class="user-area">
+                <div class="staff-name">#session.staffName#</div>
 
-                    <button type="button" class="detail-button" id="detail_button">
-                        <img
-                            src="#Application.asset_url#/image/arrow-down-icon.svg"
-                            data-down="#Application.asset_url#/image/arrow-down-icon.svg"
-                            data-up="#Application.asset_url#/image/arrow-up-icon.svg"
-                            class="arrow-icon arrow-down-icon"
-                            alt="メニュー開閉">
-                    </button>
+                <button type="button" class="detail-button" id="detail_button">
+                    <img
+                        src="#Application.asset_url#/image/arrow-down-icon.svg"
+                        data-down="#Application.asset_url#/image/arrow-down-icon.svg"
+                        data-up="#Application.asset_url#/image/arrow-up-icon.svg"
+                        id="arrow_icon"
+                        alt="メニュー開閉">
+                </button>
 
-                    <div class="user-menu" id="user_menu">
-                        <button type="button" class="logout-button" id="logout-button">
-                            ログアウト
-                        </button>
-                    </div>
-                </div>
-            </header>
-
-            <main class="main">
-                <div class="menu-grid">
-                    <button type="button" class="menu-button" id="add_slip_button">
-                        <img src="#Application.asset_url#/image/slip-entry-icon.svg" alt="伝票登録" class="menu-icon">
-                        <span class="menu-text">伝票登録</span>
-                    </button>
-
-                    <button type="button" class="menu-button" id="slip_list_button">
-                        <img src="#Application.asset_url#/image/slip-list-icon.svg" alt="伝票一覧" class="menu-icon">
-                        <span class="menu-text">伝票一覧</span>
-                    </button>
-
-                    <cfset disabled_btn = "">
-
-                    <cfif session.authorityLevel eq 1>
-                        <cfset disabled_btn = "disabled-button">
-                    </cfif>
-
-                    <button type="button" class="menu-button #disabled_btn#" id="master_button">
-                        <img src="#Application.asset_url#/image/master-icon.svg" alt="マスタ" class="menu-icon">
-                        <span class="menu-text">マスタ</span>
-                    </button>
-                </div>
-            </main>
-
-            <div class="modal-bg" id="master_modal">
-                <div class="modal-box">
-                    <h3 class="modal-title">マスタ選択</h3>
-
-                    <button type="button" class="master-button" id="item-master-button">
-                        商品マスタ
-                    </button>
-                    <button type="button" class="master-button" id="supplier-master-button">
-                        取引先マスタ
-                    </button>
-                    <button type="button" class="master-button" id="staff-master-button">
-                        社員マスタ
-                    </button>
-
-                    <button type="button" class="close-button" id="close_modal_button">
-                        閉じる
+                <div class="user-menu" id="user_menu">
+                    <button type="button" class="logout-button" id="logout-button">
+                        ログアウト
                     </button>
                 </div>
             </div>
-        </div>
+        </header>
 
-        <script src="#application.asset_url#/js/menu.js?20260326_1"></script>
-    </body>
+        <cfset addSlipButtonClass = "menu-button">
+        <cfif session.authorityLevel eq 1>
+            <cfset addSlipButtonClass = "menu-button disabled-button">
+        </cfif>
+
+        <main class="main">
+            <div class="menu-grid">
+                <button type="button" class="#addSlipButtonClass#" id="add_slip_button">
+                    <img src="#Application.asset_url#/image/slip-entry-icon.svg" alt="伝票登録" class="menu-icon">
+                    <span class="menu-text">伝票登録</span>
+                </button>
+
+                <button type="button" class="menu-button" id="slip_list_button">
+                    <img src="#Application.asset_url#/image/slip-list-icon.svg" alt="伝票一覧" class="menu-icon">
+                    <span class="menu-text">伝票一覧</span>
+                </button>
+
+                <button type="button" class="menu-button" id="total_report_button">
+                    <img src="#Application.asset_url#/image/total-report-icon.svg" alt="集計レポート" class="menu-icon">
+                    <span class="menu-text">集計レポート</span>
+                </button>
+
+                <button type="button" class="menu-button" id="master_button">
+                    <img src="#Application.asset_url#/image/master-icon.svg" alt="マスタ" class="menu-icon">
+                    <span class="menu-text">マスタ</span>
+                </button>
+
+                <button type="button" class="menu-button" id="admin-button">
+                    <img src="#Application.asset_url#/image/admin-icon.svg" alt="基本設定" class="menu-icon">
+                    <span class="menu-text">基本設定</span>
+                </button>
+            </div>
+
+            <section class="dashboard">
+                <!--- <h2 class="dashboard-title">ダッシュボード</h2> --->
+
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <p class="kpi-label">今日の伝票数</p>
+                        <p class="kpi-value" id="today_slip_count">-</p>
+                    </div>
+                    <div class="kpi-card">
+                        <p class="kpi-label">未確定伝票数</p>
+                        <p class="kpi-value" id="unfixed_slip_count">-</p>
+                    </div>
+                    <div class="kpi-card">
+                        <p class="kpi-label">今日の商品合計数量</p>
+                        <p class="kpi-value" id="today_total_qty">-</p>
+                    </div>
+                    <div class="kpi-card">
+                        <p class="kpi-label">今日の合計金額</p>
+                        <p class="kpi-value" id="today_total_amount">-</p>
+                    </div>
+                </div>
+
+                <div class="dashboard-row">
+                    <div class="panel">
+                        <h3 class="panel-title">最近の伝票</h3>
+                        <div id="recent_slip_list" class="info-list">
+                            <p class="loading-text">読み込み中です...</p>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <h3 class="panel-title">本日の状況</h3>
+                        <div class="summary-box">
+                            <!--- <div class="summary-item">
+                                <p class="summary-label">本日納品予定件数</p>
+                                <p class="summary-value" id="today_delivery_count">-</p>
+                            </div> --->
+                            <div class="summary-item">
+                                <p class="summary-label">削除伝票数</p>
+                                <p class="summary-value" id="deleted_slip_count">-</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <div class="modal-bg" id="master_modal">
+            <div class="modal-box">
+                <h3 class="modal-title">マスタ選択</h3>
+
+                <button type="button" class="master-button" id="item-master-button">商品マスタ</button>
+                <button type="button" class="master-button" id="supplier-master-button">取引先マスタ</button>
+                <button type="button" class="master-button" id="staff-master-button">社員マスタ</button>
+
+                <button type="button" class="close-button" id="close_modal_button">閉じる</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="#application.asset_url#/js/menu.js?20260401_1"></script>
+</body>
 </cfoutput>
 </html>
