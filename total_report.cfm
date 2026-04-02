@@ -106,39 +106,46 @@
             padding: 24px;
         }
 
+        /* =========================
+           タイトル
+        ========================= */
         .report-screen-title {
-            margin: 0 0 20px 0;
+            margin: 0 0 20px;
             font-size: 28px;
             font-weight: bold;
             color: #2E4136;
         }
 
         .report-screen-subtitle {
-            margin: -8px 0 24px 0;
+            margin: -8px 0 24px;
             font-size: 14px;
             color: #645B50;
         }
 
+        /* =========================
+           検索エリア
+        ========================= */
         .report-search-area {
+            margin-bottom: 24px;
+            padding: 24px;
             background: #FFFCF5;
             border: 1px solid #D8CBB3;
             border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 24px;
             box-shadow: 0 2px 8px rgba(63, 91, 75, 0.08);
         }
 
         .report-search-title {
+            margin: 0 0 20px;
             font-size: 24px;
             font-weight: bold;
             color: #2E4136;
-            margin-bottom: 20px;
         }
 
         .report-search-grid {
             display: grid;
             grid-template-columns: repeat(4, minmax(220px, 1fr));
             gap: 16px 20px;
+            align-items: end;
         }
 
         .report-form-item {
@@ -153,18 +160,39 @@
             color: #2E4136;
         }
 
+        /* =========================
+           入力欄共通
+        ========================= */
         .report-form-control {
             width: 100%;
             height: 44px;
-            border: 1px solid #D8CBB3;
-            border-radius: 10px;
-            background: #FFFFFF;
             padding: 0 12px;
-            font-size: 14px;
-            color: #2E4136;
             box-sizing: border-box;
+            font-size: 14px;
+            color: #2F2A24;
+            background: #FFFFFF;
+            border: 1px solid #CDBFA8;
+            border-radius: 8px;
+            transition:
+                border-color 0.15s ease,
+                background-color 0.15s ease,
+                box-shadow 0.15s ease;
         }
 
+        .report-form-control:focus {
+            outline: none;
+            border-color: #3F5B4B;
+            background-color: #FFFCF4;
+            box-shadow: 0 0 0 1px rgba(63, 91, 75, 0.15);
+        }
+
+        .report-form-control::placeholder {
+            color: #8A8175;
+        }
+
+        /* =========================
+           日付範囲
+        ========================= */
         .report-date-range {
             display: flex;
             align-items: center;
@@ -175,39 +203,77 @@
             flex: 1;
         }
 
-        .report-actions {
+        /* =========================
+           ボタンエリア
+        ========================= */
+        .report-action-item {
             display: flex;
+            flex-direction: column;
             justify-content: flex-end;
-            gap: 12px;
-            margin-top: 20px;
         }
 
-        .report-button {
-            min-width: 120px;
+        .report-action-label {
+            visibility: hidden;
+        }
+
+        .report-actions-inline {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            height: 50px;
+        }
+
+        /* =========================
+           アイコンボタン
+        ========================= */
+        .icon_btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
             height: 44px;
+            padding: 0;
+            box-sizing: border-box;
+            background: transparent;
             border: none;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: bold;
+            border-radius: 8px;
             cursor: pointer;
-            transition: 0.2s;
+            transition:
+                background-color 0.15s ease,
+                transform 0.15s ease;
         }
 
-        .report-button:hover {
-            opacity: 0.9;
+        .search_btn {
+            width: 50px;
+            height: 50px;
+        }
+
+        .icon_btn:hover {
+            background: #EFE5D1;
             transform: translateY(-1px);
         }
 
-        .search-button {
-            background: #3F5B4B;
-            color: #FFFFFF;
+        .icon_btn:active {
+            transform: translateY(0);
         }
 
-        .clear-button {
-            background: #EDE4D3;
-            color: #2E4136;
+        .clear_btn img {
+            display: block;
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
         }
 
+        .search_btn img {
+            display: block;
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+        }
+
+        /* =========================
+           サマリー
+        ========================= */
         .report-summary-grid {
             display: grid;
             grid-template-columns: repeat(4, minmax(220px, 1fr));
@@ -216,40 +282,43 @@
         }
 
         .report-summary-card {
+            padding: 20px 24px;
             background: #FFFFFF;
             border: 1px solid #D8CBB3;
             border-radius: 16px;
-            padding: 20px 24px;
             box-shadow: 0 2px 8px rgba(63, 91, 75, 0.06);
         }
 
         .report-summary-label {
-            font-size: 14px;
-            color: #6B6B6B;
             margin-bottom: 12px;
+            font-size: 14px;
             font-weight: bold;
+            color: #6B6B6B;
         }
 
         .report-summary-value {
             font-size: 28px;
             font-weight: bold;
-            color: #2E4136;
             line-height: 1.2;
+            color: #2E4136;
         }
 
+        /* =========================
+            テーブル
+        ========================= */
         .report-table-area {
+            padding: 24px;
             background: #FFFFFF;
             border: 1px solid #D8CBB3;
             border-radius: 16px;
-            padding: 24px;
             box-shadow: 0 2px 8px rgba(63, 91, 75, 0.06);
         }
 
         .report-table-title {
+            margin-bottom: 20px;
             font-size: 24px;
             font-weight: bold;
             color: #2E4136;
-            margin-bottom: 20px;
         }
 
         .report-table-wrap {
@@ -258,27 +327,27 @@
 
         .report-table {
             width: 100%;
-            border-collapse: collapse;
             min-width: 900px;
+            border-collapse: collapse;
         }
 
         .report-table th {
+            padding: 14px 12px;
             background: #F7F1E3;
-            color: #2E4136;
+            border-bottom: 1px solid #D8CBB3;
             font-size: 14px;
             font-weight: bold;
-            padding: 14px 12px;
-            border-bottom: 1px solid #D8CBB3;
             text-align: left;
             white-space: nowrap;
+            color: #2E4136;
         }
 
         .report-table td {
+            padding: 14px 12px;
+            background: #FFFFFF;
+            border-bottom: 1px solid #EEE6D8;
             font-size: 14px;
             color: #2E4136;
-            padding: 14px 12px;
-            border-bottom: 1px solid #EEE6D8;
-            background: #FFFFFF;
         }
 
         .report-table tbody tr:hover td {
@@ -287,41 +356,17 @@
 
         .report-empty {
             padding: 40px 16px;
+            font-size: 15px;
             text-align: center;
             color: #6B6B6B;
-            font-size: 15px;
         }
 
         .loading-area {
             display: none;
-            text-align: center;
             padding: 24px;
-            color: #2E4136;
             font-weight: bold;
-        }
-
-        .report-form-control {
-            width: 100%;
-            height: 44px;
-            border: 1px solid #CDBFA8;
-            border-radius: 5px;
-            background: #FFFFFF;
-            padding: 0 12px;
-            font-size: 14px;
-            color: #2F2A24;
-            box-sizing: border-box;
-            transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
-        }
-
-        .report-form-control:focus {
-            border-color: #3F5B4B;
-            background-color: #FFFCF4;
-            box-shadow: 0 0 0 1px rgba(63, 91, 75, 0.15);
-            outline: none;
-        }
-
-        .report-form-control::placeholder {
-            color: #8A8175;
+            text-align: center;
+            color: #2E4136;
         }
     </style>
 </head>
@@ -434,11 +479,21 @@
                             <option value="status"<cfif defaultReportType eq "status"> selected</cfif>>状態別集計</option>
                         </select>
                     </div>
-                </div>
 
-                <div class="report-actions">
-                    <button type="button" id="clear_button" class="report-button clear-button">条件クリア</button>
-                    <button type="submit" id="search_button" class="report-button search-button">集計する</button>
+                    <cfoutput>
+                    <div class="report-form-item report-action-item">
+                        <div class="report-form-label report-action-label">操作</div>
+                        <div class="report-actions-inline">
+                            <button type="submit" id="search_button" class="icon_btn search_btn" title="集計">
+                                <img src="#Application.asset_url#/image/search-icon.svg" alt="集計">
+                            </button>
+
+                            <button type="button" id="clear_button" class="icon_btn clear_btn" title="クリア">
+                                <img src="#Application.asset_url#/image/clear-icon.svg" alt="クリア">
+                            </button>
+                        </div>
+                    </div>
+                    </cfoutput>
                 </div>
             </form>
         </div>
