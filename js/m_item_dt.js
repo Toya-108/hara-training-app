@@ -139,7 +139,10 @@ function moveToAdd() {
     return_url: detailUrl,
     return_search_product_code: getValue("return_search_product_code"),
     return_search_jan_code: getValue("return_search_jan_code"),
-    return_search_product_name: getValue("return_search_product_name")
+    return_search_product_name: getValue("return_search_product_name"),
+    return_sort_field: getValue("return_sort_field"),
+    return_sort_order: getValue("return_sort_order"),
+    return_page: getValue("return_page")
   });
 }
 
@@ -159,7 +162,10 @@ function moveToEdit() {
     return_url: getValue("return_url"),
     return_search_product_code: getValue("return_search_product_code"),
     return_search_jan_code: getValue("return_search_jan_code"),
-    return_search_product_name: getValue("return_search_product_name")
+    return_search_product_name: getValue("return_search_product_name"),
+    return_sort_field: getValue("return_sort_field"),
+    return_sort_order: getValue("return_sort_order"),
+    return_page: getValue("return_page")
   });
 }
 
@@ -179,7 +185,10 @@ function moveToCurrentView() {
     return_url: getValue("return_url"),
     return_search_product_code: getValue("return_search_product_code"),
     return_search_jan_code: getValue("return_search_jan_code"),
-    return_search_product_name: getValue("return_search_product_name")
+    return_search_product_name: getValue("return_search_product_name"),
+    return_sort_field: getValue("return_sort_field"),
+    return_sort_order: getValue("return_sort_order"),
+    return_page: getValue("return_page")
   });
 }
 
@@ -199,7 +208,10 @@ function moveToOriginDetail() {
     return_url: listUrl,
     return_search_product_code: getValue("return_search_product_code"),
     return_search_jan_code: getValue("return_search_jan_code"),
-    return_search_product_name: getValue("return_search_product_name")
+    return_search_product_name: getValue("return_search_product_name"),
+    return_sort_field: getValue("return_sort_field"),
+    return_sort_order: getValue("return_sort_order"),
+    return_page: getValue("return_page")
   });
 }
 
@@ -223,7 +235,10 @@ function moveToListByPost() {
   submitPost(listUrl, {
     search_product_code: getValue("return_search_product_code"),
     search_jan_code: getValue("return_search_jan_code"),
-    search_product_name: getValue("return_search_product_name")
+    search_product_name: getValue("return_search_product_name"),
+    sort_field: getValue("return_sort_field"),
+    sort_order: getValue("return_sort_order"),
+    page: getValue("return_page")
   });
 }
 
@@ -307,7 +322,10 @@ async function saveItem() {
       return_url: getValue("return_url"),
       return_search_product_code: getValue("return_search_product_code"),
       return_search_jan_code: getValue("return_search_jan_code"),
-      return_search_product_name: getValue("return_search_product_name")
+      return_search_product_name: getValue("return_search_product_name"),
+      return_sort_field: getValue("return_sort_field"),
+      return_sort_order: getValue("return_sort_order"),
+      return_page: getValue("return_page")
     });
   } catch (error) {
     console.error("商品保存エラー:", error);

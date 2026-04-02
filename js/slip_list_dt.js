@@ -85,7 +85,11 @@ function bindEvents() {
         }
       }
 
-      moveToListByPost();
+      if (isFromMenu()) {
+        moveToMenu();
+      } else {
+        moveToListByPost();
+      }
     });
   }
 
@@ -108,6 +112,10 @@ function bindEvents() {
       true
     );
   }
+}
+
+function isFromMenu() {
+  return getValue("return_from_menu") === "1";
 }
 
 async function lookupItemByCode(input) {
@@ -222,6 +230,7 @@ function moveToEdit() {
   submitPost("slip_list_dt.cfm", {
     detail_slip_no: slipNo,
     detail_display_mode: "edit",
+    return_from_menu: getValue("return_from_menu"),
     return_search_slip_no: getValue("return_search_slip_no"),
     return_search_order_date_from: getValue("return_search_order_date_from"),
     return_search_order_date_to: getValue("return_search_order_date_to"),
@@ -241,13 +250,18 @@ function moveToView() {
   const slipNo = getValue("detail_slip_no");
 
   if (!slipNo) {
-    moveToListByPost();
+    if (isFromMenu()) {
+      moveToMenu();
+    } else {
+      moveToListByPost();
+    }
     return;
   }
 
   submitPost("slip_list_dt.cfm", {
     detail_slip_no: slipNo,
     detail_display_mode: "view",
+    return_from_menu: getValue("return_from_menu"),
     return_search_slip_no: getValue("return_search_slip_no"),
     return_search_order_date_from: getValue("return_search_order_date_from"),
     return_search_order_date_to: getValue("return_search_order_date_to"),
@@ -261,6 +275,10 @@ function moveToView() {
     return_sort_field: getValue("return_sort_field"),
     return_sort_order: getValue("return_sort_order")
   });
+}
+
+function moveToMenu() {
+  location.href = "menu.cfm";
 }
 
 function moveToListByPost() {
@@ -347,7 +365,7 @@ function loadSlipDetail() {
 
 function renderHeader(header) {
   setText("slip_no_disp", header.slip_no || "");
-  setText("status_disp", getStatusLabel(header.status));
+  setStatus(header.status);
   setText("slip_date_disp", formatDateDisplay(header.slip_date));
   setText("delivery_date_disp", formatDateDisplay(header.delivery_date));
   setText("supplier_code_disp", header.supplier_code || "");
@@ -643,6 +661,7 @@ async function saveSlip() {
     submitPost("slip_list_dt.cfm", {
       detail_slip_no: slipNo,
       detail_display_mode: "view",
+      return_from_menu: getValue("return_from_menu"),
       return_search_slip_no: getValue("return_search_slip_no"),
       return_search_order_date_from: getValue("return_search_order_date_from"),
       return_search_order_date_to: getValue("return_search_order_date_to"),
@@ -768,4 +787,17 @@ function escapeHtml(value) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
+}
+
+function setStatus(status) {
+  const el = document.getElementById("status_disp");
+
+  let text = "";
+  if (status == "1") text = "登録";
+  if (status == "2") text = "確定";
+  if (status == "3") text = "削除";
+
+  el.textContent = text;
+  el.classList.remove("status-1", "status-2", "status-3");
+  el.classList.add("status-" + status);
 }

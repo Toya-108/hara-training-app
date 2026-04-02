@@ -8,34 +8,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
     var homeButton = document.getElementById('home-btn');
 
-    // 取引先モーダル関連
     var supplierModal = document.getElementById("supplier_modal");
     var closeSupplierModalButton = document.getElementById("close_supplier_modal_btn");
     var supplierSearchButton = document.getElementById("modal_supplier_search_btn");
     var supplierClearButton = document.getElementById("modal_supplier_clear_btn");
     var supplierTableBody = document.getElementById("supplier_table_body");
 
-    // 取引先入力欄
     var supplierDisplayInput = document.getElementById("supplier_display");
     var supplierCodeInput = document.getElementById("supplier_code");
     var supplierNameInput = document.getElementById("supplier_name");
     var supplierOpenTriggers = document.querySelectorAll(".supplier-open-trigger");
-
-    CommonValidation.setupRequiredValidation(form);
 
     bindEnterMoveEvents();
     bindEnterMoveEventsForTable();
     bindItemCodeAutoFill();
     bindDatePicker();
 
-    // 行追加
     if (addRowButton) {
         addRowButton.addEventListener("click", function () {
             addItemRow();
         });
     }
 
-    // クリア
     if (clearButton) {
         clearButton.addEventListener("click", async function () {
             var result = await Swal.fire({
@@ -62,7 +56,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // 明細削除
     if (itemTableBody) {
         itemTableBody.addEventListener("click", async function (event) {
             if (!event.target.classList.contains("delete-row-btn")) {
@@ -73,21 +66,18 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // 取引先モーダルを開く
     supplierOpenTriggers.forEach(function (element) {
         element.addEventListener("click", function () {
             openSupplierModal();
         });
     });
 
-    // 取引先モーダルを閉じる
     if (closeSupplierModalButton) {
         closeSupplierModalButton.addEventListener("click", function () {
             closeSupplierModal();
         });
     }
 
-    // 背景クリックでモーダルを閉じる
     if (supplierModal) {
         supplierModal.addEventListener("click", function (event) {
             if (event.target === supplierModal) {
@@ -96,14 +86,12 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // 取引先検索
     if (supplierSearchButton) {
         supplierSearchButton.addEventListener("click", function () {
             searchSupplierList();
         });
     }
 
-    // 取引先検索クリア
     if (supplierClearButton) {
         supplierClearButton.addEventListener("click", function () {
             var modalSearchSupplierCode = document.getElementById("modal_search_supplier_code");
@@ -119,14 +107,12 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Enterで取引先検索しない
     var modalSearchSupplierCode = document.getElementById("modal_search_supplier_code");
     var modalSearchSupplierName = document.getElementById("modal_search_supplier_name");
 
     disableEnterSubmit(modalSearchSupplierCode);
     disableEnterSubmit(modalSearchSupplierName);
 
-    // 取引先選択
     if (supplierTableBody) {
         supplierTableBody.addEventListener("click", function (event) {
             if (event.target.classList.contains("select-supplier-btn")) {
@@ -139,7 +125,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // 登録
     if (form) {
         form.addEventListener("submit", async function (event) {
             event.preventDefault();
@@ -183,6 +168,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
+            var totals = calculateTotals(detailList);
+
             var confirmResult = await Swal.fire({
                 title: "この内容で伝票を登録しますか？",
                 icon: "question",
@@ -204,6 +191,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 supplier_name: getValue("supplier_name"),
                 delivery_date: getValue("delivery_date"),
                 memo: getValue("memo"),
+                total_qty: totals.total_qty,
+                total_amount: totals.total_amount,
                 detail_list: detailList
             };
 
@@ -262,10 +251,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
-
-    // ----------------------------
-    // 関数
-    // ----------------------------
 
     function disableEnterSubmit(input) {
         if (!input) {
@@ -439,18 +424,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
         rows.forEach(function (row) {
             var itemCodeInput = row.querySelector('input[name="item_code[]"]');
+            var janCodeInput = row.querySelector('input[name="jan_code[]"]');
             var itemNameInput = row.querySelector('input[name="item_name[]"]');
             var qtyInput = row.querySelector('input[name="qty[]"]');
             var unitPriceInput = row.querySelector('input[name="unit_price[]"]');
 
             var itemCode = itemCodeInput ? itemCodeInput.value.trim() : "";
+            var janCode = janCodeInput ? janCodeInput.value.trim() : "";
             var itemName = itemNameInput ? itemNameInput.value.trim() : "";
             var qty = qtyInput ? qtyInput.value.trim() : "";
             var unitPrice = unitPriceInput ? unitPriceInput.value.trim() : "";
 
-            if (itemCode !== "" || itemName !== "" || qty !== "" || unitPrice !== "") {
+            if (itemCode !== "" || janCode !== "" || itemName !== "" || qty !== "" || unitPrice !== "") {
                 detailList.push({
                     item_code: itemCode,
+                    jan_code: janCode,
                     item_name: itemName,
                     qty: qty,
                     unit_price: unitPrice
@@ -493,6 +481,24 @@ document.addEventListener("DOMContentLoaded", function () {
         return "";
     }
 
+    function calculateTotals(detailList) {
+        var totalQty = 0;
+        var totalAmount = 0;
+
+        detailList.forEach(function (detail) {
+            var qty = toNumber(detail.qty);
+            var unitPrice = toNumber(detail.unit_price);
+
+            totalQty += qty;
+            totalAmount += qty * unitPrice;
+        });
+
+        return {
+            total_qty: totalQty,
+            total_amount: totalAmount
+        };
+    }
+
     function addItemRow() {
         if (!itemTableBody) {
             return;
@@ -501,9 +507,10 @@ document.addEventListener("DOMContentLoaded", function () {
         var rowHtml = `
             <tr>
                 <td><input type="text" name="item_code[]" class="item-code" maxlength="20"></td>
-                <td><input type="text" name="item_name[]" class="item-name" maxlength="100"></td>
-                <td><input type="text" name="qty[]" class="qty" min="1" step="1"></td>
-                <td><input type="text" name="unit_price[]" class="price" min="0" step="0.01"></td>
+                <td><input type="text" name="jan_code[]" class="jan-code readonly-cell" maxlength="20" readonly></td>
+                <td><input type="text" name="item_name[]" class="item-name readonly-cell" maxlength="100"></td>
+                <td><input type="text" name="qty[]" class="qty num-check" title="数量"></td>
+                <td><input type="text" name="unit_price[]" class="price num-check readonly-cell" title="単価"></td>
                 <td>
                     <button type="button" class="table-btn sub delete-row-btn">削除</button>
                 </td>
@@ -560,9 +567,10 @@ document.addEventListener("DOMContentLoaded", function () {
         itemTableBody.innerHTML = `
             <tr>
                 <td><input type="text" name="item_code[]" class="item-code" maxlength="20"></td>
-                <td><input type="text" name="item_name[]" class="item-name" maxlength="100"></td>
-                <td><input type="number" name="qty[]" class="qty" min="1" step="1"></td>
-                <td><input type="number" name="unit_price[]" class="price" min="0" step="0.01"></td>
+                <td><input type="text" name="jan_code[]" class="jan-code readonly-cell" maxlength="20" readonly></td>
+                <td><input type="text" name="item_name[]" class="item-name readonly-cell" maxlength="100"></td>
+                <td><input type="text" name="qty[]" class="qty num-check" title="数量"></td>
+                <td><input type="text" name="unit_price[]" class="price num-check readonly-cell" title="単価"></td>
                 <td>
                     <button type="button" class="table-btn sub delete-row-btn">削除</button>
                 </td>
@@ -639,6 +647,20 @@ document.addEventListener("DOMContentLoaded", function () {
         return element.value.trim();
     }
 
+    function toNumber(value) {
+        if (value == null) {
+            return 0;
+        }
+
+        var normalized = String(value).replace(/,/g, "").trim();
+        if (normalized === "") {
+            return 0;
+        }
+
+        var num = Number(normalized);
+        return isNaN(num) ? 0 : num;
+    }
+
     function escapeHtml(value) {
         if (value === null || value === undefined) {
             return "";
@@ -699,11 +721,17 @@ document.addEventListener("DOMContentLoaded", function () {
             if (!event.target.classList.contains("item-code")) return;
 
             const itemCode = event.target.value.trim();
-            if (!itemCode) return;
-
             const row = event.target.closest("tr");
+            const janCodeInput = row.querySelector(".jan-code");
             const itemNameInput = row.querySelector(".item-name");
             const priceInput = row.querySelector(".price");
+
+            if (!itemCode) {
+                if (janCodeInput) janCodeInput.value = "";
+                if (itemNameInput) itemNameInput.value = "";
+                if (priceInput) priceInput.value = "";
+                return;
+            }
 
             try {
                 const response = await fetch("add_slip.cfc?method=getItemByCode&returnformat=json", {
@@ -720,13 +748,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 const data = JSON.parse(rawText);
 
                 if (data.status === 0) {
-                    itemNameInput.value = data.results.item_name || "";
-                    priceInput.value = data.results.gentanka || "";
+                    if (janCodeInput) janCodeInput.value = data.results.jan_code || "";
+                    if (itemNameInput) itemNameInput.value = data.results.item_name || "";
+                    if (priceInput) priceInput.value = data.results.gentanka || "";
                 } else {
-                    itemNameInput.value = "";
-                    itemNameInput.textContent = "";
-                    priceInput.value = "";
-                    priceInput.textContent = "";
+                    if (janCodeInput) janCodeInput.value = "";
+                    if (itemNameInput) itemNameInput.value = "";
+                    if (priceInput) priceInput.value = "";
 
                     await Swal.fire({
                         title: "商品が見つかりません",
@@ -735,7 +763,6 @@ document.addEventListener("DOMContentLoaded", function () {
                         confirmButtonText: "OK",
                         confirmButtonColor: "#3F5B4B"
                     });
-
                 }
             } catch (error) {
                 console.error("商品取得エラー:", error);
@@ -771,8 +798,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    homeButton.addEventListener('click', function(){
+    homeButton.addEventListener('click', function () {
         location.href = 'menu.cfm';
-    })
-
+    });
 });

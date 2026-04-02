@@ -4,14 +4,14 @@
 <!-- =========================
      受け取り（cfparamなし）
      ========================= -->
-<cfset postedStaffId = 0>
-<cfif StructKeyExists(Form, "staff_id")>
-    <cfset postedStaffId = Val(Form.staff_id)>
+<cfset postedStaffCode = "">
+<cfif StructKeyExists(Form, "staff_code")>
+    <cfset postedStaffCode = Trim(Form.staff_code)>
 </cfif>
 
-<cfset returnStaffId = 0>
-<cfif StructKeyExists(Form, "return_staff_id")>
-    <cfset returnStaffId = Val(Form.return_staff_id)>
+<cfset returnStaffCode = "">
+<cfif StructKeyExists(Form, "return_staff_code")>
+    <cfset returnStaffCode = Trim(Form.return_staff_code)>
 </cfif>
 
 <cfset displayMode = "view">
@@ -48,15 +48,25 @@
     <cfset returnSearchUseFlag = Trim(Form.return_search_use_flag)>
 </cfif>
 
+<cfset returnSortField = "">
+<cfif StructKeyExists(Form, "return_sort_field")>
+    <cfset returnSortField = Trim(Form.return_sort_field)>
+</cfif>
+
+<cfset returnSortOrder = "">
+<cfif StructKeyExists(Form, "return_sort_order")>
+    <cfset returnSortOrder = LCase(Trim(Form.return_sort_order))>
+</cfif>
+
 <!-- =========================
-     表示対象ID
+     表示対象コード
      return優先 → なければpost
      ========================= -->
-<cfset targetStaffId = 0>
-<cfif returnStaffId gt 0>
-    <cfset targetStaffId = returnStaffId>
-<cfelseif postedStaffId gt 0>
-    <cfset targetStaffId = postedStaffId>
+<cfset targetStaffCode = "">
+<cfif returnStaffCode neq "">
+    <cfset targetStaffCode = returnStaffCode>
+<cfelseif postedStaffCode neq "">
+    <cfset targetStaffCode = postedStaffCode>
 </cfif>
 
 <!-- =========================
@@ -94,7 +104,7 @@
 <!-- =========================
      初期値
      ========================= -->
-<cfset detailStaffId = "">
+<cfset detailOriginalStaffCode = "">
 <cfset detailStaffCode = "">
 <cfset detailStaffName = "">
 <cfset detailStaffKana = "">
@@ -115,10 +125,9 @@
 <!-- =========================
      DB取得（add以外のみ）
      ========================= -->
-<cfif displayMode neq "add" AND targetStaffId gt 0>
+<cfif displayMode neq "add" AND targetStaffCode neq "">
     <cfquery name="qStaffDetail">
         SELECT
-            staff_id,
             staff_code,
             staff_name,
             staff_kana,
@@ -137,11 +146,11 @@
         FROM
             m_staff
         WHERE
-            staff_id = <cfqueryparam value="#targetStaffId#" cfsqltype="cf_sql_integer">
+            staff_code = <cfqueryparam value="#targetStaffCode#" cfsqltype="cf_sql_varchar">
     </cfquery>
 
     <cfif qStaffDetail.recordCount eq 1>
-        <cfset detailStaffId = qStaffDetail.staff_id[1]>
+        <cfset detailOriginalStaffCode = qStaffDetail.staff_code[1]>
         <cfset detailStaffCode = qStaffDetail.staff_code[1]>
         <cfset detailStaffName = qStaffDetail.staff_name[1]>
         <cfset detailStaffKana = qStaffDetail.staff_kana[1]>
@@ -165,7 +174,7 @@
 <!-- =========================
      addでは必ず空表示
      ========================= -->
-<cfset displayStaffId = detailStaffId>
+<cfset displayOriginalStaffCode = detailOriginalStaffCode>
 <cfset displayStaffCode = detailStaffCode>
 <cfset displayStaffName = detailStaffName>
 <cfset displayStaffKana = detailStaffKana>
@@ -183,7 +192,7 @@
 <cfset displayUpdateStaffName = detailUpdateStaffName>
 
 <cfif displayMode eq "add">
-    <cfset displayStaffId = "">
+    <cfset displayOriginalStaffCode = "">
     <cfset displayStaffCode = "">
     <cfset displayStaffName = "">
     <cfset displayStaffKana = "">
@@ -213,7 +222,7 @@
     <title><cfoutput>#HTMLEditFormat(pageTitle)#</cfoutput></title>
     <cfoutput>
         <link rel="icon" href="#Application.asset_url#/image/hara-logiapp-logo.ico">
-        <link rel="stylesheet" href="#Application.asset_url#/css/style.css?20260326_2">
+        <link rel="stylesheet" href="#Application.asset_url#/css/style.css?20260331_2">
     </cfoutput>
 
     <style>
@@ -275,6 +284,54 @@
         }
         .normal_btn:hover:not(:disabled) { background: #EFE5D1; }
         .normal_btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .view-only { display: block; }
+        .edit-only { display: none; }
+
+        #dt_card:not(.view_mode) .view-only { display: none; }
+        #dt_card:not(.view_mode) .edit-only { display: block; }
+
+        /* 使用区分 */
+        .use-badge {
+            display: inline-block;
+            min-width: 70px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .use-1 {
+            background: #DCEBDC;
+            color: #2F6A40;
+        }
+
+        .use-0 {
+            background: #FDECEB;
+            color: #C62828;
+        }
+
+        /* 権限 */
+        .auth-badge {
+            display: inline-block;
+            min-width: 70px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .auth-9 {
+            background: #E8EAF6;
+            color: #3949AB;
+        }
+
+        .auth-1 {
+            background: #ECEFF1;
+            color: #546E7A;
+        }
     </style>
 </head>
 
@@ -290,10 +347,6 @@
 
                 <div class="meta_box">
                     <cfif displayMode neq "add">
-                        <div class="meta_line">
-                            <div class="meta_label">最終ログイン</div>
-                            <div class="meta_value">#HTMLEditFormat(displayLastLoginDatetime)#</div>
-                        </div>
                         <div class="meta_line">
                             <div class="meta_label">作成日時</div>
                             <div class="meta_value">#HTMLEditFormat(displayCreateDatetime)#</div>
@@ -318,9 +371,12 @@
             <div id="loading_area" class="loading_area">処理中です...</div>
 
             <form id="master_form" onsubmit="return false;">
-                <input type="hidden" id="staff_id" name="staff_id" value="#HTMLEditFormat(displayStaffId)#">
-                <input type="hidden" id="return_staff_id" name="return_staff_id" value="#HTMLEditFormat(targetStaffId)#">
+                <input type="hidden" id="original_staff_code" name="original_staff_code" value="#HTMLEditFormat(displayOriginalStaffCode)#">
+                <input type="hidden" id="return_staff_code" name="return_staff_code" value="#HTMLEditFormat(targetStaffCode)#">
                 <input type="hidden" id="display_mode" name="display_mode" value="#HTMLEditFormat(displayMode)#">
+
+                <input type="hidden" id="return_sort_field" name="return_sort_field" value="#HTMLEditFormat(returnSortField)#">
+                <input type="hidden" id="return_sort_order" name="return_sort_order" value="#HTMLEditFormat(returnSortOrder)#">
 
                 <input type="hidden" id="return_search_staff_code" name="return_search_staff_code" value="#HTMLEditFormat(returnSearchStaffCode)#">
                 <input type="hidden" id="return_search_staff_name" name="return_search_staff_name" value="#HTMLEditFormat(returnSearchStaffName)#">
@@ -353,10 +409,16 @@
                     <div class="form_item">
                         <div class="form_label">権限レベル</div>
                         <div class="form_value">
-                            <select id="authority_level" name="authority_level" class="form-control form-select">
+
+                            <!-- 表示用 -->
+                            <span id="authority_level_disp" class="auth-badge view-only"></span>
+
+                            <!-- 編集用 -->
+                            <select id="authority_level" name="authority_level" class="form-control form-select edit-only">
                                 <option value="1"<cfif displayAuthorityLevel eq "1"> selected</cfif>>一般</option>
                                 <option value="9"<cfif displayAuthorityLevel eq "9"> selected</cfif>>管理者</option>
                             </select>
+
                         </div>
                     </div>
 
@@ -377,25 +439,37 @@
                     <div class="form_item">
                         <div class="form_label">使用区分</div>
                         <div class="form_value">
-                            <select id="use_flag" name="use_flag" class="form-control form-select">
+
+                            <!-- 表示用 -->
+                            <span id="use_flag_disp" class="use-badge view-only"></span>
+
+                            <!-- 編集用 -->
+                            <select id="use_flag" name="use_flag" class="form-control form-select edit-only">
                                 <option value="1"<cfif displayUseFlag eq "1"> selected</cfif>>使用中</option>
                                 <option value="0"<cfif displayUseFlag eq "0"> selected</cfif>>停止</option>
                             </select>
+
                         </div>
                     </div>
 
                     <div></div>
 
-                    <cfif displayMode eq "add">
+                    <cfif displayMode eq "add" OR displayMode eq "edit">
                         <div class="form_item">
-                            <div class="form_label">パスワード<span class="required_mark">必須</span></div>
+                            <div class="form_label">
+                                パスワード
+                                <cfif displayMode eq "add"><span class="required_mark">必須</span></cfif>
+                            </div>
                             <div class="form_value">
                                 <input type="password" id="login_password" name="login_password" maxlength="100" value="">
                             </div>
                         </div>
 
                         <div class="form_item">
-                            <div class="form_label">パスワード確認<span class="required_mark">必須</span></div>
+                            <div class="form_label">
+                                パスワード確認
+                                <cfif displayMode eq "add"><span class="required_mark">必須</span></cfif>
+                            </div>
                             <div class="form_value">
                                 <input type="password" id="login_password_confirm" name="login_password_confirm" maxlength="100" value="">
                             </div>
@@ -421,7 +495,7 @@
     </div>
 
     <script src="#Application.asset_url#/js/sweetalert2.all.min.js"></script>
-    <script src="#Application.asset_url#/js/m_staff_dt.js?20260326_2"></script>
+    <script src="#Application.asset_url#/js/m_staff_dt.js?20260331_2"></script>
 </body>
 </cfoutput>
 </html>

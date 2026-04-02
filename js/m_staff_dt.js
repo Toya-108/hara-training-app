@@ -1,4 +1,4 @@
-let staffId = 0;
+let staffCode = "";
 let displayMode = "view";
 
 const baseUrl = "/training/hara";
@@ -10,10 +10,12 @@ document.addEventListener("DOMContentLoaded", function () {
   bindHeaderButtons();
   bindEvents();
   applyModeLayout();
+  setAuthorityLevel(getValue("authority_level"));
+  setUseFlag(getValue("use_flag"));
 });
 
 function initializeScreenValues() {
-  staffId = Number(getValue("staff_id") || 0);
+  staffCode = getValue("original_staff_code");
   displayMode = String(getValue("display_mode") || "view").toLowerCase();
 
   if (displayMode !== "view" && displayMode !== "edit" && displayMode !== "add") {
@@ -94,64 +96,72 @@ function applyModeLayout() {
 }
 
 function moveToAdd() {
-  const currentStaffId = getReturnStaffId();
+  const currentStaffCode = getReturnStaffCode();
 
   submitPost(detailUrl, {
-    staff_id: "",
-    return_staff_id: currentStaffId,
+    staff_code: "",
+    return_staff_code: currentStaffCode,
     display_mode: "add",
     return_search_staff_code: getValue("return_search_staff_code"),
     return_search_staff_name: getValue("return_search_staff_name"),
     return_search_mail_address: getValue("return_search_mail_address"),
     return_search_authority_level: getValue("return_search_authority_level"),
-    return_search_use_flag: getValue("return_search_use_flag")
+    return_search_use_flag: getValue("return_search_use_flag"),
+
+    return_sort_field: getValue("return_sort_field"),
+    return_sort_order: getValue("return_sort_order")
   });
 }
 
 function moveToEdit() {
-  const currentStaffId = getReturnStaffId();
+  const currentStaffCode = getReturnStaffCode();
 
-  if (!currentStaffId) {
-    showErrorAlert("社員IDが取得できません。");
+  if (!currentStaffCode) {
+    showErrorAlert("社員コードが取得できません。");
     return;
   }
 
   submitPost(detailUrl, {
-    staff_id: currentStaffId,
-    return_staff_id: currentStaffId,
+    staff_code: currentStaffCode,
+    return_staff_code: currentStaffCode,
     display_mode: "edit",
     return_search_staff_code: getValue("return_search_staff_code"),
     return_search_staff_name: getValue("return_search_staff_name"),
     return_search_mail_address: getValue("return_search_mail_address"),
     return_search_authority_level: getValue("return_search_authority_level"),
-    return_search_use_flag: getValue("return_search_use_flag")
-  });
+    return_search_use_flag: getValue("return_search_use_flag"),
+
+    return_sort_field: getValue("return_sort_field"),
+    return_sort_order: getValue("return_sort_order")  });
 }
 
 function moveToView() {
-  const currentStaffId = getReturnStaffId();
+  const currentStaffCode = getReturnStaffCode();
 
-  if (!currentStaffId) {
+  if (!currentStaffCode) {
     moveToListByPost();
     return;
   }
 
   submitPost(detailUrl, {
-    staff_id: currentStaffId,
-    return_staff_id: currentStaffId,
+    staff_code: currentStaffCode,
+    return_staff_code: currentStaffCode,
     display_mode: "view",
     return_search_staff_code: getValue("return_search_staff_code"),
     return_search_staff_name: getValue("return_search_staff_name"),
     return_search_mail_address: getValue("return_search_mail_address"),
     return_search_authority_level: getValue("return_search_authority_level"),
-    return_search_use_flag: getValue("return_search_use_flag")
+    return_search_use_flag: getValue("return_search_use_flag"),
+
+    return_sort_field: getValue("return_sort_field"),
+    return_sort_order: getValue("return_sort_order")
   });
 }
 
 function moveToCancel() {
-  const currentStaffId = getReturnStaffId();
+  const currentStaffCode = getReturnStaffCode();
 
-  if (displayMode === "add" && !currentStaffId) {
+  if (displayMode === "add" && !currentStaffCode) {
     moveToListByPost();
     return;
   }
@@ -165,17 +175,20 @@ function moveToListByPost() {
     search_staff_name: getValue("return_search_staff_name"),
     search_mail_address: getValue("return_search_mail_address"),
     search_authority_level: getValue("return_search_authority_level"),
-    search_use_flag: getValue("return_search_use_flag")
+    search_use_flag: getValue("return_search_use_flag"),
+
+    sort_field: getValue("return_sort_field"),
+    sort_order: getValue("return_sort_order")
   });
 }
 
-function getReturnStaffId() {
-  const returnStaffId = getValue("return_staff_id");
-  if (returnStaffId) {
-    return returnStaffId;
+function getReturnStaffCode() {
+  const returnStaffCode = getValue("return_staff_code");
+  if (returnStaffCode) {
+    return returnStaffCode;
   }
 
-  return getValue("staff_id");
+  return getValue("original_staff_code");
 }
 
 async function deleteStaff() {
@@ -183,12 +196,12 @@ async function deleteStaff() {
     return;
   }
 
-  const currentStaffId = Number(getValue("staff_id") || 0);
+  const currentOriginalStaffCode = getValue("original_staff_code");
   const currentStaffCode = getValue("staff_code");
   const currentStaffName = getValue("staff_name");
 
-  if (currentStaffId <= 0) {
-    await showErrorAlert("社員IDが取得できません。");
+  if (!currentOriginalStaffCode) {
+    await showErrorAlert("社員コードが取得できません。");
     return;
   }
 
@@ -215,7 +228,7 @@ async function deleteStaff() {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        staff_id: currentStaffId
+        staff_code: currentOriginalStaffCode
       })
     });
 
@@ -275,7 +288,7 @@ async function saveStaff() {
   }
 
   const payload = {
-    staff_id: Number(getValue("staff_id") || 0),
+    original_staff_code: getValue("original_staff_code"),
     staff_code: getValue("staff_code"),
     staff_name: getValue("staff_name"),
     staff_kana: getValue("staff_kana"),
@@ -316,36 +329,30 @@ async function saveStaff() {
       confirmButtonText: "OK"
     });
 
-    const savedStaffId =
+    const savedStaffCode =
       data &&
       data.results &&
-      data.results.staff_id
-        ? String(data.results.staff_id)
+      data.results.staff_code
+        ? String(data.results.staff_code)
         : "";
 
-    if (displayMode === "add") {
-      const returnStaffId = getValue("return_staff_id");
-
-      if (!returnStaffId) {
-        moveToListByPost();
-        return;
-      }
-    }
-
-    if (!savedStaffId) {
+    if (!savedStaffCode) {
       moveToListByPost();
       return;
     }
 
     submitPost(detailUrl, {
-      staff_id: savedStaffId,
-      return_staff_id: savedStaffId,
+      staff_code: savedStaffCode,
+      return_staff_code: savedStaffCode,
       display_mode: "view",
       return_search_staff_code: getValue("return_search_staff_code"),
       return_search_staff_name: getValue("return_search_staff_name"),
       return_search_mail_address: getValue("return_search_mail_address"),
       return_search_authority_level: getValue("return_search_authority_level"),
-      return_search_use_flag: getValue("return_search_use_flag")
+      return_search_use_flag: getValue("return_search_use_flag"),
+
+      return_sort_field: getValue("return_sort_field"),
+      return_sort_order: getValue("return_sort_order")
     });
   } catch (error) {
     console.error("社員保存エラー:", error);
@@ -373,6 +380,11 @@ function validateForm() {
   if (displayMode === "add" && !loginPassword) {
     focusTo("login_password");
     return "新規登録時はパスワードを入力してください。";
+  }
+
+  if (displayMode === "add" && !loginPasswordConfirm) {
+    focusTo("login_password_confirm");
+    return "新規登録時はパスワード確認を入力してください。";
   }
 
   if ((loginPassword || loginPasswordConfirm) && loginPassword !== loginPasswordConfirm) {
@@ -448,4 +460,32 @@ function focusTo(id) {
   if (element) {
     element.focus();
   }
+}
+
+function setAuthorityLevel(level) {
+    const el = document.getElementById("authority_level_disp");
+    if (!el) return;
+
+    let text = "";
+    if (level == "9") text = "管理者";
+    if (level == "1") text = "一般";
+
+    el.textContent = text;
+
+    el.classList.remove("auth-9", "auth-1");
+    el.classList.add("auth-" + level);
+}
+
+function setUseFlag(flag) {
+    const el = document.getElementById("use_flag_disp");
+    if (!el) return;
+
+    let text = "";
+    if (flag == "1") text = "使用中";
+    if (flag == "0") text = "停止";
+
+    el.textContent = text;
+
+    el.classList.remove("use-1", "use-0");
+    el.classList.add("use-" + flag);
 }

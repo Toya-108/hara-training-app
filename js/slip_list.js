@@ -2,6 +2,8 @@ let currentPage = 1;
 const pageSize = 50;
 let totalPage = 1;
 
+let lastTotalCount = 0;
+
 const baseUrl = "/training/hara";
 let sortField = "";
 let sortOrder = "";
@@ -14,6 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
   bindSortEvents();
   bindHeaderExportButtonEvent();
   bindBackButtonEvent();
+  bindBulkConfirmEvent();
   applyReturnState();
   loadSlipList(currentPage);
 });
@@ -280,7 +283,7 @@ function resetSortIcons() {
   });
 }
 
-function loadSlipList(page) {
+async function loadSlipList(page) {
   const slipTableBody = document.getElementById("slip_table_body");
   const pageStatus = document.getElementById("page_status");
   const pageNumberText = document.getElementById("page_number_text");
@@ -314,65 +317,68 @@ function loadSlipList(page) {
     `;
   }
 
-  fetch(baseUrl + "/slip_list.cfc?method=getSlipList&returnformat=json", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(requestBody)
-  })
-    .then(function (response) {
-      if (!response.ok) {
-        throw new Error("HTTPエラー: " + response.status);
-      }
-      return response.json();
-    })
-    .then(function (data) {
-      if (!data || Number(data.status) !== 0) {
-        throw new Error(data && data.message ? data.message : "伝票一覧の取得に失敗しました。");
-      }
-
-      const results = data.results || [];
-      const paging = data.paging || {};
-
-      currentPage = Number(paging.page || 1);
-      totalPage = Number(paging.totalPage || 1);
-
-      renderSlipTable(results);
-      updatePagingArea(currentPage, totalPage, Number(paging.totalCount || 0));
-
-      if (pageStatus) {
-        pageStatus.textContent = currentPage + " / " + totalPage + " ページ（全 " + Number(paging.totalCount || 0) + " 件）";
-      }
-
-      if (pageNumberText) {
-        pageNumberText.textContent = currentPage + " / " + totalPage;
-      }
-    })
-    .catch(function (error) {
-      console.error("伝票一覧取得エラー:", error);
-
-      if (slipTableBody) {
-        slipTableBody.innerHTML = `
-          <tr>
-            <td colspan="6" class="error_text">伝票一覧の取得に失敗しました。</td>
-          </tr>
-        `;
-      }
-
-      if (pageStatus) {
-        pageStatus.textContent = "1 / 1 ページ";
-      }
-
-      if (pageNumberText) {
-        pageNumberText.textContent = "1 / 1";
-      }
-    })
-    .finally(function () {
-      if (loadingIndicator) {
-        loadingIndicator.classList.remove("is-visible");
-      }
+  try {
+    const response = await fetch(baseUrl + "/slip_list.cfc?method=getSlipList&returnformat=json", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(requestBody)
     });
+
+    if (!response.ok) {
+      throw new Error("HTTPエラー: " + response.status);
+    }
+
+    const data = await response.json();
+
+    if (!data || Number(data.status) !== 0) {
+      throw new Error(data && data.message ? data.message : "伝票一覧の取得に失敗しました。");
+    }
+
+    const results = data.results || [];
+    const paging = data.paging || {};
+
+    lastTotalCount = Number(paging.totalCount || 0);
+
+    currentPage = Number(paging.page || 1);
+    totalPage = Number(paging.totalPage || 1);
+
+    renderSlipTable(results);
+    updatePagingArea(currentPage, totalPage, Number(paging.totalCount || 0));
+
+    if (pageStatus) {
+      pageStatus.textContent = currentPage + " / " + totalPage + " ページ（全 " + Number(paging.totalCount || 0) + " 件）";
+    }
+
+    if (pageNumberText) {
+      pageNumberText.textContent = currentPage + " / " + totalPage;
+    }
+
+  } catch (error) {
+    console.error("伝票一覧取得エラー:", error);
+
+    if (slipTableBody) {
+      slipTableBody.innerHTML = `
+        <tr>
+          <td colspan="6" class="error_text">伝票一覧の取得に失敗しました。</td>
+        </tr>
+      `;
+    }
+
+    if (pageStatus) {
+      pageStatus.textContent = "1 / 1 ページ";
+    }
+
+    if (pageNumberText) {
+      pageNumberText.textContent = "1 / 1";
+    }
+
+  } finally {
+    if (loadingIndicator) {
+      loadingIndicator.classList.remove("is-visible");
+    }
+  }
 }
 
 function renderSlipTable(list) {
@@ -527,4 +533,161 @@ function escapeHtml(value) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
+}
+
+function bindBulkConfirmEvent() {
+  const bulkConfirmBtn = document.getElementById("bulk_confirm_btn");
+  if (!bulkConfirmBtn) return;
+
+  bulkConfirmBtn.addEventListener("click", async function () {
+    await bulkConfirmSlips();
+  });
+}
+
+async function bulkConfirmSlips() {
+  const searchStatus = getValue("search_status");
+
+  if (lastTotalCount <= 0) {
+    await Swal.fire({
+      title: "対象なし",
+      text: "一括確定の対象となる伝票がありません。",
+      icon: "warning",
+      confirmButtonText: "OK",
+      confirmButtonColor: "#3F5B4B"
+    });
+    return;
+  }
+
+  if (searchStatus === "2") {
+    await Swal.fire({
+      title: "対象なし",
+      text: "検索条件が「確定」になっているため、一括確定の対象がありません。",
+      icon: "warning",
+      confirmButtonText: "OK",
+      confirmButtonColor: "#3F5B4B"
+    });
+    return;
+  }
+
+  if (searchStatus === "3") {
+    await Swal.fire({
+      title: "対象なし",
+      text: "検索条件が「削除」になっているため、一括確定の対象がありません。",
+      icon: "warning",
+      confirmButtonText: "OK",
+      confirmButtonColor: "#3F5B4B"
+    });
+    return;
+  }
+
+  const passwordResult = await Swal.fire({
+    title: "一括確定",
+    html: "一括確定を実行するには<br>パスワードを入力してください。",
+    input: "password",
+    inputLabel: "パスワード",
+    inputPlaceholder: "パスワードを入力",
+    inputAttributes: {
+      autocapitalize: "off",
+      autocorrect: "off"
+    },
+    showCancelButton: true,
+    confirmButtonText: "確認へ進む",
+    cancelButtonText: "キャンセル",
+    confirmButtonColor: "#3F5B4B",
+    cancelButtonColor: "#8A8175",
+    reverseButtons: true,
+    inputValidator: function (value) {
+      if (!value) {
+        return "パスワードを入力してください。";
+      }
+      return null;
+    }
+  });
+
+  if (!passwordResult.isConfirmed) {
+    return;
+  }
+
+  const password = String(passwordResult.value || "");
+
+  const confirmResult = await Swal.fire({
+    title: "検索結果を一括確定しますか？",
+    html:
+      "現在の検索条件に一致する<br>" +
+      "<strong>登録状態の伝票のみ</strong> を一括確定します。<br><br>" +
+      "対象件数: <strong>" + escapeHtml(String(lastTotalCount)) + "件</strong>",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "一括確定する",
+    cancelButtonText: "戻る",
+    confirmButtonColor: "#3F5B4B",
+    cancelButtonColor: "#8A8175",
+    reverseButtons: true
+  });
+
+  if (!confirmResult.isConfirmed) {
+    return;
+  }
+
+  const loadingIndicator = document.getElementById("loading_indicator");
+  if (loadingIndicator) {
+    loadingIndicator.classList.add("is-visible");
+  }
+
+  try {
+    const requestBody = {
+      password: password,
+      search_slip_no: getValue("search_slip_no"),
+      search_order_date_from: getValue("search_order_date_from"),
+      search_order_date_to: getValue("search_order_date_to"),
+      search_delivery_date_from: getValue("search_delivery_date_from"),
+      search_delivery_date_to: getValue("search_delivery_date_to"),
+      search_supplier_code: getValue("search_supplier_code"),
+      search_supplier_keyword: getValue("search_supplier_keyword"),
+      search_item_keyword: getValue("search_item_keyword"),
+      search_status: getValue("search_status")
+    };
+
+    const response = await fetch(baseUrl + "/slip_list.cfc?method=bulkConfirmSlips&returnformat=json", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(requestBody)
+    });
+
+    if (!response.ok) {
+      throw new Error("HTTPエラー: " + response.status);
+    }
+
+    const data = await response.json();
+
+    if (!data || Number(data.status) !== 0) {
+      throw new Error(data && data.message ? data.message : "一括確定に失敗しました。");
+    }
+
+    await Swal.fire({
+      title: "一括確定完了",
+      text: data.message || "一括確定が完了しました。",
+      icon: "success",
+      confirmButtonText: "OK",
+      confirmButtonColor: "#3F5B4B"
+    });
+
+    loadSlipList(currentPage);
+  } catch (error) {
+    console.error("一括確定エラー:", error);
+
+    await Swal.fire({
+      title: "一括確定失敗",
+      text: error.message || "一括確定に失敗しました。",
+      icon: "error",
+      confirmButtonText: "OK",
+      confirmButtonColor: "#B84A4A"
+    });
+  } finally {
+    if (loadingIndicator) {
+      loadingIndicator.classList.remove("is-visible");
+    }
+  }
 }

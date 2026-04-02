@@ -25,6 +25,21 @@
     <cfset returnSearchUseFlag = Form.return_search_use_flag>
 </cfif>
 
+<cfset returnSortField = "">
+<cfif StructKeyExists(Form, "return_sort_field")>
+    <cfset returnSortField = Trim(Form.return_sort_field)>
+</cfif>
+
+<cfset returnSortOrder = "">
+<cfif StructKeyExists(Form, "return_sort_order")>
+    <cfset returnSortOrder = LCase(Trim(Form.return_sort_order))>
+</cfif>
+
+<cfset returnPage = "1">
+<cfif StructKeyExists(Form, "return_page") AND IsNumeric(Form.return_page) AND Val(Form.return_page) gt 0>
+    <cfset returnPage = Form.return_page>
+</cfif>
+
 <cfset displayMode = "view">
 <cfif StructKeyExists(Form, "display_mode") AND Trim(Form.display_mode) neq "">
     <cfset displayMode = LCase(Trim(Form.display_mode))>
@@ -302,7 +317,7 @@
     <title><cfoutput>#HTMLEditFormat(pageTitle)#</cfoutput></title>
     <cfoutput>
         <link rel="icon" href="#Application.asset_url#/image/hara-logiapp-logo.ico">
-        <link rel="stylesheet" href="#Application.asset_url#/css/style.css?20260326_1">
+        <link rel="stylesheet" href="#Application.asset_url#/css/style.css?20260401_1">
     </cfoutput>
 
     <style>
@@ -518,6 +533,42 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
+
+        .view-only {
+            display: block;
+        }
+
+        .edit-only {
+            display: none;
+        }
+
+        #dt_card:not(.view_mode) .view-only {
+            display: none;
+        }
+
+        #dt_card:not(.view_mode) .edit-only {
+            display: block;
+        }
+
+        .use-badge {
+            display: inline-block;
+            min-width: 70px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .use-1 {
+            background: #DCEBDC;
+            color: #2F6A40;
+        }
+
+        .use-0 {
+            background: #FDECEB;
+            color: #C62828;
+        }
     </style>
 </head>
 
@@ -574,6 +625,10 @@
                 <input type="hidden" id="return_search_supplier_name" name="return_search_supplier_name" value="#HTMLEditFormat(returnSearchSupplierName)#">
                 <input type="hidden" id="return_search_delivery_company" name="return_search_delivery_company" value="#HTMLEditFormat(returnSearchDeliveryCompany)#">
                 <input type="hidden" id="return_search_use_flag" name="return_search_use_flag" value="#HTMLEditFormat(returnSearchUseFlag)#">
+
+                <input type="hidden" id="return_sort_field" name="return_sort_field" value="#HTMLEditFormat(returnSortField)#">
+                <input type="hidden" id="return_sort_order" name="return_sort_order" value="#HTMLEditFormat(returnSortOrder)#">
+                <input type="hidden" id="return_page" name="return_page" value="#HTMLEditFormat(returnPage)#">
 
                 <div class="form_grid">
                     <div class="form_item">
@@ -663,7 +718,9 @@
                     <div class="form_item">
                         <div class="form_label">使用区分</div>
                         <div class="form_value">
-                            <select id="use_flag" name="use_flag" class="form-control form-select">
+                            <span id="use_flag_disp" class="use-badge view-only"></span>
+
+                            <select id="use_flag" name="use_flag" class="form-control form-select edit-only">
                                 <option value="1"<cfif displayUseFlag eq "1"> selected</cfif>>有効</option>
                                 <option value="0"<cfif displayUseFlag eq "0"> selected</cfif>>無効</option>
                             </select>
@@ -686,7 +743,7 @@
     </div>
 
     <script src="#Application.asset_url#/js/sweetalert2.all.min.js"></script>
-    <script src="#Application.asset_url#/js/m_supplier_dt.js?20260326_1"></script>
+    <script src="#Application.asset_url#/js/m_supplier_dt.js?20260401_1"></script>
 </body>
 </cfoutput>
 </html>

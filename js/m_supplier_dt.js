@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
   bindDeleteButton();
   bindZipcodeAutoFill();
   applyModeLayout();
+  setUseFlag(getValue("use_flag"));
 });
 
 function initializeScreenValues() {
@@ -99,7 +100,10 @@ function moveToAdd() {
     return_search_supplier_code: getValue("return_search_supplier_code"),
     return_search_supplier_name: getValue("return_search_supplier_name"),
     return_search_delivery_company: getValue("return_search_delivery_company"),
-    return_search_use_flag: getValue("return_search_use_flag")
+    return_search_use_flag: getValue("return_search_use_flag"),
+    return_sort_field: getValue("return_sort_field"),
+    return_sort_order: getValue("return_sort_order"),
+    return_page: getValue("return_page")
   });
 }
 
@@ -118,7 +122,10 @@ function moveToEdit() {
     return_search_supplier_code: getValue("return_search_supplier_code"),
     return_search_supplier_name: getValue("return_search_supplier_name"),
     return_search_delivery_company: getValue("return_search_delivery_company"),
-    return_search_use_flag: getValue("return_search_use_flag")
+    return_search_use_flag: getValue("return_search_use_flag"),
+    return_sort_field: getValue("return_sort_field"),
+    return_sort_order: getValue("return_sort_order"),
+    return_page: getValue("return_page")
   });
 }
 
@@ -137,7 +144,10 @@ function moveToView() {
     return_search_supplier_code: getValue("return_search_supplier_code"),
     return_search_supplier_name: getValue("return_search_supplier_name"),
     return_search_delivery_company: getValue("return_search_delivery_company"),
-    return_search_use_flag: getValue("return_search_use_flag")
+    return_search_use_flag: getValue("return_search_use_flag"),
+    return_sort_field: getValue("return_sort_field"),
+    return_sort_order: getValue("return_sort_order"),
+    return_page: getValue("return_page")
   });
 }
 
@@ -150,7 +160,10 @@ function moveToListByPost() {
     search_supplier_code: getValue("return_search_supplier_code"),
     search_supplier_name: getValue("return_search_supplier_name"),
     search_delivery_company: getValue("return_search_delivery_company"),
-    search_use_flag: getValue("return_search_use_flag")
+    search_use_flag: getValue("return_search_use_flag"),
+    sort_field: getValue("return_sort_field"),
+    sort_order: getValue("return_sort_order"),
+    page: getValue("return_page")
   });
 }
 
@@ -255,7 +268,10 @@ async function saveSupplier() {
       return_search_supplier_code: getValue("return_search_supplier_code"),
       return_search_supplier_name: getValue("return_search_supplier_name"),
       return_search_delivery_company: getValue("return_search_delivery_company"),
-      return_search_use_flag: getValue("return_search_use_flag")
+      return_search_use_flag: getValue("return_search_use_flag"),
+      return_sort_field: getValue("return_sort_field"),
+      return_sort_order: getValue("return_sort_order"),
+      return_page: getValue("return_page")
     });
   } catch (error) {
     console.error("取引先保存エラー:", error);
@@ -524,4 +540,18 @@ async function deleteSupplier() {
     await showErrorAlert(error.message || "削除に失敗しました。");
     showLoading(false);
   }
+}
+
+function setUseFlag(flag) {
+    const el = document.getElementById("use_flag_disp");
+    if (!el) return;
+
+    let text = "";
+    if (flag == "1") text = "有効";
+    if (flag == "0") text = "無効";
+
+    el.textContent = text;
+
+    el.classList.remove("use-1", "use-0");
+    el.classList.add("use-" + flag);
 }

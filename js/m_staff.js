@@ -7,13 +7,15 @@ let sortField = "";
 let sortOrder = "";
 
 document.addEventListener("DOMContentLoaded", function () {
+  initializeSortState();
   bindSearchEvents();
   bindEnterMoveEvents();
   bindPagingEvents();
   bindSortEvents();
   bindHeaderNewButtonEvent();
   bindHeaderExportButtonEvent();
-  bindBackButtonEvent();
+  bindhomeButtonEvent();
+  updateSortIcons();
   loadStaffList(currentPage);
 });
 
@@ -196,8 +198,8 @@ function moveToAddByPost() {
   const form = document.getElementById("master_form");
   if (!form) return;
 
-  setValue("detail_staff_id", "");
-  setValue("detail_return_staff_id", "");
+  setValue("detail_staff_code", "");
+  setValue("detail_return_staff_code", "");
   setValue("detail_display_mode", "add");
 
   setValue("return_search_staff_code", getValue("search_staff_code"));
@@ -205,6 +207,9 @@ function moveToAddByPost() {
   setValue("return_search_mail_address", getValue("search_mail_address"));
   setValue("return_search_authority_level", getValue("search_authority_level"));
   setValue("return_search_use_flag", getValue("search_use_flag"));
+
+  setValue("return_sort_field", sortField);
+  setValue("return_sort_order", sortOrder);
 
   form.method = "post";
   form.action = "m_staff_dt.cfm";
@@ -260,6 +265,9 @@ function loadStaffList(page) {
   const pageStatus = document.getElementById("page_status");
   const pageNumberText = document.getElementById("page_number_text");
   const loadingIndicator = document.getElementById("loading_indicator");
+
+  setValue("return_sort_field", sortField);
+  setValue("return_sort_order", sortOrder);
 
   const requestBody = {
     page: page,
@@ -367,7 +375,7 @@ function renderStaffTable(list) {
     const useFlagText = String(row.use_flag) === "1" ? "使用中" : "停止";
 
     html += `
-      <tr class="staff_row" data-staff-id="${escapeHtml(row.staff_id || "")}">
+      <tr class="staff_row" data-staff-code="${escapeHtml(row.staff_code || "")}">
         <td>${escapeHtml(row.staff_code || "")}</td>
         <td>${escapeHtml(row.staff_name || "")}</td>
         <td>
@@ -419,10 +427,10 @@ function moveToDetailByPost(row) {
   const form = document.getElementById("master_form");
   if (!form) return;
 
-  const staffId = row.dataset.staffId || "";
+  const staffCode = row.dataset.staffCode || "";
 
-  setValue("detail_staff_id", staffId);
-  setValue("detail_return_staff_id", staffId);
+  setValue("detail_staff_code", staffCode);
+  setValue("detail_return_staff_code", staffCode);
   setValue("detail_display_mode", "view");
 
   setValue("return_search_staff_code", getValue("search_staff_code"));
@@ -430,6 +438,9 @@ function moveToDetailByPost(row) {
   setValue("return_search_mail_address", getValue("search_mail_address"));
   setValue("return_search_authority_level", getValue("search_authority_level"));
   setValue("return_search_use_flag", getValue("search_use_flag"));
+
+  setValue("return_sort_field", sortField);
+  setValue("return_sort_order", sortOrder);
 
   form.method = "post";
   form.action = "m_staff_dt.cfm";
@@ -453,11 +464,11 @@ function updatePagingArea(current, total, totalCount) {
   }
 }
 
-function bindBackButtonEvent() {
-  const backButton = document.getElementById("back-btn");
+function bindhomeButtonEvent() {
+  const homeButton = document.getElementById("home-btn");
 
-  if (backButton) {
-    backButton.addEventListener("click", function () {
+  if (homeButton) {
+    homeButton.addEventListener("click", function () {
       location.href = "menu.cfm";
     });
   }
@@ -486,4 +497,13 @@ function escapeHtml(value) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
+}
+
+function initializeSortState() {
+  sortField = getValue("return_sort_field");
+  sortOrder = getValue("return_sort_order");
+
+  if (sortOrder !== "asc" && sortOrder !== "desc") {
+    sortOrder = "";
+  }
 }

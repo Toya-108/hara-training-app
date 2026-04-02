@@ -10,6 +10,11 @@
 <cfparam name="showTrashButton" default="false">
 <cfparam name="showCancelButton" default="false">
 
+<cfoutput>
+    <link rel="icon" href="#Application.asset_url#/image/hara-logiapp-logo.ico">
+</cfoutput>
+
+
 <style>
   .header-left {
     width: 120px;

@@ -2,9 +2,6 @@
 
 <cfset pageTitle = "伝票一覧">
 <cfset showHomeButton = true>
-<cfset showBackButton = false>
-<cfset showNewButton = false>
-<cfset showImportButton = false>
 <cfset showExportButton = true>
 
 <cfset initSearchSlipNo = "">
@@ -84,6 +81,12 @@
     ORDER BY supplier_code ASC
 </cfquery>
 
+<cfif session.authorityLevel eq 9>
+    <cfset showExportButton = true> 
+<cfelse>
+    <cfset showExportButton = false> 
+</cfif>
+
 <cfinclude template="header.cfm">
 
 <title>伝票一覧</title>
@@ -95,13 +98,6 @@
 </cfoutput>
 
 <style>
-    body {
-        margin: 0;
-        background: #F7F1E3;
-        font-family: "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
-        color: #2F2A24;
-    }
-
     .page-content {
         max-width: 1540px;
         margin: 24px auto;
@@ -410,6 +406,36 @@
             flex-direction: column;
         }
     }
+
+    .bulk-action-area {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 14px;
+    }
+
+    .bulk-confirm-button {
+        min-width: 140px;
+        height: 40px;
+        padding: 0 16px;
+        border: 1px solid #4B6653;
+        border-radius: 8px;
+        background: #4B6653;
+        color: #FFFFFF;
+        font-size: 13px;
+        font-weight: bold;
+        cursor: pointer;
+        box-sizing: border-box;
+    }
+
+    .bulk-confirm-button:hover {
+        background: #3F5B4B;
+        border-color: #3F5B4B;
+    }
+
+    .bulk-confirm-button:disabled {
+        opacity: 0.45;
+        cursor: default;
+    }
 </style>
 
 <div class="page-content">
@@ -435,7 +461,7 @@
             <div class="search-row">
                 <div class="search-item slipno-item">
                     <label for="search_slip_no">伝票番号</label>
-                    <input type="text" id="search_slip_no" class="form-control" value="<cfoutput>#encodeForHtmlAttribute(initSearchSlipNo)#</cfoutput>">
+                    <input type="text" id="search_slip_no" class="form-control" value="<cfoutput>#encodeForHtmlAttribute(initSearchSlipNo)#</cfoutput>" placeholder="伝票番号">
                 </div>
 
                 <div class="search-item date-item">
@@ -472,7 +498,7 @@
 
                 <div class="search-item supplier-text-item">
                     <label for="search_supplier_keyword">&nbsp;</label>
-                    <input type="text" id="search_supplier_keyword" class="form-control" placeholder="取引先名で絞り込み" value="<cfoutput>#encodeForHtmlAttribute(initSearchSupplierKeyword)#</cfoutput>">
+                    <input type="text" id="search_supplier_keyword" class="form-control" placeholder="取引先名 / 取引先名(カナ)" value="<cfoutput>#encodeForHtmlAttribute(initSearchSupplierKeyword)#</cfoutput>">
                 </div>
 
                 <div class="search-item item-keyword-item">
@@ -509,6 +535,14 @@
         </div>
 
         <div class="loading_indicator" id="loading_indicator">読み込み中です...</div>
+
+        <cfif session.staffCode eq 1>
+            <div class="bulk-action-area">
+                <button type="button" id="bulk_confirm_btn" class="bulk-confirm-button">
+                    検索結果を一括確定
+                </button>
+            </div>
+        </cfif>
 
         <div class="list-header-row">
             <div class="page-info" id="page_status">1 / 1 ページ</div>
@@ -575,6 +609,7 @@
 </div>
 
 <cfoutput>
+    <script src="#Application.asset_url#/js/sweetalert2.all.min.js"></script>
     <script src="#Application.asset_url#/js/flatpickr.min.js"></script>
     <script src="#Application.asset_url#/js/ja.js"></script>
     <script src="#Application.asset_url#/js/slip_list.js"></script>

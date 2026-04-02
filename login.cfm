@@ -34,7 +34,6 @@
 
         .logo-area {
             display: flex;
-            /* align-items: center; */
         }
 
         .logo-area img {
@@ -113,41 +112,10 @@
             background-color: #FFFFFF;
         }
 
-        .input-text.is-error {
-            border-color: #B84A4A;
-            background-color: #FFF8F8;
-        }
-
-        .field-error {
-            display: none;
-            margin-top: 6px;
-            font-size: 12px;
-            color: #B84A4A;
-        }
-
-        .field-error.is-visible {
-            display: block;
-        }
-
         .check-row {
             margin-bottom: 20px;
             font-size: 14px;
             color: #645B50;
-        }
-
-        .message {
-            display: none;
-            margin-bottom: 18px;
-            padding: 10px;
-            font-size: 13px;
-            color: #B84A4A;
-            background-color: #FFF3F3;
-            border: 1px solid #E8B9B9;
-            border-radius: 8px;
-        }
-
-        .message.is-visible {
-            display: block;
         }
 
         .login-button {
@@ -160,6 +128,11 @@
             font-size: 15px;
             font-weight: bold;
             cursor: pointer;
+        }
+
+        .login-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
         }
     </style>
 </head>
@@ -177,9 +150,6 @@
                 </div>
             </div>
         </header>
-
-        <div id="form_message" class="message" aria-live="polite"></div>
-
 
         <main class="main">
             <section class="login-box">
@@ -199,12 +169,11 @@
                             type="text"
                             id="staff_code"
                             name="staff_code"
-                            class="input-text js-required"
-                            data-label="ユーザー名"
+                            class="input-text required-check maxlen-check"
+                            title="ユーザー名"
                             autocomplete="username"
                             maxlength="20"
                         >
-                        <div class="field-error" data-for="staff_code"></div>
                     </div>
 
                     <div class="row">
@@ -216,12 +185,11 @@
                             type="password"
                             id="password"
                             name="password"
-                            class="input-text js-required"
-                            data-label="パスワード"
+                            class="input-text required-check maxlen-check"
+                            title="パスワード"
                             autocomplete="current-password"
                             maxlength="100"
                         >
-                        <div class="field-error" data-for="password"></div>
                     </div>
 
                     <div class="check-row">
@@ -239,9 +207,14 @@
         </main>
     </div>
 
-    <script src="#Application.asset_url#/js/validation-common.js"></script>
+    <!-- SweetAlert2 を先に読む -->
     <script src="#Application.asset_url#/js/sweetalert2.all.min.js"></script>
-    <script src="#Application.asset_url#/js/login.js?20260319_1"></script>
+
+    <!-- 共通バリデーション -->
+    <script src="#Application.asset_url#/js/validation-common.js"></script>
+
+    <!-- 画面個別JS -->
+    <script src="#Application.asset_url#/js/login.js?20260331_1"></script>
 </body>
 </cfoutput>
 </html>

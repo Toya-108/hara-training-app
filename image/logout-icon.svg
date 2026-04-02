@@ -1,0 +1,8 @@
+<svg width="160" height="44" viewBox="0 0 160 44" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="160" height="44" rx="20" ry="20" fill="#D8CDB2"/>
+  <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
+    font-family="Hiragino Sans, Yu Gothic, Meiryo, sans-serif"
+    font-size="16" font-weight="600" fill="#2F2A24">
+    ログアウト
+  </text>
+</svg>

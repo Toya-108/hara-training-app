@@ -9,13 +9,27 @@ let sortField = "";
 let sortOrder = "";
 
 document.addEventListener("DOMContentLoaded", function () {
+  initializeListState();
   bindPagingEvents();
   bindSortEvents();
   bindSearchEvents();
   bindEnterMoveEvents();
   bindHeaderButtons();
+  updateSortButtonsFromState();
   loadItemList(currentPage);
 });
+
+function initializeListState() {
+  if (window.initialItemListState) {
+    sortField = window.initialItemListState.sortField || "";
+    sortOrder = window.initialItemListState.sortOrder || "";
+
+    const pageValue = Number(window.initialItemListState.page || 1);
+    if (pageValue > 0) {
+      currentPage = pageValue;
+    }
+  }
+}
 
 function bindHeaderButtons() {
   const homeBtn = document.getElementById("home-btn");
@@ -131,9 +145,35 @@ function bindSortEvents() {
       }
 
       currentPage = 1;
+      saveListState();
       loadItemList(currentPage);
     });
   });
+}
+
+function updateSortButtonsFromState() {
+  if (!sortField || !sortOrder) {
+    resetSortButtons();
+    return;
+  }
+
+  const targetButton = document.querySelector('.sort_btn[data-field="' + sortField + '"]');
+  if (!targetButton) {
+    resetSortButtons();
+    return;
+  }
+
+  resetSortButtons();
+
+  if (sortOrder === "asc") {
+    targetButton.dataset.sort = "asc";
+    targetButton.innerHTML = `<img src="${baseUrl}/image/sort_asc.svg" alt="昇順">`;
+    targetButton.classList.add("active");
+  } else if (sortOrder === "desc") {
+    targetButton.dataset.sort = "desc";
+    targetButton.innerHTML = `<img src="${baseUrl}/image/sort_desc.svg" alt="降順">`;
+    targetButton.classList.add("active");
+  }
 }
 
 function resetSortButtons() {
@@ -159,6 +199,11 @@ function bindSearchEvents() {
   if (clearBtn) {
     clearBtn.addEventListener("click", function () {
       clearSearchConditions();
+      sortField = "";
+      sortOrder = "";
+      currentPage = 1;
+      updateSortButtonsFromState();
+      saveListState();
       executeSearch();
     });
   }
@@ -194,6 +239,7 @@ function bindEnterMoveEvents() {
 
 function executeSearch() {
   currentPage = 1;
+  saveListState();
   loadItemList(currentPage);
 }
 
@@ -211,6 +257,9 @@ async function loadItemList(page) {
   if (isLoading) {
     return;
   }
+
+  currentPage = page;
+  saveListState();
 
   setLoadingState(true);
   renderLoadingRow();
@@ -234,6 +283,7 @@ async function loadItemList(page) {
 
     renderItemTable(responseData);
     updatePagingInfo(responseData);
+    saveListState();
   } catch (error) {
     console.error("商品一覧取得エラー:", error);
     renderErrorRow("商品一覧の取得に失敗しました。");
@@ -388,7 +438,10 @@ function moveToDetailByPost(itemCode) {
     display_mode: "view",
     return_search_product_code: getValue("search_product_code"),
     return_search_jan_code: getValue("search_jan_code"),
-    return_search_product_name: getValue("search_product_name")
+    return_search_product_name: getValue("search_product_name"),
+    return_sort_field: sortField,
+    return_sort_order: sortOrder,
+    return_page: currentPage
   };
 
   Object.keys(params).forEach(function (key) {
@@ -415,7 +468,10 @@ function moveToAddByPost() {
     display_mode: "add",
     return_search_product_code: getValue("search_product_code"),
     return_search_jan_code: getValue("search_jan_code"),
-    return_search_product_name: getValue("search_product_name")
+    return_search_product_name: getValue("search_product_name"),
+    return_sort_field: sortField,
+    return_sort_order: sortOrder,
+    return_page: currentPage
   };
 
   Object.keys(params).forEach(function (key) {
@@ -428,6 +484,24 @@ function moveToAddByPost() {
 
   document.body.appendChild(form);
   form.submit();
+}
+
+function saveListState() {
+  const sortFieldInput = document.getElementById("return_sort_field");
+  const sortOrderInput = document.getElementById("return_sort_order");
+  const pageInput = document.getElementById("return_page");
+
+  if (sortFieldInput) {
+    sortFieldInput.value = sortField;
+  }
+
+  if (sortOrderInput) {
+    sortOrderInput.value = sortOrder;
+  }
+
+  if (pageInput) {
+    pageInput.value = currentPage;
+  }
 }
 
 function getValue(id, trimFlag = true) {

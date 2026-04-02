@@ -4,18 +4,32 @@ let totalPage = 1;
 
 const baseUrl = "/training/hara";
 let sortField = "";
-let sortOrder = ""; // "asc" or "desc"
+let sortOrder = "";
 
 document.addEventListener("DOMContentLoaded", function () {
+  initializeListState();
   bindSearchEvents();
   bindEnterMoveEvents();
   bindPagingEvents();
   bindSortEvents();
   bindHeaderNewButtonEvent();
   bindHeaderExportButtonEvent();
-  bindBackButtonEvent();
+  bindHomeButtonEvent();
+  updateSortIcons();
   loadSupplierList(currentPage);
 });
+
+function initializeListState() {
+  if (window.initialSupplierListState) {
+    sortField = window.initialSupplierListState.sortField || "";
+    sortOrder = window.initialSupplierListState.sortOrder || "";
+
+    const pageValue = Number(window.initialSupplierListState.page || 1);
+    if (pageValue > 0) {
+      currentPage = pageValue;
+    }
+  }
+}
 
 function bindSearchEvents() {
   const searchBtn = document.getElementById("search_btn");
@@ -24,6 +38,7 @@ function bindSearchEvents() {
   if (searchBtn) {
     searchBtn.addEventListener("click", function () {
       currentPage = 1;
+      saveListState();
       loadSupplierList(currentPage);
     });
   }
@@ -45,6 +60,7 @@ function bindSearchEvents() {
       resetSortIcons();
 
       currentPage = 1;
+      saveListState();
       loadSupplierList(currentPage);
     });
   }
@@ -150,6 +166,7 @@ function bindSortEvents() {
 
       updateSortIcons();
       currentPage = 1;
+      saveListState();
       loadSupplierList(currentPage);
     });
   });
@@ -199,6 +216,9 @@ function moveToAddByPost() {
   setValue("return_search_supplier_name", getValue("search_supplier_name"));
   setValue("return_search_delivery_company", getValue("search_delivery_company"));
   setValue("return_search_use_flag", getValue("search_use_flag"));
+  setValue("return_sort_field", sortField);
+  setValue("return_sort_order", sortOrder);
+  setValue("return_page", currentPage);
 
   form.method = "post";
   form.action = "m_supplier_dt.cfm";
@@ -255,6 +275,9 @@ function loadSupplierList(page) {
   const pageNumberText = document.getElementById("page_number_text");
   const loadingIndicator = document.getElementById("loading_indicator");
 
+  currentPage = page;
+  saveListState();
+
   const requestBody = {
     page: page,
     pageSize: pageSize,
@@ -304,6 +327,7 @@ function loadSupplierList(page) {
 
       renderSupplierTable(results);
       updatePagingArea(currentPage, totalPage, Number(paging.totalCount || 0));
+      saveListState();
 
       if (pageStatus) {
         pageStatus.textContent = currentPage + " / " + totalPage + " ページ";
@@ -401,6 +425,9 @@ function moveToDetailByPost(row) {
   setValue("return_search_supplier_name", getValue("search_supplier_name"));
   setValue("return_search_delivery_company", getValue("search_delivery_company"));
   setValue("return_search_use_flag", getValue("search_use_flag"));
+  setValue("return_sort_field", sortField);
+  setValue("return_sort_order", sortOrder);
+  setValue("return_page", currentPage);
 
   form.method = "post";
   form.action = "m_supplier_dt.cfm";
@@ -424,13 +451,31 @@ function updatePagingArea(current, total, totalCount) {
   }
 }
 
-function bindBackButtonEvent() {
-  const backButton = document.getElementById("back-btn");
-  if (!backButton) return;
+function bindHomeButtonEvent() {
+  const homeButton = document.getElementById("home-btn");
+  if (!homeButton) return;
 
-  backButton.addEventListener("click", function () {
+  homeButton.addEventListener("click", function () {
     location.href = "menu.cfm";
   });
+}
+
+function saveListState() {
+  const sortFieldInput = document.getElementById("return_sort_field");
+  const sortOrderInput = document.getElementById("return_sort_order");
+  const pageInput = document.getElementById("return_page");
+
+  if (sortFieldInput) {
+    sortFieldInput.value = sortField;
+  }
+
+  if (sortOrderInput) {
+    sortOrderInput.value = sortOrder;
+  }
+
+  if (pageInput) {
+    pageInput.value = currentPage;
+  }
 }
 
 function getValue(id) {

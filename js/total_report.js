@@ -11,8 +11,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const summaryTotalAmount = document.getElementById("summary_total_amount");
     const summaryRowCount = document.getElementById("summary_row_count");
 
-    const exportButton = document.getElementById('export-button');
-    const homeButton = document.getElementById('home-btn');
+    const exportButton = document.getElementById("export-button");
+    const homeButton = document.getElementById("home-btn");
 
     // ===== 日付ピッカー =====
     if (typeof flatpickr !== "undefined") {
@@ -133,7 +133,8 @@ document.addEventListener("DOMContentLoaded", function () {
             supplier_code: document.getElementById("supplier_code").value,
             item_keyword: document.getElementById("item_keyword").value,
             status: document.getElementById("status").value,
-            report_type: document.getElementById("report_type").value
+            report_type: document.getElementById("report_type").value,
+            dashboard_mode: document.getElementById("dashboard_mode") ? document.getElementById("dashboard_mode").value : ""
         };
     }
 
@@ -194,62 +195,74 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // ===== 条件クリア =====
-    clearButton.addEventListener("click", function () {
-        document.getElementById("delivery_date_from").value = "";
-        document.getElementById("delivery_date_to").value = "";
-        document.getElementById("supplier_code").value = "";
-        document.getElementById("item_keyword").value = "";
-        document.getElementById("status").value = "";
-        document.getElementById("report_type").value = "day";
+    if (clearButton) {
+        clearButton.addEventListener("click", function () {
+            document.getElementById("delivery_date_from").value = "";
+            document.getElementById("delivery_date_to").value = "";
+            document.getElementById("supplier_code").value = "";
+            document.getElementById("item_keyword").value = "";
+            document.getElementById("status").value = "";
+            document.getElementById("report_type").value = "day";
 
-        updateGroupKeyLabel();
-        resetDisplay();
-    });
+            if (document.getElementById("dashboard_mode")) {
+                document.getElementById("dashboard_mode").value = "";
+            }
+
+            updateGroupKeyLabel();
+            resetDisplay();
+        });
+    }
 
     // ===== フォーム送信 =====
-    form.addEventListener("submit", async function (event) {
-        event.preventDefault();
-        await searchReport();
-    });
+    if (form) {
+        form.addEventListener("submit", async function (event) {
+            event.preventDefault();
+            await searchReport();
+        });
+    }
 
     // ===== 集計区分変更時 =====
-    reportType.addEventListener("change", function () {
-        updateGroupKeyLabel();
-    });
+    if (reportType) {
+        reportType.addEventListener("change", function () {
+            updateGroupKeyLabel();
+        });
+    }
 
     updateGroupKeyLabel();
 
-    // 初回表示時に自動検索
+    // ===== 初回表示時に自動検索 =====
     searchReport();
 
-function submitExport() {
-    const exportForm = document.createElement("form");
-    exportForm.method = "POST";
-    exportForm.action = "total_report_export.cfm";
+    // ===== エクスポート =====
+    function submitExport() {
+        const exportForm = document.createElement("form");
+        exportForm.method = "POST";
+        exportForm.action = "total_report_export.cfm";
 
-    const params = getSearchParams();
+        const params = getSearchParams();
 
-    Object.keys(params).forEach(function (key) {
-        const input = document.createElement("input");
-        input.type = "hidden";
-        input.name = key;
-        input.value = params[key];
-        exportForm.appendChild(input);
-    });
+        Object.keys(params).forEach(function (key) {
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = key;
+            input.value = params[key];
+            exportForm.appendChild(input);
+        });
 
-    document.body.appendChild(exportForm);
-    exportForm.submit();
-    document.body.removeChild(exportForm);
-}
+        document.body.appendChild(exportForm);
+        exportForm.submit();
+        document.body.removeChild(exportForm);
+    }
 
-if (exportButton) {
-    exportButton.addEventListener("click", function () {
-        submitExport();
-    });
-}
+    if (exportButton) {
+        exportButton.addEventListener("click", function () {
+            submitExport();
+        });
+    }
 
-homeButton.addEventListener('click', function(){
-  location.href = 'menu.cfm';
-});
-
+    if (homeButton) {
+        homeButton.addEventListener("click", function () {
+            location.href = "menu.cfm";
+        });
+    }
 });

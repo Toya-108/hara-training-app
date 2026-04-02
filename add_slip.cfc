@@ -23,6 +23,12 @@
         <cfset var slipPrefix = "">
         <cfset var nextSeq = 1>
 
+        <cfset var totalQty = 0>
+        <cfset var totalAmount = 0>
+        <cfset var janCode = "">
+        <cfset var qtyValue = 0>
+        <cfset var unitPriceValue = 0>
+
         <cfset result["status"] = 1>
         <cfset result["message"] = "">
 
@@ -53,7 +59,6 @@
                 <cfset detailList = requestData.detail_list>
             </cfif>
 
-            <!--- 必須チェック --->
             <cfif slipDate eq "">
                 <cfset result["message"] = "発注日を入力してください。">
                 <cfreturn result>
@@ -89,12 +94,50 @@
                 <cfreturn result>
             </cfif>
 
+            <cfloop from="1" to="#ArrayLen(detailList)#" index="i">
+                <cfset detail = detailList[i]>
+
+                <cfif NOT StructKeyExists(detail, "item_code") OR Trim(detail.item_code) eq "">
+                    <cfset result["message"] = i & "行目の商品コードを入力してください。">
+                    <cfreturn result>
+                </cfif>
+
+                <cfif NOT StructKeyExists(detail, "item_name") OR Trim(detail.item_name) eq "">
+                    <cfset result["message"] = i & "行目の商品名を入力してください。">
+                    <cfreturn result>
+                </cfif>
+
+                <cfif NOT StructKeyExists(detail, "qty") OR Trim(detail.qty) eq "">
+                    <cfset result["message"] = i & "行目の数量を入力してください。">
+                    <cfreturn result>
+                </cfif>
+
+                <cfif NOT StructKeyExists(detail, "unit_price") OR Trim(detail.unit_price) eq "">
+                    <cfset result["message"] = i & "行目の単価を入力してください。">
+                    <cfreturn result>
+                </cfif>
+
+                <cfset qtyValue = Val(Replace(Trim(detail.qty), ",", "", "all"))>
+                <cfset unitPriceValue = Val(Replace(Trim(detail.unit_price), ",", "", "all"))>
+
+                <cfif qtyValue LTE 0>
+                    <cfset result["message"] = i & "行目の数量は1以上を入力してください。">
+                    <cfreturn result>
+                </cfif>
+
+                <cfif unitPriceValue LT 0>
+                    <cfset result["message"] = i & "行目の単価は0以上を入力してください。">
+                    <cfreturn result>
+                </cfif>
+
+                <cfset totalQty = totalQty + qtyValue>
+                <cfset totalAmount = totalAmount + (qtyValue * unitPriceValue)>
+            </cfloop>
+
             <cftransaction isolation="serializable">
 
-                <!--- YYMMDD 部分を作成 --->
                 <cfset slipPrefix = DateFormat(slipDate, "yymmdd")>
 
-                <!--- その日の最大伝票番号を取得 --->
                 <cfquery name="qGetSlipNo">
                     SELECT
                         MAX(slip_no) AS max_slip_no
@@ -110,10 +153,8 @@
                     <cfset nextSeq = 1>
                 </cfif>
 
-                <!--- 10桁伝票番号を作成 --->
                 <cfset slipNo = slipPrefix & Right("0000" & nextSeq, 4)>
 
-                <!--- ヘッダ登録 --->
                 <cfquery>
                     INSERT INTO t_slip (
                         slip_no,
@@ -122,6 +163,8 @@
                         supplier_name,
                         delivery_date,
                         status,
+                        total_qty,
+                        total_amount,
                         memo,
                         create_datetime,
                         create_staff_code,
@@ -136,6 +179,8 @@
                         <cfqueryparam value="#supplierName#" cfsqltype="cf_sql_varchar">,
                         <cfqueryparam value="#deliveryDate#" cfsqltype="cf_sql_date">,
                         <cfqueryparam value="1" cfsqltype="cf_sql_tinyint">,
+                        <cfqueryparam value="#totalQty#" cfsqltype="cf_sql_integer">,
+                        <cfqueryparam value="#totalAmount#" cfsqltype="cf_sql_decimal" scale="2">,
                         <cfqueryparam value="#memo#" cfsqltype="cf_sql_varchar" null="#(memo eq '')#">,
                         NOW(),
                         <cfqueryparam value="#session.staffCode#" cfsqltype="cf_sql_varchar">,
@@ -146,36 +191,24 @@
                     )
                 </cfquery>
 
-                <!--- 明細登録 --->
                 <cfloop from="1" to="#ArrayLen(detailList)#" index="i">
                     <cfset detail = detailList[i]>
                     <cfset lineNo = i>
 
-                    <cfif NOT StructKeyExists(detail, "item_code") OR Trim(detail.item_code) eq "">
-                        <cfset result["message"] = lineNo & "行目の商品コードを入力してください。">
-                        <cfreturn result>
+                    <cfset janCode = "">
+                    <cfif StructKeyExists(detail, "jan_code")>
+                        <cfset janCode = Trim(detail.jan_code)>
                     </cfif>
 
-                    <cfif NOT StructKeyExists(detail, "item_name") OR Trim(detail.item_name) eq "">
-                        <cfset result["message"] = lineNo & "行目の商品名を入力してください。">
-                        <cfreturn result>
-                    </cfif>
-
-                    <cfif NOT StructKeyExists(detail, "qty") OR Trim(detail.qty) eq "">
-                        <cfset result["message"] = lineNo & "行目の数量を入力してください。">
-                        <cfreturn result>
-                    </cfif>
-
-                    <cfif NOT StructKeyExists(detail, "unit_price") OR Trim(detail.unit_price) eq "">
-                        <cfset result["message"] = lineNo & "行目の単価を入力してください。">
-                        <cfreturn result>
-                    </cfif>
+                    <cfset qtyValue = Val(Replace(Trim(detail.qty), ",", "", "all"))>
+                    <cfset unitPriceValue = Val(Replace(Trim(detail.unit_price), ",", "", "all"))>
 
                     <cfquery>
                         INSERT INTO t_slip_detail (
                             slip_no,
                             line_no,
                             item_code,
+                            jan_code,
                             item_name,
                             qty,
                             unit_price,
@@ -189,9 +222,10 @@
                             <cfqueryparam value="#slipNo#" cfsqltype="cf_sql_varchar">,
                             <cfqueryparam value="#lineNo#" cfsqltype="cf_sql_integer">,
                             <cfqueryparam value="#Trim(detail.item_code)#" cfsqltype="cf_sql_varchar">,
+                            <cfqueryparam value="#janCode#" cfsqltype="cf_sql_varchar" null="#(janCode eq '')#">,
                             <cfqueryparam value="#Trim(detail.item_name)#" cfsqltype="cf_sql_varchar">,
-                            <cfqueryparam value="#Val(detail.qty)#" cfsqltype="cf_sql_integer">,
-                            <cfqueryparam value="#Val(detail.unit_price)#" cfsqltype="cf_sql_decimal" scale="2">,
+                            <cfqueryparam value="#qtyValue#" cfsqltype="cf_sql_integer">,
+                            <cfqueryparam value="#unitPriceValue#" cfsqltype="cf_sql_decimal" scale="2">,
                             NOW(),
                             <cfqueryparam value="#session.staffCode#" cfsqltype="cf_sql_varchar">,
                             <cfqueryparam value="#session.staffName#" cfsqltype="cf_sql_varchar">,
@@ -232,9 +266,7 @@
         <cfset var qGetItem = "">
         <cfset var req = "">
         <cfset var body = {}>
-        <cfset var querySuccess = true>
 
-        <!--- 初期値 --->
         <cfset result["status"] = 0>
         <cfset result["message"] = "">
         <cfset result["results"] = {}>
@@ -255,6 +287,7 @@
             <cfquery name="qGetItem">
                 SELECT
                     item_code,
+                    jan_code,
                     item_name,
                     gentanka
                 FROM
@@ -267,20 +300,20 @@
                 <cflog file="HARA_TRAINING_APP" type="Error" text="商品取得エラー：#cfcatch.message# #cfcatch.detail#">
                 <cfset result["status"] = 1>
                 <cfset result["message"] = "商品取得中にエラーが発生しました。">
+                <cfreturn result>
             </cfcatch>
         </cftry>
 
         <cflog file="HARA_TRAINING_APP" type="Information" text="商品取得件数：#qGetItem.recordCount#件">
 
-        <!--- 該当商品なし --->
         <cfif qGetItem.recordCount eq 0>
             <cfset result["status"] = 1>
             <cfset result["message"] = "該当商品なし">
             <cfreturn result>
         </cfif>
 
-        <!--- 正常終了 --->
         <cfset record["item_code"] = qGetItem.item_code>
+        <cfset record["jan_code"] = qGetItem.jan_code>
         <cfset record["item_name"] = qGetItem.item_name>
         <cfset record["gentanka"] = qGetItem.gentanka>
 

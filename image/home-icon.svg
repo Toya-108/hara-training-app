@@ -1,6 +1,33 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
-  <g fill="none" stroke="#4B6653" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M32 56 L64 28 L96 56" />
-    <path d="M40 50 V88 Q40 100 52 100 H76 Q88 100 88 88 V50" />
-  </g>
+<svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gradHome" x1="0" y1="0" x2="24" y2="24">
+      <stop offset="0%" stop-color="#5E7F6E"/>
+      <stop offset="100%" stop-color="#3F5B4B"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 家の形 -->
+  <path
+    d="M4 10.5L12 4L20 10.5V19C20 19.55 19.55 20 19 20H5C4.45 20 4 19.55 4 19V10.5Z"
+    fill="url(#gradHome)"
+  />
+
+  <!-- 屋根ライン -->
+  <path
+    d="M3 11L12 3L21 11"
+    stroke="#2F3E36"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <!-- ドア -->
+  <rect
+    x="10"
+    y="14"
+    width="4"
+    height="6"
+    rx="1"
+    fill="#F7F1E3"
+  />
 </svg>

@@ -2,13 +2,33 @@
 
 <cfset pageTitle = "商品マスタ一覧">
 <cfset showHomeButton = true>
-<cfset showNewButton = true>
-<!--- <cfset showImportButton = true> --->
-<cfset showExportButton = true>
+
+<cfif session.authorityLevel eq 9>
+  <cfset showNewButton = true>
+  <cfset showExportButton = true>
+<cfelse>
+  <cfset showNewButton = false>
+  <cfset showExportButton = false>
+</cfif>
 
 <cfparam name="Form.search_product_code" default="">
 <cfparam name="Form.search_jan_code" default="">
 <cfparam name="Form.search_product_name" default="">
+
+<cfset formSortField = "">
+<cfif StructKeyExists(Form, "sort_field")>
+  <cfset formSortField = Trim(Form.sort_field)>
+</cfif>
+
+<cfset formSortOrder = "">
+<cfif StructKeyExists(Form, "sort_order")>
+  <cfset formSortOrder = LCase(Trim(Form.sort_order))>
+</cfif>
+
+<cfset formPage = "1">
+<cfif StructKeyExists(Form, "page") AND IsNumeric(Form.page) AND Val(Form.page) gt 0>
+  <cfset formPage = Form.page>
+</cfif>
 
 <html lang="ja">
     <head>
@@ -51,6 +71,7 @@
           font-size: 15px;
           background-color: #FFFFFF;
           color: #2F2A24;
+          line-height: 34px;
         }
 
         .search_item input:focus {
@@ -200,6 +221,14 @@
         .loading_indicator.is-visible {
           display: block;
         }
+
+        .item_table_body tr {
+          cursor: pointer;
+        }
+
+        .item_table_body tr:hover {
+          background-color: #FFFCF4;
+        }
       </style>
     </head>
     <body>
@@ -208,6 +237,10 @@
       <cfinclude template="header.cfm">
 
       <form action="" method="post" id="master_form" class="search_form">
+        <input type="hidden" id="return_sort_field" name="sort_field" value="#HTMLEditFormat(formSortField)#">
+        <input type="hidden" id="return_sort_order" name="sort_order" value="#HTMLEditFormat(formSortOrder)#">
+        <input type="hidden" id="return_page" name="page" value="#HTMLEditFormat(formPage)#">
+
         <div class="wrap">
 
           <div class="search_area" style="display:flex;margin-top:30px;">
@@ -217,18 +250,18 @@
                 type="text"
                 id="search_product_code"
                 name="search_product_code"
-                placeholder="商品コードを入力"
+                placeholder="商品コード"
                 value="#HTMLEditFormat(Form.search_product_code)#"
               >
             </div>
 
-            <div class="search_item">
+            <div class="search_item" style="margin-top:3px;">
               <label for="search_jan_code">JAN</label>
               <input
                 type="text"
                 id="search_jan_code"
                 name="search_jan_code"
-                placeholder="JANを入力"
+                placeholder="JANコード"
                 value="#HTMLEditFormat(Form.search_jan_code)#"
               >
             </div>
@@ -239,9 +272,9 @@
                 type="text"
                 id="search_product_name"
                 name="search_product_name"
-                placeholder="商品名を入力"
+                placeholder="商品コード / JANコード / 商品名 / 商品名(カナ)"
                 value="#HTMLEditFormat(Form.search_product_name)#"
-                style="width:300px;"
+                style="width:350px;"
               >
             </div>
 
@@ -320,7 +353,14 @@
         </div>
       </form>
 
-      <script src="#Application.asset_url#/js/m_item.js?20260326_fix_2"></script>
+      <script>
+      window.initialItemListState = {
+        sortField: "#JSStringFormat(formSortField)#",
+        sortOrder: "#JSStringFormat(formSortOrder)#",
+        page: "#JSStringFormat(formPage)#"
+      };
+      </script>
+      <script src="#Application.asset_url#/js/m_item.js?20260331_keep_state_1"></script>
     </cfoutput>
     </body>
 </html>

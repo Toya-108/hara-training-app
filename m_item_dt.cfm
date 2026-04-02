@@ -47,6 +47,21 @@
     <cfset returnSearchProductName = Trim(Form.return_search_product_name)>
 </cfif>
 
+<cfset returnSortField = "">
+<cfif StructKeyExists(Form, "return_sort_field")>
+    <cfset returnSortField = Trim(Form.return_sort_field)>
+</cfif>
+
+<cfset returnSortOrder = "">
+<cfif StructKeyExists(Form, "return_sort_order")>
+    <cfset returnSortOrder = LCase(Trim(Form.return_sort_order))>
+</cfif>
+
+<cfset returnPage = "1">
+<cfif StructKeyExists(Form, "return_page") AND IsNumeric(Form.return_page) AND Val(Form.return_page) gt 0>
+    <cfset returnPage = Form.return_page>
+</cfif>
+
 <cfset pageTitle = "商品マスタ詳細">
 <cfset pageHeading = "商品マスタ詳細">
 
@@ -59,21 +74,24 @@
 <cfset showTrashButton = false>
 <cfset showCancelButton = false>
 
+
 <cfif displayMode eq "view">
-    <cfset showBackButton = true>
-    <cfset showNewButton = true>
-    <cfset showEditButton = true>
-    <cfset showTrashButton = true>
     <cfset pageTitle = "商品マスタ詳細">
     <cfset pageHeading = "商品マスタ詳細">
+    <cfset showBackButton = true>
+    <cfif session.authorityLevel eq 9>
+      <cfset showNewButton = true>
+      <cfset showEditButton = true>
+      <cfset showTrashButton = true>
+    </cfif>
 <cfelseif displayMode eq "edit">
-    <cfset showCancelButton = true>
     <cfset pageTitle = "商品マスタ修正">
     <cfset pageHeading = "商品マスタ修正">
-<cfelseif displayMode eq "add">
     <cfset showCancelButton = true>
+<cfelseif displayMode eq "add">
     <cfset pageTitle = "商品マスタ追加">
     <cfset pageHeading = "商品マスタ追加">
+    <cfset showCancelButton = true>
 </cfif>
 
 <cfset detailItemCode = "">
@@ -164,7 +182,7 @@
     <title><cfoutput>#HTMLEditFormat(pageTitle)#</cfoutput></title>
     <cfoutput>
         <link rel="icon" href="#Application.asset_url#/image/hara-logiapp-logo.ico">
-        <link rel="stylesheet" href="#Application.asset_url#/css/style.css?20260326_fix_2">
+        <link rel="stylesheet" href="#Application.asset_url#/css/style.css?20260331_keep_state_1">
     </cfoutput>
     <style>
         body { background-color: #F7F1E3; color: #2F2A24; }
@@ -273,6 +291,9 @@
                 <input type="hidden" id="return_search_product_code" name="return_search_product_code" value="#HTMLEditFormat(returnSearchProductCode)#">
                 <input type="hidden" id="return_search_jan_code" name="return_search_jan_code" value="#HTMLEditFormat(returnSearchJanCode)#">
                 <input type="hidden" id="return_search_product_name" name="return_search_product_name" value="#HTMLEditFormat(returnSearchProductName)#">
+                <input type="hidden" id="return_sort_field" name="return_sort_field" value="#HTMLEditFormat(returnSortField)#">
+                <input type="hidden" id="return_sort_order" name="return_sort_order" value="#HTMLEditFormat(returnSortOrder)#">
+                <input type="hidden" id="return_page" name="return_page" value="#HTMLEditFormat(returnPage)#">
 
                 <div class="form_grid">
                     <div class="form_item">
@@ -350,7 +371,7 @@
     </div>
 
     <script src="#Application.asset_url#/js/sweetalert2.all.min.js"></script>
-    <script src="#Application.asset_url#/js/m_item_dt.js?20260326_fix_2"></script>
+    <script src="#Application.asset_url#/js/m_item_dt.js?20260331_keep_state_1"></script>
 </body>
 </cfoutput>
 </html>

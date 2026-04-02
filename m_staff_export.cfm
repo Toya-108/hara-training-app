@@ -36,11 +36,9 @@
     <cfset sortOrder = "desc">
 </cfif>
 
-<cfset orderBySql = "m_staff.staff_id ASC">
+<cfset orderBySql = "m_staff.staff_code">
 
-<cfif sortField eq "staff_code">
-    <cfset orderBySql = "m_staff.staff_code">
-<cfelseif sortField eq "staff_name">
+<cfif sortField eq "staff_name">
     <cfset orderBySql = "m_staff.staff_name">
 <cfelseif sortField eq "mail_address">
     <cfset orderBySql = "m_staff.mail_address">
@@ -53,7 +51,7 @@
 <cfelseif sortField eq "update_datetime">
     <cfset orderBySql = "m_staff.update_datetime">
 <cfelse>
-    <cfset orderBySql = "m_staff.staff_id">
+    <cfset orderBySql = "m_staff.staff_code">
 </cfif>
 
 <cfif sortOrder eq "desc">
@@ -87,7 +85,7 @@
 <cfset export_file_name = "社員マスタ" & DateFormat(Now(), "yyyymmdd") & "_" & TimeFormat(Now(), "HHmmss") & ".csv">
 <cfset export_file = Application.temp_path & Application.path_delimiter & export_file_name>
 
-<cfset header_data = "社員ID,社員コード,社員名,社員名カナ,権限レベル,権限名,メールアドレス,電話番号,使用区分,最終ログイン日時,備考,作成日時,作成者コード,作成者名,更新日時,更新者コード,更新者名">
+<cfset header_data = "社員コード,社員名,社員名カナ,権限レベル,権限名,メールアドレス,電話番号,使用区分,最終ログイン日時,備考,作成日時,作成者コード,作成者名,更新日時,更新者コード,更新者名">
 <cffile
     action="write"
     file="#export_file#"
@@ -97,7 +95,6 @@
 
 <cfset pageSql = "
 SELECT
-    IFNULL(CAST(m_staff.staff_id AS CHAR), ''),
     IFNULL(m_staff.staff_code, ''),
     IFNULL(m_staff.staff_name, ''),
     IFNULL(m_staff.staff_kana, ''),

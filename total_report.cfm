@@ -6,9 +6,13 @@
 <cfset showNewButton = false>
 <cfset showEditButton = false>
 <cfset showImportButton = false>
-<cfset showExportButton = true>
 <cfset showTrashButton = false>
 <cfset showCancelButton = false>
+<cfset showExportButton = false>
+
+<cfif session.authorityLevel eq 9>
+    <cfset showExportButton = true>
+</cfif>
 
 <!--- 取引先一覧取得 --->
 <cfquery name="qSupplier">
@@ -23,28 +27,96 @@
         supplier_code
 </cfquery>
 
+<!--- 初期値 --->
 <cfset defaultSlipDateFrom = dateFormat(dateAdd("m", -1, now()), "yyyy/mm/dd")>
-<cfset defaultSlipDateTo   = dateFormat(now(), "yyyy/mm/dd")>
+<cfset defaultSlipDateTo = dateFormat(now(), "yyyy/mm/dd")>
 <cfset defaultDeliveryDateFrom = "">
-<cfset defaultDeliveryDateTo   = "">
+<cfset defaultDeliveryDateTo = "">
+<cfset defaultSupplierCode = "">
+<cfset defaultItemKeyword = "">
+<cfset defaultStatus = "">
+<cfset defaultReportType = "day">
+<cfset dashboardMode = "">
+<cfset reportScreenTitle = "集計レポート">
+<cfset reportResultTitle = "集計結果">
+
+<!--- POSTされてきた条件があれば優先 --->
+<cfif structKeyExists(form, "slip_date_from")>
+    <cfset defaultSlipDateFrom = trim(form.slip_date_from)>
+</cfif>
+
+<cfif structKeyExists(form, "slip_date_to")>
+    <cfset defaultSlipDateTo = trim(form.slip_date_to)>
+</cfif>
+
+<cfif structKeyExists(form, "delivery_date_from")>
+    <cfset defaultDeliveryDateFrom = trim(form.delivery_date_from)>
+</cfif>
+
+<cfif structKeyExists(form, "delivery_date_to")>
+    <cfset defaultDeliveryDateTo = trim(form.delivery_date_to)>
+</cfif>
+
+<cfif structKeyExists(form, "supplier_code")>
+    <cfset defaultSupplierCode = trim(form.supplier_code)>
+</cfif>
+
+<cfif structKeyExists(form, "item_keyword")>
+    <cfset defaultItemKeyword = trim(form.item_keyword)>
+</cfif>
+
+<cfif structKeyExists(form, "status")>
+    <cfset defaultStatus = trim(form.status)>
+</cfif>
+
+<cfif structKeyExists(form, "report_type") AND len(trim(form.report_type))>
+    <cfset defaultReportType = trim(form.report_type)>
+</cfif>
+
+<cfif structKeyExists(form, "dashboard_mode")>
+    <cfset dashboardMode = trim(form.dashboard_mode)>
+</cfif>
+
+<!--- ダッシュボードからの遷移時はタイトルを分ける --->
+<cfif dashboardMode eq "qty">
+    <cfset pageTitle = "日別集計レポート">
+    <cfset reportScreenTitle = "日別集計レポート">
+    <cfset reportResultTitle = "日別集計結果">
+<cfelseif dashboardMode eq "amount">
+    <cfset pageTitle = "日別売上集計">
+    <cfset reportScreenTitle = "日別売上集計">
+    <cfset reportResultTitle = "日別売上集計結果">
+</cfif>
 
 <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>集計レポート</title>
+    <title><cfoutput>#encodeForHtml(pageTitle)#</cfoutput></title>
 
     <cfoutput>
         <link rel="stylesheet" href="#Application.asset_url#/css/style.css">
         <link rel="stylesheet" href="#Application.asset_url#/css/flatpickr.min.css">
     </cfoutput>
 
-
     <style>
         .report-page {
             max-width: 1400px;
             margin: 0 auto;
             padding: 24px;
+        }
+
+        .report-screen-title {
+            margin: 0 0 20px 0;
+            font-size: 28px;
+            font-weight: bold;
+            color: #2E4136;
+        }
+
+        .report-screen-subtitle {
+            margin: -8px 0 24px 0;
+            font-size: 14px;
+            color: #645B50;
         }
 
         .report-search-area {
@@ -228,31 +300,28 @@
             font-weight: bold;
         }
 
-        @media screen and (max-width: 1200px) {
-            .report-search-grid,
-            .report-summary-grid {
-                grid-template-columns: repeat(2, minmax(220px, 1fr));
-            }
+        .report-form-control {
+            width: 100%;
+            height: 44px;
+            border: 1px solid #CDBFA8;
+            border-radius: 5px;
+            background: #FFFFFF;
+            padding: 0 12px;
+            font-size: 14px;
+            color: #2F2A24;
+            box-sizing: border-box;
+            transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
         }
 
-        @media screen and (max-width: 768px) {
-            .report-page {
-                padding: 16px;
-            }
+        .report-form-control:focus {
+            border-color: #3F5B4B;
+            background-color: #FFFCF4;
+            box-shadow: 0 0 0 1px rgba(63, 91, 75, 0.15);
+            outline: none;
+        }
 
-            .report-search-grid,
-            .report-summary-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .report-actions {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .report-button {
-                width: 100%;
-            }
+        .report-form-control::placeholder {
+            color: #8A8175;
         }
     </style>
 </head>
@@ -260,10 +329,20 @@
     <cfinclude template="header.cfm">
 
     <div class="report-page">
+        <h2 class="report-screen-title"><cfoutput>#encodeForHtml(reportScreenTitle)#</cfoutput></h2>
+
+        <cfif dashboardMode eq "qty">
+            <p class="report-screen-subtitle">メニューの「今日の商品合計数量」から遷移したため、本日の日別集計条件で表示しています。</p>
+        <cfelseif dashboardMode eq "amount">
+            <p class="report-screen-subtitle">メニューの「今日の合計金額」から遷移したため、本日の日別集計条件で表示しています。</p>
+        </cfif>
+
         <div class="report-search-area">
             <div class="report-search-title">集計条件</div>
 
             <form id="report_search_form">
+                <input type="hidden" id="dashboard_mode" name="dashboard_mode" value="<cfoutput>#encodeForHtmlAttribute(dashboardMode)#</cfoutput>">
+
                 <div class="report-search-grid">
                     <div class="report-form-item">
                         <div class="report-form-label">発注日</div>
@@ -273,16 +352,18 @@
                                 id="slip_date_from"
                                 name="slip_date_from"
                                 class="report-form-control datepicker"
-                                value="<cfoutput>#defaultSlipDateFrom#</cfoutput>"
-                                autocomplete="off">
+                                value="<cfoutput>#encodeForHtmlAttribute(defaultSlipDateFrom)#</cfoutput>"
+                                autocomplete="off"
+                                placeholder="/ 年 / 月 / 日">
                             <span>～</span>
                             <input
                                 type="text"
                                 id="slip_date_to"
                                 name="slip_date_to"
                                 class="report-form-control datepicker"
-                                value="<cfoutput>#defaultSlipDateTo#</cfoutput>"
-                                autocomplete="off">
+                                value="<cfoutput>#encodeForHtmlAttribute(defaultSlipDateTo)#</cfoutput>"
+                                autocomplete="off"
+                                placeholder="/ 年 / 月 / 日">
                         </div>
                     </div>
 
@@ -294,16 +375,18 @@
                                 id="delivery_date_from"
                                 name="delivery_date_from"
                                 class="report-form-control datepicker"
-                                value="<cfoutput>#defaultDeliveryDateFrom#</cfoutput>"
-                                autocomplete="off">
+                                value="<cfoutput>#encodeForHtmlAttribute(defaultDeliveryDateFrom)#</cfoutput>"
+                                autocomplete="off"
+                                placeholder="/ 年 / 月 / 日">
                             <span>～</span>
                             <input
                                 type="text"
                                 id="delivery_date_to"
                                 name="delivery_date_to"
                                 class="report-form-control datepicker"
-                                value="<cfoutput>#defaultDeliveryDateTo#</cfoutput>"
-                                autocomplete="off">
+                                value="<cfoutput>#encodeForHtmlAttribute(defaultDeliveryDateTo)#</cfoutput>"
+                                autocomplete="off"
+                                placeholder="/ 年 / 月 / 日">
                         </div>
                     </div>
 
@@ -312,7 +395,9 @@
                         <select id="supplier_code" name="supplier_code" class="report-form-control">
                             <option value="">すべて</option>
                             <cfloop query="qSupplier">
-                                <option value="<cfoutput>#encodeForHtmlAttribute(qSupplier.supplier_code)#</cfoutput>">
+                                <option
+                                    value="<cfoutput>#encodeForHtmlAttribute(qSupplier.supplier_code)#</cfoutput>"
+                                    <cfif defaultSupplierCode eq qSupplier.supplier_code>selected</cfif>>
                                     <cfoutput>#encodeForHtml(qSupplier.supplier_code)# : #encodeForHtml(qSupplier.supplier_name)#</cfoutput>
                                 </option>
                             </cfloop>
@@ -326,26 +411,27 @@
                             id="item_keyword"
                             name="item_keyword"
                             class="report-form-control"
-                            placeholder="商品コード / JAN / 商品名">
+                            value="<cfoutput>#encodeForHtmlAttribute(defaultItemKeyword)#</cfoutput>"
+                            placeholder="商品コード / JAN / 商品名 / 商品名(カナ)">
                     </div>
 
                     <div class="report-form-item">
                         <div class="report-form-label">状態</div>
                         <select id="status" name="status" class="report-form-control">
-                            <option value="">すべて</option>
-                            <option value="1">登録</option>
-                            <option value="2">確定</option>
-                            <option value="3">削除</option>
+                            <option value=""<cfif defaultStatus eq ""> selected</cfif>>すべて</option>
+                            <option value="1"<cfif defaultStatus eq "1"> selected</cfif>>登録</option>
+                            <option value="2"<cfif defaultStatus eq "2"> selected</cfif>>確定</option>
+                            <option value="3"<cfif defaultStatus eq "3"> selected</cfif>>削除</option>
                         </select>
                     </div>
 
                     <div class="report-form-item">
                         <div class="report-form-label">集計区分</div>
                         <select id="report_type" name="report_type" class="report-form-control">
-                            <option value="day">日別集計</option>
-                            <option value="supplier">取引先別集計</option>
-                            <option value="item">商品別集計</option>
-                            <option value="status">状態別集計</option>
+                            <option value="day"<cfif defaultReportType eq "day"> selected</cfif>>日別集計</option>
+                            <option value="supplier"<cfif defaultReportType eq "supplier"> selected</cfif>>取引先別集計</option>
+                            <option value="item"<cfif defaultReportType eq "item"> selected</cfif>>商品別集計</option>
+                            <option value="status"<cfif defaultReportType eq "status"> selected</cfif>>状態別集計</option>
                         </select>
                     </div>
                 </div>
@@ -377,7 +463,7 @@
         </div>
 
         <div class="report-table-area">
-            <div class="report-table-title">集計結果</div>
+            <div class="report-table-title"><cfoutput>#encodeForHtml(reportResultTitle)#</cfoutput></div>
 
             <div class="loading-area" id="loading_area">集計中です...</div>
 
@@ -406,6 +492,6 @@
     <script src="#Application.asset_url#/js/flatpickr.min.js"></script>
     <script src="#Application.asset_url#/js/ja.js"></script>
     <script src="#Application.asset_url#/js/sweetalert2.all.min.js"></script>
-    <script src="#Application.asset_url#/js/total_report.js"></script>
+    <script src="#Application.asset_url#/js/total_report.js?20260401_2"></script>
 </cfoutput>
 </html>

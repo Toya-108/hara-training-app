@@ -14,11 +14,15 @@
 <cfset showHomeButton = false>
 <cfset showBackButton = true>
 <cfset showNewButton = false>
-<cfset showEditButton = true>
+<cfset showEditButton = false>
 <cfset showImportButton = false>
 <cfset showExportButton = false>
 <cfset showTrashButton = false>
 <cfset showCancelButton = false>
+
+<cfif session.authorityLevel eq 9>
+    <cfset showEditButton = true>
+</cfif>
 
 <cfif displayMode EQ "edit">
     <cfset showEditButton = false>
@@ -92,13 +96,6 @@
 </cfoutput>
 
 <style>
-    body {
-        margin: 0;
-        background: #F7F1E3;
-        font-family: "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
-        color: #2F2A24;
-    }
-
     .page-content {
         max-width: 1200px;
         margin: 24px auto;

@@ -141,7 +141,6 @@
 
             <cfquery name="qGetStaffList">
                 SELECT
-                    staff_id,
                     staff_code,
                     staff_name,
                     staff_kana,
@@ -189,7 +188,6 @@
 
             <cfloop query="qGetStaffList">
                 <cfset ArrayAppend(result["results"], {
-                    "staff_id" = qGetStaffList.staff_id,
                     "staff_code" = qGetStaffList.staff_code,
                     "staff_name" = qGetStaffList.staff_name,
                     "staff_kana" = qGetStaffList.staff_kana,

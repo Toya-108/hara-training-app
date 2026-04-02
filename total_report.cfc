@@ -113,6 +113,7 @@
                                 d.item_code = <cfqueryparam value="#itemKeyword#" cfsqltype="cf_sql_varchar">
                                 OR d.jan_code = <cfqueryparam value="#itemKeyword#" cfsqltype="cf_sql_varchar">
                                 OR d.item_name LIKE <cfqueryparam value="%#itemKeyword#%" cfsqltype="cf_sql_varchar">
+                                OR d.item_name_kana LIKE <cfqueryparam value="%#itemKeyword#%" cfsqltype="cf_sql_varchar">
                             )
                     )
                 </cfif>

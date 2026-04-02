@@ -36,7 +36,7 @@
         }
 
         .content-wrap {
-            max-width: 1100px;
+            max-width: 1180px;
             margin: 30px auto 0;
             padding: 0 24px;
         }
@@ -182,6 +182,10 @@
             outline: none;
             border-color: #3F5B4B;
             background-color: #FFFCF4;
+        }
+
+        .readonly-cell {
+            background-color: #F8F4EA;
         }
 
         .table-btn {
@@ -363,7 +367,6 @@
             box-shadow: 0 0 0 1px rgba(63, 91, 75, 0.15);
         }
 
-        /* カレンダーアイコン風 */
         .form-row {
             position: relative;
         }
@@ -379,7 +382,6 @@
             opacity: 0.75;
         }
 
-        /* flatpickr本体 */
         .flatpickr-calendar {
             border: 1px solid #CDBFA8;
             border-radius: 12px;
@@ -484,7 +486,6 @@
             outline: none;
         }
 
-        /* エラー時も altInput に反映しやすくする */
         .flatpickr-input.is-error {
             border-color: #B84A4A !important;
             background-color: #FFF8F8 !important;
@@ -499,7 +500,7 @@
 
         <div class="content-wrap">
             <div class="page-title-area">
-                <p class="page-subtitle">伝票情報と商品情報を入力して登録します。</p>
+                <p class="page-subtitle">基本情報と明細情報を入力して、伝票を登録します。</p>
             </div>
 
             <div id="form_message" class="message-area"></div>
@@ -533,7 +534,6 @@
                               readonly
                           >
 
-                          <!--- 実際に送る値 --->
                           <input type="hidden" id="supplier_code" name="supplier_code">
                           <input type="hidden" id="supplier_name" name="supplier_name">
 
@@ -547,7 +547,7 @@
                             </label>
                             <input type="text" id="delivery_date" name="delivery_date" class="form-input js-required js-date-picker" data-label="納品日" placeholder="納品日を選択">
                             <div class="field-error" data-for="delivery_date"></div>
-                          </div>
+                        </div>
 
                         <div class="form-row full">
                             <label class="form-label" for="memo">
@@ -559,13 +559,14 @@
                 </div>
 
                 <div class="form-card">
-                    <h2 class="section-title">商品明細</h2>
+                    <h2 class="section-title">伝票明細</h2>
 
                     <div class="item-table-wrap">
                         <table class="item-table" id="item_table">
                             <thead>
                                 <tr>
-                                    <th style="width: 160px;">商品コード</th>
+                                    <th style="width: 150px;">商品コード</th>
+                                    <th style="width: 170px;">JANコード</th>
                                     <th>商品名</th>
                                     <th style="width: 120px;">数量</th>
                                     <th style="width: 140px;">単価</th>
@@ -575,9 +576,10 @@
                             <tbody id="item_table_body">
                                 <tr>
                                     <td><input type="text" name="item_code[]" class="item-code" maxlength="20"></td>
-                                    <td><input type="text" name="item_name[]" class="item-name" maxlength="100"></td>
-                                    <td><input type="text" name="qty[]" class="qty" min="0" step="1"></td>
-                                    <td><input type="text" name="unit_price[]" class="price" min="0" step="0.01"></td>
+                                    <td><input type="text" name="jan_code[]" class="jan-code readonly-cell" maxlength="20" readonly></td>
+                                    <td><input type="text" name="item_name[]" class="item-name readonly-cell" maxlength="100"></td>
+                                    <td><input type="text" name="qty[]" class="qty num-check" title="数量"></td>
+                                    <td><input type="text" name="unit_price[]" class="price num-check readonly-cell" title="単価"></td>
                                     <td>
                                         <button type="button" class="table-btn sub delete-row-btn">削除</button>
                                     </td>
@@ -597,59 +599,58 @@
                 </div>
 
                 <div class="modal-bg" id="supplier_modal">
-                  <div class="modal-box supplier-modal-box">
-                      <h3 class="modal-title">取引先選択</h3>
+                    <div class="modal-box supplier-modal-box">
+                        <h3 class="modal-title">取引先選択</h3>
 
-                      <div class="supplier-search-area">
-                          <div class="supplier-search-row">
-                              <label for="modal_search_supplier_code">取引先コード</label>
-                              <input type="text" id="modal_search_supplier_code" class="form-input" placeholder="取引先コード">
-                          </div>
+                        <div class="supplier-search-area">
+                            <div class="supplier-search-row">
+                                <label for="modal_search_supplier_code">取引先コード</label>
+                                <input type="text" id="modal_search_supplier_code" class="form-input" placeholder="取引先コード">
+                            </div>
 
-                          <div class="supplier-search-row">
-                              <label for="modal_search_supplier_name">取引先名</label>
-                              <input type="text" id="modal_search_supplier_name" class="form-input" placeholder="取引先名">
-                          </div>
+                            <div class="supplier-search-row">
+                                <label for="modal_search_supplier_name">取引先名</label>
+                                <input type="text" id="modal_search_supplier_name" class="form-input" placeholder="取引先名">
+                            </div>
 
-                          <div class="supplier-search-buttons">
-                              <button type="button" id="modal_supplier_search_btn" class="table-btn">検索</button>
-                              <button type="button" id="modal_supplier_clear_btn" class="table-btn sub">クリア</button>
-                          </div>
-                      </div>
+                            <div class="supplier-search-buttons">
+                                <button type="button" id="modal_supplier_search_btn" class="table-btn">検索</button>
+                                <button type="button" id="modal_supplier_clear_btn" class="table-btn sub">クリア</button>
+                            </div>
+                        </div>
 
-                      <div class="supplier-table-wrap">
-                          <table class="item-table">
-                              <thead>
-                                  <tr>
-                                      <th style="width: 140px;">取引先コード</th>
-                                      <th>取引先名</th>
-                                      <th style="width: 120px;">配送業者</th>
-                                      <th style="width: 100px;">選択</th>
-                                  </tr>
-                              </thead>
-                              <tbody id="supplier_table_body">
-                                  <tr>
-                                      <td colspan="4" class="loading_text">検索してください。</td>
-                                  </tr>
-                              </tbody>
-                          </table>
-                      </div>
+                        <div class="supplier-table-wrap">
+                            <table class="item-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 140px;">取引先コード</th>
+                                        <th>取引先名</th>
+                                        <th style="width: 120px;">配送業者</th>
+                                        <th style="width: 100px;">選択</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="supplier_table_body">
+                                    <tr>
+                                        <td colspan="4" class="loading_text">検索してください。</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
 
-                      <div class="action-area">
-                          <button type="button" id="close_supplier_modal_btn" class="action-btn clear">閉じる</button>
-                      </div>
-                  </div>
-              </div>
+                        <div class="action-area">
+                            <button type="button" id="close_supplier_modal_btn" class="action-btn clear">閉じる</button>
+                        </div>
+                    </div>
+                </div>
             </form>
         </div>
     </div>
 
-    <script src="#Application.asset_url#/js/validation-common.js"></script>
     <script src="#Application.asset_url#/js/sweetalert2.all.min.js"></script>
+    <script src="#Application.asset_url#/js/validation-common.js"></script>
     <script src="#Application.asset_url#/js/flatpickr.min.js"></script>
     <script src="#Application.asset_url#/js/ja.js"></script>
-    <script src="#Application.asset_url#/js/add_slip.js?20260324_1"></script>
-
+    <script src="#Application.asset_url#/js/add_slip.js?20260331_1"></script>
 </cfoutput>
 </body>
 </html>

@@ -126,7 +126,7 @@
     </cffunction>
 
 
-    <cffunction name="saveSlipDetail" access="remote" returntype="any" returnformat="json" output="false">
+        <cffunction name="saveSlipDetail" access="remote" returntype="any" returnformat="json" output="false">
         <cfset var result = {} />
         <cfset var requestBody = "" />
         <cfset var requestData = {} />
@@ -141,6 +141,7 @@
         <cfset var nowDt = now() />
         <cfset var qSupplier = "" />
         <cfset var qItem = "" />
+        <cfset var qCurrentSlip = "" />
         <cfset var supplierName = "" />
         <cfset var totalQty = 0 />
         <cfset var totalAmount = 0 />
@@ -149,9 +150,13 @@
         <cfset var newSlipNo = "" />
         <cfset var qMax = "" />
         <cfset var itemCode = "" />
+        <cfset var itemName = "" />
         <cfset var itemJanCode = "" />
         <cfset var qtyValue = 0 />
         <cfset var unitPriceValue = 0 />
+        <cfset var currentStatus = 0 />
+        <cfset var staffCode = "SYSTEM" />
+        <cfset var staffName = "SYSTEM" />
 
         <cfset result["status"] = 0 />
         <cfset result["message"] = "" />
@@ -178,6 +183,10 @@
                 <cfset status = val(requestData.status) />
             </cfif>
 
+            <cfif status NEQ 1 AND status NEQ 2>
+                <cfset status = 1 />
+            </cfif>
+
             <cfif structKeyExists(requestData, "slip_date")>
                 <cfset slipDate = trim(requestData.slip_date) />
             </cfif>
@@ -198,6 +207,13 @@
                 <cfset details = requestData.details />
             <cfelse>
                 <cfset details = [] />
+            </cfif>
+
+            <cfif structKeyExists(session, "staffCode") AND trim(session.staffCode) NEQ "">
+                <cfset staffCode = session.staffCode />
+            </cfif>
+            <cfif structKeyExists(session, "staffName") AND trim(session.staffName) NEQ "">
+                <cfset staffName = session.staffName />
             </cfif>
 
             <cfif slipDate EQ "">
@@ -225,8 +241,7 @@
             </cfif>
 
             <cfquery name="qSupplier">
-                SELECT
-                    supplier_name
+                SELECT supplier_name
                 FROM m_supplier
                 WHERE supplier_code = <cfqueryparam value="#supplierCode#" cfsqltype="cf_sql_varchar">
             </cfquery>
@@ -267,6 +282,38 @@
             </cfloop>
 
             <cftransaction>
+                <cfif slipNo NEQ "">
+                    <cfquery name="qCurrentSlip">
+                        SELECT status
+                        FROM t_slip
+                        WHERE slip_no = <cfqueryparam value="#slipNo#" cfsqltype="cf_sql_varchar">
+                        FOR UPDATE
+                    </cfquery>
+
+                    <cfif qCurrentSlip.recordCount EQ 0>
+                        <cfset result["status"] = 1 />
+                        <cfset result["message"] = "対象伝票が存在しません。" />
+                        <cftransaction action="rollback" />
+                        <cfreturn result />
+                    </cfif>
+
+                    <cfset currentStatus = val(qCurrentSlip.status) />
+
+                    <cfif currentStatus EQ 2>
+                        <cfset result["status"] = 1 />
+                        <cfset result["message"] = "確定済み伝票は修正できません。" />
+                        <cftransaction action="rollback" />
+                        <cfreturn result />
+                    </cfif>
+
+                    <cfif currentStatus EQ 3>
+                        <cfset result["status"] = 1 />
+                        <cfset result["message"] = "削除済み伝票は修正できません。" />
+                        <cftransaction action="rollback" />
+                        <cfreturn result />
+                    </cfif>
+                </cfif>
+
                 <cfif slipNo EQ "">
                     <cfquery name="qMax">
                         SELECT IFNULL(MAX(CAST(SUBSTRING(slip_no, 2) AS UNSIGNED)), 0) AS max_no
@@ -286,6 +333,7 @@
                             status,
                             total_qty,
                             total_amount,
+                            fix_datetime,
                             memo,
                             create_datetime,
                             create_staff_code,
@@ -302,13 +350,14 @@
                             <cfqueryparam value="#status#" cfsqltype="cf_sql_integer">,
                             <cfqueryparam value="#totalQty#" cfsqltype="cf_sql_integer">,
                             <cfqueryparam value="#totalAmount#" cfsqltype="cf_sql_decimal" scale="2">,
+                            <cfqueryparam value="#nowDt#" cfsqltype="cf_sql_timestamp" null="#status NEQ 2#">,
                             <cfqueryparam value="#memo#" cfsqltype="cf_sql_varchar" null="#NOT len(memo)#">,
                             <cfqueryparam value="#nowDt#" cfsqltype="cf_sql_timestamp">,
-                            <cfqueryparam value="SYSTEM" cfsqltype="cf_sql_varchar">,
-                            <cfqueryparam value="SYSTEM" cfsqltype="cf_sql_varchar">,
+                            <cfqueryparam value="#staffCode#" cfsqltype="cf_sql_varchar">,
+                            <cfqueryparam value="#staffName#" cfsqltype="cf_sql_varchar">,
                             <cfqueryparam value="#nowDt#" cfsqltype="cf_sql_timestamp">,
-                            <cfqueryparam value="SYSTEM" cfsqltype="cf_sql_varchar">,
-                            <cfqueryparam value="SYSTEM" cfsqltype="cf_sql_varchar">
+                            <cfqueryparam value="#staffCode#" cfsqltype="cf_sql_varchar">,
+                            <cfqueryparam value="#staffName#" cfsqltype="cf_sql_varchar">
                         )
                     </cfquery>
                 <cfelse>
@@ -322,10 +371,11 @@
                             status = <cfqueryparam value="#status#" cfsqltype="cf_sql_integer">,
                             total_qty = <cfqueryparam value="#totalQty#" cfsqltype="cf_sql_integer">,
                             total_amount = <cfqueryparam value="#totalAmount#" cfsqltype="cf_sql_decimal" scale="2">,
+                            fix_datetime = <cfqueryparam value="#nowDt#" cfsqltype="cf_sql_timestamp" null="#status NEQ 2#">,
                             memo = <cfqueryparam value="#memo#" cfsqltype="cf_sql_varchar" null="#NOT len(memo)#">,
                             update_datetime = <cfqueryparam value="#nowDt#" cfsqltype="cf_sql_timestamp">,
-                            update_staff_code = <cfqueryparam value="SYSTEM" cfsqltype="cf_sql_varchar">,
-                            update_staff_name = <cfqueryparam value="SYSTEM" cfsqltype="cf_sql_varchar">
+                            update_staff_code = <cfqueryparam value="#staffCode#" cfsqltype="cf_sql_varchar">,
+                            update_staff_name = <cfqueryparam value="#staffName#" cfsqltype="cf_sql_varchar">
                         WHERE slip_no = <cfqueryparam value="#slipNo#" cfsqltype="cf_sql_varchar">
                     </cfquery>
 
@@ -366,16 +416,13 @@
 
                     <cfif itemCode NEQ "">
                         <cfquery name="qItem">
-                            SELECT
-                                jan_code,
-                                item_name
+                            SELECT jan_code, item_name
                             FROM m_item
                             WHERE item_code = <cfqueryparam value="#itemCode#" cfsqltype="cf_sql_varchar">
                         </cfquery>
 
                         <cfif qItem.recordCount GT 0>
                             <cfset itemJanCode = qItem.jan_code />
-
                             <cfif itemName EQ "">
                                 <cfset itemName = qItem.item_name />
                             </cfif>
@@ -405,23 +452,43 @@
                                 <cfqueryparam value="#qtyValue#" cfsqltype="cf_sql_integer">,
                                 <cfqueryparam value="#unitPriceValue#" cfsqltype="cf_sql_decimal" scale="2">,
                                 <cfqueryparam value="#nowDt#" cfsqltype="cf_sql_timestamp">,
-                                <cfqueryparam value="SYSTEM" cfsqltype="cf_sql_varchar">,
-                                <cfqueryparam value="SYSTEM" cfsqltype="cf_sql_varchar">,
+                                <cfqueryparam value="#staffCode#" cfsqltype="cf_sql_varchar">,
+                                <cfqueryparam value="#staffName#" cfsqltype="cf_sql_varchar">,
                                 <cfqueryparam value="#nowDt#" cfsqltype="cf_sql_timestamp">,
-                                <cfqueryparam value="SYSTEM" cfsqltype="cf_sql_varchar">,
-                                <cfqueryparam value="SYSTEM" cfsqltype="cf_sql_varchar">
+                                <cfqueryparam value="#staffCode#" cfsqltype="cf_sql_varchar">,
+                                <cfqueryparam value="#staffName#" cfsqltype="cf_sql_varchar">
                             )
                         </cfquery>
                     </cfif>
                 </cfloop>
+
+                <cfif status EQ 2>
+                    <cfset reflectSlipToInventory(
+                        slipNo = slipNo,
+                        staffCode = staffCode,
+                        staffName = staffName,
+                        reasonPrefix = "伝票確定"
+                    ) />
+                </cfif>
             </cftransaction>
 
-            <cfset result["message"] = "保存しました。" />
+            <cfif status EQ 2>
+                <cfset result["message"] = "保存して確定しました。" />
+            <cfelse>
+                <cfset result["message"] = "保存しました。" />
+            </cfif>
+
             <cfset result["results"]["slip_no"] = slipNo />
 
             <cfcatch type="database">
+                <cflog file="HARA_TRAINING_APP" type="Information" text="伝票詳細 保存エラー #cfcatch.sql# #cfcatch.queryError#" />
                 <cfset result["status"] = 1 />
                 <cfset result["message"] = "伝票保存中にデータベースエラーが発生しました。" />
+            </cfcatch>
+            <cfcatch type="any">
+                <cflog file="HARA_TRAINING_APP" type="Information" text="伝票詳細 保存エラー #cfcatch.message# #cfcatch.detail#" />
+                <cfset result["status"] = 1 />
+                <cfset result["message"] = "伝票保存中にエラーが発生しました。" />
             </cfcatch>
         </cftry>
 
@@ -429,12 +496,13 @@
     </cffunction>
 
 
-    <cffunction name="deleteSlipDetail" access="remote" returntype="any" returnformat="json" output="false">
+        <cffunction name="deleteSlipDetail" access="remote" returntype="any" returnformat="json" output="false">
         <cfset var result = {} />
         <cfset var requestBody = "" />
         <cfset var requestData = {} />
         <cfset var slipNo = "" />
         <cfset var nowDt = now() />
+        <cfset var qSlip = "" />
 
         <cfset result["status"] = 0 />
         <cfset result["message"] = "" />
@@ -458,15 +526,40 @@
                 <cfreturn result />
             </cfif>
 
+            <cfquery name="qSlip">
+                SELECT status
+                FROM t_slip
+                WHERE slip_no = <cfqueryparam value="#slipNo#" cfsqltype="cf_sql_varchar">
+            </cfquery>
+
+            <cfif qSlip.recordCount EQ 0>
+                <cfset result["status"] = 1 />
+                <cfset result["message"] = "対象伝票が存在しません。" />
+                <cfreturn result />
+            </cfif>
+
+            <cfif val(qSlip.status) EQ 2>
+                <cfset result["status"] = 1 />
+                <cfset result["message"] = "確定済み伝票は削除できません。" />
+                <cfreturn result />
+            </cfif>
+
+            <cfif val(qSlip.status) EQ 3>
+                <cfset result["status"] = 1 />
+                <cfset result["message"] = "すでに削除済みです。" />
+                <cfreturn result />
+            </cfif>
+
             <cfquery>
                 UPDATE t_slip
                 SET
                     status = 3,
                     delete_datetime = <cfqueryparam value="#nowDt#" cfsqltype="cf_sql_timestamp">,
                     update_datetime = <cfqueryparam value="#nowDt#" cfsqltype="cf_sql_timestamp">,
-                    update_staff_code = <cfqueryparam value="SYSTEM" cfsqltype="cf_sql_varchar">,
-                    update_staff_name = <cfqueryparam value="SYSTEM" cfsqltype="cf_sql_varchar">
+                    update_staff_code = <cfqueryparam value="#session.staffCode#" cfsqltype="cf_sql_varchar">,
+                    update_staff_name = <cfqueryparam value="#session.staffName#" cfsqltype="cf_sql_varchar">
                 WHERE slip_no = <cfqueryparam value="#slipNo#" cfsqltype="cf_sql_varchar">
+                  AND status = 1
             </cfquery>
 
             <cfset result["message"] = "削除しました。" />
@@ -475,9 +568,129 @@
                 <cfset result["status"] = 1 />
                 <cfset result["message"] = "伝票削除中にデータベースエラーが発生しました。" />
             </cfcatch>
+            <cfcatch type="any">
+                <cfset result["status"] = 1 />
+                <cfset result["message"] = "伝票削除中にエラーが発生しました。" />
+            </cfcatch>
         </cftry>
 
         <cfreturn result />
+    </cffunction>
+
+
+
+
+
+        <cffunction name="reflectSlipToInventory" access="private" returntype="void" output="false">
+        <cfargument name="slipNo" type="string" required="true">
+        <cfargument name="staffCode" type="string" required="false" default="SYSTEM">
+        <cfargument name="staffName" type="string" required="false" default="SYSTEM">
+        <cfargument name="reasonPrefix" type="string" required="false" default="伝票確定">
+
+        <cfset var qDetail = "" />
+        <cfset var qInventory = "" />
+        <cfset var beforeQty = 0 />
+        <cfset var afterQty = 0 />
+        <cfset var changeQty = 0 />
+
+        <cfquery name="qDetail">
+            SELECT
+                item_code,
+                SUM(qty) AS total_qty
+            FROM t_slip_detail
+            WHERE slip_no = <cfqueryparam value="#arguments.slipNo#" cfsqltype="cf_sql_varchar">
+              AND item_code IS NOT NULL
+              AND item_code <> ''
+            GROUP BY item_code
+        </cfquery>
+
+        <cfloop query="qDetail">
+            <cfset changeQty = val(qDetail.total_qty) />
+
+            <cfif changeQty GT 0>
+                <cfquery name="qInventory">
+                    SELECT
+                        item_code,
+                        current_qty
+                    FROM t_inventory
+                    WHERE item_code = <cfqueryparam value="#qDetail.item_code#" cfsqltype="cf_sql_varchar">
+                    FOR UPDATE
+                </cfquery>
+
+                <cfif qInventory.recordCount EQ 0>
+                    <cfquery>
+                        INSERT INTO t_inventory (
+                            item_code,
+                            current_qty,
+                            safety_stock_qty,
+                            create_datetime,
+                            create_staff_code,
+                            create_staff_name,
+                            update_datetime,
+                            update_staff_code,
+                            update_staff_name
+                        ) VALUES (
+                            <cfqueryparam value="#qDetail.item_code#" cfsqltype="cf_sql_varchar">,
+                            0,
+                            0,
+                            NOW(),
+                            <cfqueryparam value="#arguments.staffCode#" cfsqltype="cf_sql_varchar">,
+                            <cfqueryparam value="#arguments.staffName#" cfsqltype="cf_sql_varchar">,
+                            NOW(),
+                            <cfqueryparam value="#arguments.staffCode#" cfsqltype="cf_sql_varchar">,
+                            <cfqueryparam value="#arguments.staffName#" cfsqltype="cf_sql_varchar">
+                        )
+                    </cfquery>
+
+                    <cfquery name="qInventory">
+                        SELECT
+                            item_code,
+                            current_qty
+                        FROM t_inventory
+                        WHERE item_code = <cfqueryparam value="#qDetail.item_code#" cfsqltype="cf_sql_varchar">
+                        FOR UPDATE
+                    </cfquery>
+                </cfif>
+
+                <cfset beforeQty = val(qInventory.current_qty) />
+                <cfset afterQty = beforeQty + changeQty />
+
+                <cfquery>
+                    UPDATE t_inventory
+                    SET
+                        current_qty = <cfqueryparam value="#afterQty#" cfsqltype="cf_sql_integer">,
+                        last_in_datetime = NOW(),
+                        update_datetime = NOW(),
+                        update_staff_code = <cfqueryparam value="#arguments.staffCode#" cfsqltype="cf_sql_varchar">,
+                        update_staff_name = <cfqueryparam value="#arguments.staffName#" cfsqltype="cf_sql_varchar">
+                    WHERE item_code = <cfqueryparam value="#qDetail.item_code#" cfsqltype="cf_sql_varchar">
+                </cfquery>
+
+                <cfquery>
+                    INSERT INTO t_inventory_history (
+                        item_code,
+                        change_type,
+                        before_qty,
+                        change_qty,
+                        after_qty,
+                        reason,
+                        create_datetime,
+                        create_staff_code,
+                        create_staff_name
+                    ) VALUES (
+                        <cfqueryparam value="#qDetail.item_code#" cfsqltype="cf_sql_varchar">,
+                        1,
+                        <cfqueryparam value="#beforeQty#" cfsqltype="cf_sql_integer">,
+                        <cfqueryparam value="#changeQty#" cfsqltype="cf_sql_integer">,
+                        <cfqueryparam value="#afterQty#" cfsqltype="cf_sql_integer">,
+                        <cfqueryparam value="#arguments.reasonPrefix#（伝票番号:#arguments.slipNo#）" cfsqltype="cf_sql_varchar">,
+                        NOW(),
+                        <cfqueryparam value="#arguments.staffCode#" cfsqltype="cf_sql_varchar">,
+                        <cfqueryparam value="#arguments.staffName#" cfsqltype="cf_sql_varchar">
+                    )
+                </cfquery>
+            </cfif>
+        </cfloop>
     </cffunction>
 
 

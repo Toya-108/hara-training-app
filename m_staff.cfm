@@ -1,9 +1,15 @@
 <cfinclude template="init.cfm">
 
 <cfset pageTitle = "社員マスタ一覧">
-<cfset showBackButton = true>
-<cfset showNewButton = true>
-<cfset showExportButton = true>
+<cfset showHomeButton = true>
+
+<cfif session.authorityLevel eq 9>
+    <cfset showExportButton = true> 
+    <cfset showNewButton = true>
+<cfelse>
+    <cfset showExportButton = false> 
+    <cfset showNewButton = false>
+</cfif>
 
 <cfset formSearchStaffCode = "">
 <cfif StructKeyExists(Form, "search_staff_code")>
@@ -28,6 +34,16 @@
 <cfset formSearchUseFlag = "">
 <cfif StructKeyExists(Form, "search_use_flag") AND (Form.search_use_flag eq "0" OR Form.search_use_flag eq "1")>
     <cfset formSearchUseFlag = Form.search_use_flag>
+</cfif>
+
+<cfset formSortField = "">
+<cfif StructKeyExists(Form, "sort_field")>
+    <cfset formSortField = Trim(Form.sort_field)>
+</cfif>
+
+<cfset formSortOrder = "">
+<cfif StructKeyExists(Form, "sort_order")>
+    <cfset formSortOrder = LCase(Trim(Form.sort_order))>
 </cfif>
 
 <html lang="ja">
@@ -285,9 +301,12 @@
 
 <form id="master_form" method="post" class="search_form">
 
-    <input type="hidden" id="detail_staff_id" name="staff_id" value="">
-    <input type="hidden" id="detail_return_staff_id" name="return_staff_id" value="">
+    <input type="hidden" id="detail_staff_code" name="staff_code" value="">
+    <input type="hidden" id="detail_return_staff_code" name="return_staff_code" value="">
     <input type="hidden" id="detail_display_mode" name="display_mode" value="view">
+
+    <input type="hidden" id="return_sort_field" name="return_sort_field" value="#HTMLEditFormat(formSortField)#">
+    <input type="hidden" id="return_sort_order" name="return_sort_order" value="#HTMLEditFormat(formSortOrder)#">
 
     <input type="hidden" id="return_search_staff_code" name="return_search_staff_code" value="#HTMLEditFormat(formSearchStaffCode)#">
     <input type="hidden" id="return_search_staff_name" name="return_search_staff_name" value="#HTMLEditFormat(formSearchStaffName)#">
@@ -300,17 +319,17 @@
         <div class="search_area" style="display:flex; margin-top:30px; flex-wrap:wrap;">
             <div class="search_item">
                 <label for="search_staff_code">社員コード</label>
-                <input type="text" id="search_staff_code" name="search_staff_code" placeholder="社員コードを入力" value="#HTMLEditFormat(formSearchStaffCode)#" style="width:180px;">
+                <input type="text" id="search_staff_code" name="search_staff_code" placeholder="社員コード" value="#HTMLEditFormat(formSearchStaffCode)#" style="width:180px;">
             </div>
 
             <div class="search_item">
                 <label for="search_staff_name">社員名</label>
-                <input type="text" id="search_staff_name" name="search_staff_name" placeholder="社員名を入力" value="#HTMLEditFormat(formSearchStaffName)#" style="width:250px;">
+                <input type="text" id="search_staff_name" name="search_staff_name" placeholder="社員名 / 社員名(カナ)" value="#HTMLEditFormat(formSearchStaffName)#" style="width:250px;">
             </div>
 
             <div class="search_item">
                 <label for="search_mail_address">メールアドレス</label>
-                <input type="text" id="search_mail_address" name="search_mail_address" placeholder="メールアドレスを入力" value="#HTMLEditFormat(formSearchMailAddress)#" style="width:300px;">
+                <input type="text" id="search_mail_address" name="search_mail_address" placeholder="メールアドレス" value="#HTMLEditFormat(formSearchMailAddress)#" style="width:300px;">
             </div>
 
             <div class="search_item">
@@ -318,7 +337,6 @@
                 <select id="search_authority_level" name="search_authority_level" style="width:120px;">
                     <option value="">すべて</option>
                     <option value="1">一般</option>
-                    <option value="2">責任者</option>
                     <option value="9">管理者</option>
                 </select>
             </div>
@@ -422,8 +440,11 @@
 <script>
 document.getElementById("search_authority_level").value = "#JSStringFormat(formSearchAuthorityLevel)#";
 document.getElementById("search_use_flag").value = "#JSStringFormat(formSearchUseFlag)#";
+document.getElementById("return_sort_field").value = "#JSStringFormat(formSortField)#";
+document.getElementById("return_sort_order").value = "#JSStringFormat(formSortOrder)#";
 </script>
-<script src="#Application.asset_url#/js/m_staff.js?20260325_1"></script>
+
+<script src="#Application.asset_url#/js/m_staff.js?20260331_1"></script>
 
 </cfoutput>
 </body>

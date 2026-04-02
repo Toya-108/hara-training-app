@@ -107,7 +107,14 @@
 </cfif>
 
 <cfif searchSupplierKeyword neq "">
-    <cfset filtering = filtering & " AND m_supplier.supplier_name LIKE '%" & Replace(searchSupplierKeyword, "'", "''", "all") & "%'">
+    <cfset safeKeyword = Replace(searchSupplierKeyword, "'", "''", "all")>
+    <cfset filtering = filtering & "
+        AND (
+            m_supplier.supplier_name LIKE '%" & safeKeyword & "%'
+            OR
+            m_supplier.supplier_name_kana LIKE '%" & safeKeyword & "%'
+        )
+    ">
 </cfif>
 
 <cfif searchItemKeyword neq "">

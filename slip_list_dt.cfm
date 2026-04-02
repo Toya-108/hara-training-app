@@ -15,13 +15,41 @@
     <cfset displayMode = "view">
 </cfif>
 
+<!--- 伝票ステータス取得 --->
+<cfset slipStatus = "1">
+
+<cfif detailSlipNo NEQ "">
+    <cfquery name="qSlipStatus">
+        SELECT status
+        FROM t_slip
+        WHERE slip_no = <cfqueryparam value="#detailSlipNo#" cfsqltype="cf_sql_varchar">
+    </cfquery>
+
+    <cfif qSlipStatus.recordCount GT 0>
+        <cfset slipStatus = qSlipStatus.status>
+    </cfif>
+</cfif>
+
+<!--- 表示制御 --->
 <cfif displayMode EQ "view">
     <cfset pageTitle = "伝票詳細">
     <cfset showBackButton = true>
-    <cfset showEditButton = true>
+
+    <!--- ★ここがポイント --->
+    <cfif slipStatus EQ "2">
+        <cfset showEditButton = false> <!-- 確定なら非表示 -->
+    <cfelse>
+        <cfif session.authorityLevel eq 9>
+            <cfset showEditButton = true>
+        <cfelse>
+            <cfset showEditButton = false>
+        </cfif>
+    </cfif>
+
     <cfset showNewButton = false>
     <cfset showTrashButton = false>
     <cfset showCancelButton = false>
+
 <cfelseif displayMode EQ "edit">
     <cfset pageTitle = "伝票修正">
     <cfset showBackButton = false>
@@ -51,13 +79,6 @@
 </cfoutput>
 
 <style>
-    body {
-        margin: 0;
-        background: #F7F1E3;
-        font-family: "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
-        color: #2F2A24;
-    }
-
     .page-content {
         max-width: 1320px;
         margin: 24px auto;
@@ -270,6 +291,37 @@
             grid-column: span 1;
         }
     }
+
+    .status-badge {
+        display: inline-block;
+        min-width: 70px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .status-1 {
+        background: #F5E7BE;
+        color: #7A5A00;
+    }
+
+    .status-2 {
+        background: #DCEBDC;
+        color: #2F6A40;
+    }
+
+    .status-3 {
+        background: #E5E7EB;
+        color: #4B5563;
+    }
+
+    .status-display-wrap {
+        min-height: 40px;
+        display: flex;
+        align-items: center;
+    }
 </style>
 
 <div class="page-content">
@@ -278,6 +330,7 @@
     <form id="detail_form" name="detail_form" method="post">
         <input type="hidden" id="detail_slip_no" name="detail_slip_no" value="<cfoutput>#encodeForHtmlAttribute(detailSlipNo)#</cfoutput>">
         <input type="hidden" id="detail_display_mode" name="detail_display_mode" value="<cfoutput>#encodeForHtmlAttribute(displayMode)#</cfoutput>">
+        <input type="hidden" id="return_from_menu" name="return_from_menu" value="<cfoutput><cfif structKeyExists(form, 'return_from_menu')>#encodeForHtmlAttribute(form.return_from_menu)#</cfif></cfoutput>">
 
         <input type="hidden" id="return_search_slip_no" name="return_search_slip_no" value="<cfoutput><cfif structKeyExists(form, 'return_search_slip_no')>#encodeForHtmlAttribute(form.return_search_slip_no)#</cfif></cfoutput>">
         <input type="hidden" id="return_search_order_date_from" name="return_search_order_date_from" value="<cfoutput><cfif structKeyExists(form, 'return_search_order_date_from')>#encodeForHtmlAttribute(form.return_search_order_date_from)#</cfif></cfoutput>">
@@ -304,7 +357,11 @@
 
                 <div class="form-item">
                     <div class="form-label">状態</div>
-                    <div class="readonly-box view-only" id="status_disp"></div>
+
+                    <div class="view-only status-display-wrap">
+                        <span id="status_disp" class="status-badge"></span>
+                    </div>
+
                     <select id="status" class="form-control edit-only">
                         <option value="1">登録</option>
                         <option value="2">確定</option>

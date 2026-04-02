@@ -3,7 +3,7 @@
     <cffunction name="getStaffDetail" access="remote" returntype="struct" returnformat="json" output="false">
         <cfset var result = {}>
         <cfset var requestData = {}>
-        <cfset var staffId = 0>
+        <cfset var staffCode = "">
         <cfset var qGetStaff = "">
 
         <cfset result["status"] = 0>
@@ -13,19 +13,18 @@
         <cftry>
             <cfset requestData = DeserializeJSON(ToString(GetHttpRequestData().content))>
 
-            <cfif StructKeyExists(requestData, "staff_id")>
-                <cfset staffId = Val(requestData.staff_id)>
+            <cfif StructKeyExists(requestData, "staff_code")>
+                <cfset staffCode = Trim(requestData.staff_code)>
             </cfif>
 
-            <cfif staffId lte 0>
+            <cfif staffCode eq "">
                 <cfset result["status"] = 1>
-                <cfset result["message"] = "社員IDが不正です。">
+                <cfset result["message"] = "社員コードが不正です。">
                 <cfreturn result>
             </cfif>
 
             <cfquery name="qGetStaff">
                 SELECT
-                    staff_id,
                     staff_code,
                     staff_name,
                     staff_kana,
@@ -45,7 +44,7 @@
                 FROM
                     m_staff
                 WHERE
-                    staff_id = <cfqueryparam value="#staffId#" cfsqltype="cf_sql_integer">
+                    staff_code = <cfqueryparam value="#staffCode#" cfsqltype="cf_sql_varchar">
             </cfquery>
 
             <cfif qGetStaff.recordCount neq 1>
@@ -54,7 +53,6 @@
                 <cfreturn result>
             </cfif>
 
-            <cfset result["results"]["staff_id"] = qGetStaff.staff_id[1]>
             <cfset result["results"]["staff_code"] = qGetStaff.staff_code[1]>
             <cfset result["results"]["staff_name"] = qGetStaff.staff_name[1]>
             <cfset result["results"]["staff_kana"] = qGetStaff.staff_kana[1]>
@@ -89,7 +87,7 @@
         <cfset var result = {}>
         <cfset var requestData = {}>
 
-        <cfset var staffId = 0>
+        <cfset var originalStaffCode = "">
         <cfset var staffCode = "">
         <cfset var staffName = "">
         <cfset var staffKana = "">
@@ -103,7 +101,7 @@
         <cfset var note = "">
 
         <cfset var qCheckDuplicate = "">
-        <cfset var qGetInsertedId = "">
+        <cfset var qCheckTarget = "">
 
         <cfset result["status"] = 0>
         <cfset result["message"] = "">
@@ -112,8 +110,8 @@
         <cftry>
             <cfset requestData = DeserializeJSON(ToString(GetHttpRequestData().content))>
 
-            <cfif StructKeyExists(requestData, "staff_id")>
-                <cfset staffId = Val(requestData.staff_id)>
+            <cfif StructKeyExists(requestData, "original_staff_code")>
+                <cfset originalStaffCode = Trim(requestData.original_staff_code)>
             </cfif>
 
             <cfif StructKeyExists(requestData, "staff_code")>
@@ -176,7 +174,7 @@
                 <cfset useFlag = "1">
             </cfif>
 
-            <cfif staffId lte 0 AND loginPassword eq "">
+            <cfif originalStaffCode eq "" AND loginPassword eq "">
                 <cfset result["status"] = 1>
                 <cfset result["message"] = "新規登録時はパスワード必須です。">
                 <cfreturn result>
@@ -189,16 +187,19 @@
                     <cfreturn result>
                 </cfif>
 
-                <cfset loginPasswordHash = Hash(loginPassword, "SHA-256")>
+                <cfset loginPasswordHash = generateBCryptHash(loginPassword)>
             </cfif>
 
             <cftransaction>
                 <cfquery name="qCheckDuplicate">
-                    SELECT staff_id
-                    FROM m_staff
-                    WHERE staff_code = <cfqueryparam value="#staffCode#" cfsqltype="cf_sql_varchar">
-                    <cfif staffId gt 0>
-                        AND staff_id <> <cfqueryparam value="#staffId#" cfsqltype="cf_sql_integer">
+                    SELECT
+                        staff_code
+                    FROM
+                        m_staff
+                    WHERE
+                        staff_code = <cfqueryparam value="#staffCode#" cfsqltype="cf_sql_varchar">
+                    <cfif originalStaffCode neq "">
+                        AND staff_code <> <cfqueryparam value="#originalStaffCode#" cfsqltype="cf_sql_varchar">
                     </cfif>
                 </cfquery>
 
@@ -208,9 +209,25 @@
                     <cfreturn result>
                 </cfif>
 
-                <cfif staffId gt 0>
+                <cfif originalStaffCode neq "">
+                    <cfquery name="qCheckTarget">
+                        SELECT
+                            staff_code
+                        FROM
+                            m_staff
+                        WHERE
+                            staff_code = <cfqueryparam value="#originalStaffCode#" cfsqltype="cf_sql_varchar">
+                    </cfquery>
+
+                    <cfif qCheckTarget.recordCount neq 1>
+                        <cfset result["status"] = 1>
+                        <cfset result["message"] = "更新対象データが存在しません。">
+                        <cfreturn result>
+                    </cfif>
+
                     <cfquery>
-                        UPDATE m_staff
+                        UPDATE
+                            m_staff
                         SET
                             staff_code = <cfqueryparam value="#staffCode#" cfsqltype="cf_sql_varchar">,
                             staff_name = <cfqueryparam value="#staffName#" cfsqltype="cf_sql_varchar">,
@@ -225,13 +242,12 @@
                                 password_update_datetime = NOW(),
                             </cfif>
                             update_datetime = NOW(),
-                            update_staff_code = '#session.staffCode#',
-                            update_staff_name = '#session.staffName#'
+                            update_staff_code = <cfqueryparam value="#session.staffCode#" cfsqltype="cf_sql_varchar">,
+                            update_staff_name = <cfqueryparam value="#session.staffName#" cfsqltype="cf_sql_varchar">
                         WHERE
-                            staff_id = <cfqueryparam value="#staffId#" cfsqltype="cf_sql_integer">
+                            staff_code = <cfqueryparam value="#originalStaffCode#" cfsqltype="cf_sql_varchar">
                     </cfquery>
 
-                    <cfset result["results"]["staff_id"] = staffId>
                     <cfset result["results"]["staff_code"] = staffCode>
                     <cfset result["message"] = "更新しました。">
 
@@ -266,19 +282,14 @@
                             <cfqueryparam value="#useFlag#" cfsqltype="cf_sql_tinyint" null="#useFlag eq ''#">,
                             <cfqueryparam value="#note#" cfsqltype="cf_sql_varchar" null="#Trim(note) eq ''#">,
                             NOW(),
-                            '#session.staffCode#',
-                            '#session.staffName#',
+                            <cfqueryparam value="#session.staffCode#" cfsqltype="cf_sql_varchar">,
+                            <cfqueryparam value="#session.staffName#" cfsqltype="cf_sql_varchar">,
                             NULL,
                             NULL,
                             NULL
                         )
                     </cfquery>
 
-                    <cfquery name="qGetInsertedId">
-                        SELECT LAST_INSERT_ID() AS new_staff_id
-                    </cfquery>
-
-                    <cfset result["results"]["staff_id"] = qGetInsertedId.new_staff_id[1]>
                     <cfset result["results"]["staff_code"] = staffCode>
                     <cfset result["message"] = "登録しました。">
                 </cfif>
@@ -294,10 +305,10 @@
         <cfreturn result>
     </cffunction>
 
-        <cffunction name="deleteStaff" access="remote" returntype="struct" returnformat="json" output="false">
+    <cffunction name="deleteStaff" access="remote" returntype="struct" returnformat="json" output="false">
         <cfset var result = {}>
         <cfset var requestData = {}>
-        <cfset var staffId = 0>
+        <cfset var staffCode = "">
         <cfset var qCheckStaff = "">
 
         <cfset result["status"] = 0>
@@ -307,26 +318,25 @@
         <cftry>
             <cfset requestData = DeserializeJSON(ToString(GetHttpRequestData().content))>
 
-            <cfif StructKeyExists(requestData, "staff_id")>
-                <cfset staffId = Val(requestData.staff_id)>
+            <cfif StructKeyExists(requestData, "staff_code")>
+                <cfset staffCode = Trim(requestData.staff_code)>
             </cfif>
 
-            <cfif staffId lte 0>
+            <cfif staffCode eq "">
                 <cfset result["status"] = 1>
-                <cfset result["message"] = "社員IDが不正です。">
+                <cfset result["message"] = "社員コードが不正です。">
                 <cfreturn result>
             </cfif>
 
             <cftransaction>
                 <cfquery name="qCheckStaff">
                     SELECT
-                        staff_id,
                         staff_code,
                         staff_name
                     FROM
                         m_staff
                     WHERE
-                        staff_id = <cfqueryparam value="#staffId#" cfsqltype="cf_sql_integer">
+                        staff_code = <cfqueryparam value="#staffCode#" cfsqltype="cf_sql_varchar">
                 </cfquery>
 
                 <cfif qCheckStaff.recordCount neq 1>
@@ -339,10 +349,9 @@
                     DELETE FROM
                         m_staff
                     WHERE
-                        staff_id = <cfqueryparam value="#staffId#" cfsqltype="cf_sql_integer">
+                        staff_code = <cfqueryparam value="#staffCode#" cfsqltype="cf_sql_varchar">
                 </cfquery>
 
-                <cfset result["results"]["staff_id"] = qCheckStaff.staff_id[1]>
                 <cfset result["results"]["staff_code"] = qCheckStaff.staff_code[1]>
                 <cfset result["results"]["staff_name"] = qCheckStaff.staff_name[1]>
                 <cfset result["message"] = "削除しました。">
