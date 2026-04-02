@@ -8,6 +8,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const addSlipButton = document.getElementById("add_slip_button");
     const slipListButton = document.getElementById("slip_list_button");
 
+    const inventoryButton = document.getElementById("inventory_button");
+
     const masterButton = document.getElementById("master_button");
     const masterModal = document.getElementById("master_modal");
     const closeModalButton = document.getElementById("close_modal_button");
@@ -16,18 +18,21 @@ document.addEventListener("DOMContentLoaded", function () {
     const supplierMasterButton = document.getElementById("supplier-master-button");
     const staffMasterButton = document.getElementById("staff-master-button");
 
-    const adminButton = document.getElementById('admin-button');
-
-    const totalReportButton = document.getElementById('total_report_button');
+    const adminButton = document.getElementById("admin_button");
+    const totalReportButton = document.getElementById("total_report_button");
 
     // ===== ダッシュボード要素取得 =====
     const todaySlipCount = document.getElementById("today_slip_count");
     const unfixedSlipCount = document.getElementById("unfixed_slip_count");
     const todayTotalQty = document.getElementById("today_total_qty");
     const todayTotalAmount = document.getElementById("today_total_amount");
-    const todayDeliveryCount = document.getElementById("today_delivery_count");
     const deletedSlipCount = document.getElementById("deleted_slip_count");
     const recentSlipList = document.getElementById("recent_slip_list");
+
+    const todaySlipCountCard = document.getElementById("today_slip_count_card");
+    const unfixedSlipCountCard = document.getElementById("unfixed_slip_count_card");
+    const todayTotalQtyCard = document.getElementById("today_total_qty_card");
+    const todayTotalAmountCard = document.getElementById("today_total_amount_card");
 
     // ===== ユーザーメニュー開閉 =====
     if (detailButton && userMenu && arrowIcon) {
@@ -128,10 +133,141 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // ===== 社員マスタ =====
+    // ===== 集計レポートメニュー =====
     if (totalReportButton) {
         totalReportButton.addEventListener("click", function () {
             location.href = "total_report.cfm";
+        });
+    }
+
+    // ===== 在庫管理メニュー =====
+    if (inventoryButton) {
+        inventoryButton.addEventListener("click", function () {
+            location.href = "inventory.cfm";
+        });
+    }
+
+    // ===== 今日の日付（yyyy/mm/dd） =====
+    function getTodayString() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, "0");
+        const day = String(now.getDate()).padStart(2, "0");
+        return year + "/" + month + "/" + day;
+    }
+
+    // ===== hidden追加 =====
+    function appendHidden(form, name, value) {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = name;
+        input.value = value;
+        form.appendChild(input);
+    }
+
+    // ===== 伝票一覧へPOST遷移 =====
+    function submitSlipListForm(params) {
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = "slip_list.cfm";
+
+        appendHidden(form, "return_search_slip_no", params.return_search_slip_no || "");
+        appendHidden(form, "return_search_order_date_from", params.return_search_order_date_from || "");
+        appendHidden(form, "return_search_order_date_to", params.return_search_order_date_to || "");
+        appendHidden(form, "return_search_delivery_date_from", params.return_search_delivery_date_from || "");
+        appendHidden(form, "return_search_delivery_date_to", params.return_search_delivery_date_to || "");
+        appendHidden(form, "return_search_supplier_code", params.return_search_supplier_code || "");
+        appendHidden(form, "return_search_supplier_keyword", params.return_search_supplier_keyword || "");
+        appendHidden(form, "return_search_item_keyword", params.return_search_item_keyword || "");
+        appendHidden(form, "return_search_status", params.return_search_status || "");
+        appendHidden(form, "return_current_page", params.return_current_page || "1");
+        appendHidden(form, "return_sort_field", params.return_sort_field || "");
+        appendHidden(form, "return_sort_order", params.return_sort_order || "");
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    // ===== 伝票詳細へPOST遷移 =====
+    function submitSlipDetailForm(slipNo) {
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = "slip_list_dt.cfm";
+
+        appendHidden(form, "detail_slip_no", slipNo);
+        appendHidden(form, "detail_display_mode", "view");
+        appendHidden(form, "return_from_menu", "1");
+
+        appendHidden(form, "return_search_slip_no", "");
+        appendHidden(form, "return_search_order_date_from", "");
+        appendHidden(form, "return_search_order_date_to", "");
+        appendHidden(form, "return_search_delivery_date_from", "");
+        appendHidden(form, "return_search_delivery_date_to", "");
+        appendHidden(form, "return_search_supplier_code", "");
+        appendHidden(form, "return_search_supplier_keyword", "");
+        appendHidden(form, "return_search_item_keyword", "");
+        appendHidden(form, "return_search_status", "");
+        appendHidden(form, "return_current_page", "1");
+        appendHidden(form, "return_sort_field", "");
+        appendHidden(form, "return_sort_order", "");
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    // ===== 集計レポートへPOST遷移 =====
+    function submitTotalReportForm(dashboardMode) {
+        const form = document.createElement("form");
+        const today = getTodayString();
+
+        form.method = "POST";
+        form.action = "total_report.cfm";
+
+        appendHidden(form, "slip_date_from", today);
+        appendHidden(form, "slip_date_to", today);
+        appendHidden(form, "delivery_date_from", "");
+        appendHidden(form, "delivery_date_to", "");
+        appendHidden(form, "supplier_code", "");
+        appendHidden(form, "item_keyword", "");
+        appendHidden(form, "status", "");
+        appendHidden(form, "report_type", "day");
+        appendHidden(form, "dashboard_mode", dashboardMode);
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    // ===== KPIカードクリック =====
+    if (todaySlipCountCard) {
+        todaySlipCountCard.addEventListener("click", function () {
+            const today = getTodayString();
+
+            submitSlipListForm({
+                return_search_order_date_from: today,
+                return_search_order_date_to: today,
+                return_current_page: "1"
+            });
+        });
+    }
+
+    if (unfixedSlipCountCard) {
+        unfixedSlipCountCard.addEventListener("click", function () {
+            submitSlipListForm({
+                return_search_status: "1",
+                return_current_page: "1"
+            });
+        });
+    }
+
+    if (todayTotalQtyCard) {
+        todayTotalQtyCard.addEventListener("click", function () {
+            submitTotalReportForm("qty");
+        });
+    }
+
+    if (todayTotalAmountCard) {
+        todayTotalAmountCard.addEventListener("click", function () {
+            submitTotalReportForm("amount");
         });
     }
 
@@ -181,10 +317,6 @@ document.addEventListener("DOMContentLoaded", function () {
             todayTotalAmount.textContent = "¥" + formatNumber(result.today_total_amount || 0);
         }
 
-        if (todayDeliveryCount) {
-            todayDeliveryCount.textContent = formatNumber(result.today_delivery_count || 0) + "件";
-        }
-
         if (deletedSlipCount) {
             deletedSlipCount.textContent = formatNumber(result.deleted_slip_count || 0) + "件";
         }
@@ -206,7 +338,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         recentSlips.forEach(function (slip) {
             html += `
-                <div class="info-item">
+                <div class="info-item clickable-item js-recent-slip-row" data-slip-no="${escapeHtml(slip.slip_no || "")}">
                     <div class="info-item-left">
                         <div class="info-main">伝票番号: ${escapeHtml(slip.slip_no || "")}</div>
                         <div class="info-sub">
@@ -223,6 +355,22 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         recentSlipList.innerHTML = html;
+        bindRecentSlipEvents();
+    }
+
+    function bindRecentSlipEvents() {
+        const rows = document.querySelectorAll(".js-recent-slip-row");
+
+        rows.forEach(function (row) {
+            row.addEventListener("click", function () {
+                const slipNo = row.dataset.slipNo || "";
+                if (!slipNo) {
+                    return;
+                }
+
+                submitSlipDetailForm(slipNo);
+            });
+        });
     }
 
     function showDashboardError(message) {
@@ -237,9 +385,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         if (todayTotalAmount) {
             todayTotalAmount.textContent = "-";
-        }
-        if (todayDeliveryCount) {
-            todayDeliveryCount.textContent = "-";
         }
         if (deletedSlipCount) {
             deletedSlipCount.textContent = "-";

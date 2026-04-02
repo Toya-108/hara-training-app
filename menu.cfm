@@ -156,8 +156,8 @@
         }
 
         .menu-button {
-            width: 210px;
-            height: 180px;
+            width: 230px;
+            height: 150px;
             border: none;
             border-radius: 16px;
             background-color: #3F5B4B;
@@ -180,7 +180,7 @@
 
         .menu-button.disabled-button {
             opacity: 0.55 !important;
-            cursor: not-allowed;
+            /* cursor: not-allowed; */
         }
 
         .menu-button.disabled-button:hover {
@@ -204,12 +204,6 @@
             margin-top: 8px;
         }
 
-        .dashboard-title {
-            margin: 0 0 18px 0;
-            font-size: 24px;
-            color: #2E4136;
-        }
-
         .kpi-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -223,6 +217,21 @@
             border-radius: 16px;
             padding: 20px;
             box-shadow: 0 4px 12px rgba(46, 65, 54, 0.05);
+        }
+
+        .kpi-card.clickable-card {
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+        }
+
+        .kpi-card.clickable-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(46, 65, 54, 0.10);
+            background-color: #FFFCF5;
+        }
+
+        .kpi-card.clickable-card:active {
+            transform: translateY(0);
         }
 
         .kpi-label {
@@ -273,6 +282,17 @@
             border-radius: 12px;
             background-color: #F9F4E8;
             border: 1px solid #E8DDCA;
+        }
+
+        .info-item.clickable-item {
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+        }
+
+        .info-item.clickable-item:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 14px rgba(46, 65, 54, 0.08);
+            background-color: #FCF8EE;
         }
 
         .info-item-left {
@@ -418,8 +438,7 @@
         .modal-bg.is-open {
             display: block;
         }
-
-            </style>
+    </style>
 </head>
 
 <cfoutput>
@@ -472,6 +491,11 @@
                     <span class="menu-text">伝票一覧</span>
                 </button>
 
+                <button type="button" class="menu-button" id="inventory_button">
+                    <img src="#Application.asset_url#/image/inventory-icon.svg" alt="在庫管理" class="menu-icon">
+                    <span class="menu-text">在庫管理</span>
+                </button>
+
                 <button type="button" class="menu-button" id="total_report_button">
                     <img src="#Application.asset_url#/image/total-report-icon.svg" alt="集計レポート" class="menu-icon">
                     <span class="menu-text">集計レポート</span>
@@ -482,29 +506,31 @@
                     <span class="menu-text">マスタ</span>
                 </button>
 
-                <button type="button" class="menu-button" id="admin-button">
+                <button type="button" class="menu-button" id="admin_button">
                     <img src="#Application.asset_url#/image/admin-icon.svg" alt="基本設定" class="menu-icon">
                     <span class="menu-text">基本設定</span>
                 </button>
+
             </div>
 
             <section class="dashboard">
-                <!--- <h2 class="dashboard-title">ダッシュボード</h2> --->
-
                 <div class="kpi-grid">
-                    <div class="kpi-card">
+                    <div class="kpi-card clickable-card" id="today_slip_count_card" title="今日の伝票一覧へ">
                         <p class="kpi-label">今日の伝票数</p>
                         <p class="kpi-value" id="today_slip_count">-</p>
                     </div>
-                    <div class="kpi-card">
+
+                    <div class="kpi-card clickable-card" id="unfixed_slip_count_card" title="未確定伝票一覧へ">
                         <p class="kpi-label">未確定伝票数</p>
                         <p class="kpi-value" id="unfixed_slip_count">-</p>
                     </div>
-                    <div class="kpi-card">
+
+                    <div class="kpi-card clickable-card" id="today_total_qty_card" title="日別集計レポートへ">
                         <p class="kpi-label">今日の商品合計数量</p>
                         <p class="kpi-value" id="today_total_qty">-</p>
                     </div>
-                    <div class="kpi-card">
+
+                    <div class="kpi-card clickable-card" id="today_total_amount_card" title="日別売上集計へ">
                         <p class="kpi-label">今日の合計金額</p>
                         <p class="kpi-value" id="today_total_amount">-</p>
                     </div>
@@ -521,10 +547,6 @@
                     <div class="panel">
                         <h3 class="panel-title">本日の状況</h3>
                         <div class="summary-box">
-                            <!--- <div class="summary-item">
-                                <p class="summary-label">本日納品予定件数</p>
-                                <p class="summary-value" id="today_delivery_count">-</p>
-                            </div> --->
                             <div class="summary-item">
                                 <p class="summary-label">削除伝票数</p>
                                 <p class="summary-value" id="deleted_slip_count">-</p>
@@ -548,7 +570,7 @@
         </div>
     </div>
 
-    <script src="#application.asset_url#/js/menu.js?20260401_1"></script>
+    <script src="#application.asset_url#/js/menu.js?20260402_1"></script>
 </body>
 </cfoutput>
 </html>
