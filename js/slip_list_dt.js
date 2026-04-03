@@ -57,7 +57,7 @@ function bindEvents() {
   }
 
   if (cancelBtn) {
-    cancelBtn.addEventListener("click", async function (event) {
+    cancelBtn.addEventListener("click", function (event) {
       event.preventDefault();
       moveToView();
     });
@@ -85,11 +85,7 @@ function bindEvents() {
         }
       }
 
-      if (isFromMenu()) {
-        moveToMenu();
-      } else {
-        moveToListByPost();
-      }
+      moveToListByPost();
     });
   }
 
@@ -114,16 +110,16 @@ function bindEvents() {
   }
 }
 
-function isFromMenu() {
-  return getValue("return_from_menu") === "1";
-}
-
 async function lookupItemByCode(input) {
   const row = input.closest("tr");
-  if (!row) return;
+  if (!row) {
+    return;
+  }
 
   const index = Number(row.dataset.index);
-  if (isNaN(index) || !detailRows[index]) return;
+  if (isNaN(index) || !detailRows[index]) {
+    return;
+  }
 
   const itemCode = String(input.value || "").trim();
   const janInput = row.querySelector(".jan-code-input");
@@ -136,9 +132,17 @@ async function lookupItemByCode(input) {
     detailRows[index].item_name = "";
     detailRows[index].unit_price = 0;
 
-    if (janInput) janInput.value = "";
-    if (itemNameInput) itemNameInput.value = "";
-    if (unitPriceInput) unitPriceInput.value = "";
+    if (janInput) {
+      janInput.value = "";
+    }
+
+    if (itemNameInput) {
+      itemNameInput.value = "";
+    }
+
+    if (unitPriceInput) {
+      unitPriceInput.value = "";
+    }
 
     updateDetailAmount(index);
     updateTotals();
@@ -168,9 +172,17 @@ async function lookupItemByCode(input) {
       detailRows[index].item_name = "";
       detailRows[index].unit_price = 0;
 
-      if (janInput) janInput.value = "";
-      if (itemNameInput) itemNameInput.value = "";
-      if (unitPriceInput) unitPriceInput.value = "";
+      if (janInput) {
+        janInput.value = "";
+      }
+
+      if (itemNameInput) {
+        itemNameInput.value = "";
+      }
+
+      if (unitPriceInput) {
+        unitPriceInput.value = "";
+      }
 
       await Swal.fire({
         title: "商品が見つかりません",
@@ -194,9 +206,17 @@ async function lookupItemByCode(input) {
 
     input.value = detailRows[index].item_code;
 
-    if (janInput) janInput.value = detailRows[index].jan_code;
-    if (itemNameInput) itemNameInput.value = detailRows[index].item_name;
-    if (unitPriceInput) unitPriceInput.value = detailRows[index].unit_price;
+    if (janInput) {
+      janInput.value = detailRows[index].jan_code;
+    }
+
+    if (itemNameInput) {
+      itemNameInput.value = detailRows[index].item_name;
+    }
+
+    if (unitPriceInput) {
+      unitPriceInput.value = detailRows[index].unit_price;
+    }
 
     updateDetailAmount(index);
     updateTotals();
@@ -230,7 +250,6 @@ function moveToEdit() {
   submitPost("slip_list_dt.cfm", {
     detail_slip_no: slipNo,
     detail_display_mode: "edit",
-    return_from_menu: getValue("return_from_menu"),
     return_search_slip_no: getValue("return_search_slip_no"),
     return_search_order_date_from: getValue("return_search_order_date_from"),
     return_search_order_date_to: getValue("return_search_order_date_to"),
@@ -250,18 +269,13 @@ function moveToView() {
   const slipNo = getValue("detail_slip_no");
 
   if (!slipNo) {
-    if (isFromMenu()) {
-      moveToMenu();
-    } else {
-      moveToListByPost();
-    }
+    moveToListByPost();
     return;
   }
 
   submitPost("slip_list_dt.cfm", {
     detail_slip_no: slipNo,
     detail_display_mode: "view",
-    return_from_menu: getValue("return_from_menu"),
     return_search_slip_no: getValue("return_search_slip_no"),
     return_search_order_date_from: getValue("return_search_order_date_from"),
     return_search_order_date_to: getValue("return_search_order_date_to"),
@@ -275,10 +289,6 @@ function moveToView() {
     return_sort_field: getValue("return_sort_field"),
     return_sort_order: getValue("return_sort_order")
   });
-}
-
-function moveToMenu() {
-  location.href = "menu.cfm";
 }
 
 function moveToListByPost() {
@@ -383,7 +393,7 @@ function renderHeader(header) {
   setValue("supplier_code", header.supplier_code || "");
   setValue("memo", header.memo || "");
 
-  updateSupplierNameDisplay();
+  updateSupplierNameDisplay(header.supplier_name || "");
 }
 
 function renderEmptyHeader() {
@@ -409,7 +419,9 @@ function renderEmptyHeader() {
 
 function renderDetailTableView(details) {
   const tbody = document.getElementById("detail_table_body");
-  if (!tbody) return;
+  if (!tbody) {
+    return;
+  }
 
   if (!details || details.length === 0) {
     renderEmptyDetailTable();
@@ -437,7 +449,9 @@ function renderDetailTableView(details) {
 
 function renderDetailTableEdit(details) {
   const tbody = document.getElementById("detail_table_body");
-  if (!tbody) return;
+  if (!tbody) {
+    return;
+  }
 
   if (!details || details.length === 0) {
     tbody.innerHTML = `
@@ -488,6 +502,10 @@ function bindDetailTableEvents() {
   document.querySelectorAll(".qty-input").forEach(function (input) {
     input.addEventListener("input", function () {
       const index = Number(input.dataset.index);
+      if (isNaN(index) || !detailRows[index]) {
+        return;
+      }
+
       detailRows[index].qty = toNumber(input.value);
       updateDetailAmount(index);
       updateTotals();
@@ -497,6 +515,10 @@ function bindDetailTableEvents() {
   document.querySelectorAll(".unit-price-input").forEach(function (input) {
     input.addEventListener("input", function () {
       const index = Number(input.dataset.index);
+      if (isNaN(index) || !detailRows[index]) {
+        return;
+      }
+
       detailRows[index].unit_price = toNumber(input.value);
       updateDetailAmount(index);
       updateTotals();
@@ -506,15 +528,21 @@ function bindDetailTableEvents() {
 
 function updateDetailAmount(index) {
   const row = detailRows[index];
-  if (!row) return;
+  if (!row) {
+    return;
+  }
 
   row.amount = toNumber(row.qty) * toNumber(row.unit_price);
 
   const tbody = document.getElementById("detail_table_body");
-  if (!tbody) return;
+  if (!tbody) {
+    return;
+  }
 
   const targetRow = tbody.querySelector(`tr[data-index="${index}"]`);
-  if (!targetRow) return;
+  if (!targetRow) {
+    return;
+  }
 
   const amountInput = targetRow.querySelector(".amount-input");
   if (amountInput) {
@@ -522,10 +550,25 @@ function updateDetailAmount(index) {
   }
 }
 
-function updateSupplierNameDisplay() {
+function updateSupplierNameDisplay(fallbackName) {
   const supplierCode = getValue("supplier_code");
-  const supplierMap = window.slipListDtMaster && window.slipListDtMaster.supplierMap ? window.slipListDtMaster.supplierMap : {};
-  setText("supplier_name_disp", supplierMap[supplierCode] || "");
+  const supplierMap = window.slipListDtMaster && window.slipListDtMaster.supplierMap
+    ? window.slipListDtMaster.supplierMap
+    : {};
+  const currentName = getText("supplier_name_disp");
+  let displayName = "";
+
+  if (supplierCode && supplierMap[supplierCode]) {
+    displayName = supplierMap[supplierCode];
+  } else if (fallbackName) {
+    displayName = fallbackName;
+  } else if (currentName) {
+    displayName = currentName;
+  } else {
+    displayName = "";
+  }
+
+  setText("supplier_name_disp", displayName);
 }
 
 function updateTotals() {
@@ -661,7 +704,6 @@ async function saveSlip() {
     submitPost("slip_list_dt.cfm", {
       detail_slip_no: slipNo,
       detail_display_mode: "view",
-      return_from_menu: getValue("return_from_menu"),
       return_search_slip_no: getValue("return_search_slip_no"),
       return_search_order_date_from: getValue("return_search_order_date_from"),
       return_search_order_date_to: getValue("return_search_order_date_to"),
@@ -694,7 +736,9 @@ async function saveSlip() {
 
 function renderEmptyDetailTable() {
   const tbody = document.getElementById("detail_table_body");
-  if (!tbody) return;
+  if (!tbody) {
+    return;
+  }
 
   tbody.innerHTML = `
     <tr>
@@ -705,7 +749,9 @@ function renderEmptyDetailTable() {
 
 function renderErrorDetailTable() {
   const tbody = document.getElementById("detail_table_body");
-  if (!tbody) return;
+  if (!tbody) {
+    return;
+  }
 
   tbody.innerHTML = `
     <tr>
@@ -716,22 +762,46 @@ function renderErrorDetailTable() {
 
 function getStatusLabel(status) {
   const value = String(status || "");
-  if (value === "2") return "確定";
-  if (value === "3") return "削除";
-  return value === "1" ? "登録" : "";
+
+  if (value === "2") {
+    return "確定";
+  }
+
+  if (value === "3") {
+    return "削除";
+  }
+
+  if (value === "1") {
+    return "登録";
+  }
+
+  return "";
 }
 
 function formatDateDisplay(value) {
-  if (!value) return "";
+  if (!value) {
+    return "";
+  }
+
   return String(value).replace(/-/g, "/");
 }
 
 function toNumber(value) {
-  if (value == null) return 0;
+  if (value == null) {
+    return 0;
+  }
+
   const normalized = String(value).replace(/,/g, "").trim();
-  if (normalized === "") return 0;
+  if (normalized === "") {
+    return 0;
+  }
+
   const num = Number(normalized);
-  return isNaN(num) ? 0 : num;
+  if (isNaN(num)) {
+    return 0;
+  }
+
+  return num;
 }
 
 function formatNumber(value) {
@@ -741,18 +811,35 @@ function formatNumber(value) {
 
 function getValue(id) {
   const element = document.getElementById(id);
-  return element ? element.value.trim() : "";
+
+  if (!element) {
+    return "";
+  }
+
+  return element.value.trim();
 }
 
 function setValue(id, value) {
   const element = document.getElementById(id);
+
   if (element) {
     element.value = value == null ? "" : value;
   }
 }
 
+function getText(id) {
+  const element = document.getElementById(id);
+
+  if (!element) {
+    return "";
+  }
+
+  return String(element.textContent || "").trim();
+}
+
 function setText(id, value) {
   const element = document.getElementById(id);
+
   if (element) {
     element.textContent = value == null ? "" : value;
   }
@@ -792,10 +879,23 @@ function escapeHtml(value) {
 function setStatus(status) {
   const el = document.getElementById("status_disp");
 
+  if (!el) {
+    return;
+  }
+
   let text = "";
-  if (status == "1") text = "登録";
-  if (status == "2") text = "確定";
-  if (status == "3") text = "削除";
+
+  if (String(status) === "1") {
+    text = "登録";
+  }
+
+  if (String(status) === "2") {
+    text = "確定";
+  }
+
+  if (String(status) === "3") {
+    text = "削除";
+  }
 
   el.textContent = text;
   el.classList.remove("status-1", "status-2", "status-3");

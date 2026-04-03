@@ -210,3 +210,62 @@ body {
     background-color: rgba(63, 91, 75, 0.4) !important;
     cursor: default;
 }
+
+
+/* =========================
+   ドロップダウン（ネイティブ▼維持）
+========================= */
+select,
+.form-select {
+    width: 100%;
+    height: 44px;
+    padding: 0 12px;
+
+    font-size: 15px;
+    color: #2F3E34;
+
+    /* ★ここがポイント（白やめる） */
+    background-color: #F3EDE2;
+
+    border: 1px solid #D6C8B2;
+    border-radius: 10px;
+
+    outline: none;
+    cursor: pointer;
+
+    box-sizing: border-box;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.2s ease;
+}
+
+/* hover */
+select:hover,
+.form-select:hover {
+    background-color: #EFE6D6;
+    border-color: #BFAE93;
+}
+
+/* focus */
+select:focus,
+.form-select:focus {
+    background-color: #FFFFFF; /* ←ここで一瞬だけ白にして強調 */
+    border-color: #3F5B4B;
+    box-shadow: 0 0 0 4px rgba(63, 91, 75, 0.15);
+}
+
+/* disabled */
+select:disabled,
+.form-select:disabled {
+    background-color: #E8E2D8;
+    color: #9A948A;
+    cursor: not-allowed;
+}
+
+/* option（開いた時） */
+select option {
+    background-color: #FFFFFF;
+    color: #2F3E34;
+}

@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const itemMasterButton = document.getElementById("item-master-button");
     const supplierMasterButton = document.getElementById("supplier-master-button");
     const staffMasterButton = document.getElementById("staff-master-button");
+    const deliveryCompanyButton = document.getElementById('delivery-master-button');
 
     const adminButton = document.getElementById("admin_button");
     const totalReportButton = document.getElementById("total_report_button");
@@ -126,6 +127,13 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    // ===== 配送業者マスタ =====
+    if (deliveryCompanyButton) {
+        deliveryCompanyButton.addEventListener("click", function () {
+            location.href = "m_delivery_company.cfm";
+        });
+    }
+
     // ===== 基本設定 =====
     if (adminButton) {
         adminButton.addEventListener("click", function () {
@@ -135,14 +143,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // ===== 集計レポートメニュー =====
     if (totalReportButton) {
-        totalReportButton.addEventListener("click", function () {
+        totalReportButton.addEventListener("click", function (event) {
+            if(totalReportButton.classList.contains("disabled-button")){
+                event.preventDefault();
+                return false;
+            }
             location.href = "total_report.cfm";
         });
     }
 
     // ===== 在庫管理メニュー =====
     if (inventoryButton) {
-        inventoryButton.addEventListener("click", function () {
+        inventoryButton.addEventListener("click", function (event) {
+            if(inventoryButton.classList.contains("disabled-button")){
+                event.preventDefault();
+                return false;
+            }
             location.href = "inventory.cfm";
         });
     }

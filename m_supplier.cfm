@@ -5,6 +5,15 @@
 <cfset showNewButton = true>
 <cfset showExportButton = true>
 
+<cfif session.authorityLevel eq 9>
+    <cfset showNewButton = true>
+    <cfset showExportButton = false>
+<cfelse>
+    <cfset showNewButton = false>
+    <cfset showExportButton = false>
+</cfif>
+
+
 <!--- =========================
       配送業者マスタ取得
       ========================= --->
@@ -207,7 +216,7 @@
 
         .paging_btn:disabled {
             opacity: 0.5;
-            cursor: not-allowed;
+            cursor: default;
         }
 
         .page_number_text {

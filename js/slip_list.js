@@ -128,7 +128,9 @@ function bindEnterMoveEvents() {
 
   searchFields.forEach(function (field, index) {
     field.addEventListener("keydown", function (event) {
-      if (event.isComposing) {
+
+      // IME変換中は無視（超重要）
+      if (event.isComposing || event.keyCode === 229) {
         return;
       }
 
@@ -136,7 +138,11 @@ function bindEnterMoveEvents() {
         event.preventDefault();
 
         if (index < searchFields.length - 1) {
+          // 次へ移動
           searchFields[index + 1].focus();
+        } else {
+          // 最後なら検索実行
+          document.getElementById("search_btn").click();
         }
       }
     });

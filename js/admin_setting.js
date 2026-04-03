@@ -16,12 +16,12 @@ function initializeScreenValues() {
 }
 
 function bindHeaderButtons() {
-  const backBtn = document.getElementById("back-btn");
+  const homeBtn = document.getElementById("home-btn");
   const editBtn = document.getElementById("edit-button");
   const cancelBtn = document.getElementById("cancel-button");
 
-  if (backBtn) {
-    backBtn.addEventListener("click", function (event) {
+  if (homeBtn) {
+    homeBtn.addEventListener("click", function (event) {
       event.preventDefault();
       location.href = "menu.cfm";
     });

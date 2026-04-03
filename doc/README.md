@@ -1,252 +1,312 @@
-# 伝票管理アプリケーション（Hara LogiApp）
+# 📦 Hara LogiApp - 業務管理システム
 
 ---
 
 ## 1. 概要
 
-本アプリは、物流業務および業務管理を目的としたWebアプリケーションである。
+本システムは、物流業務における以下の管理を行う業務アプリケーションである。
 
-主に以下の業務を対象とする。
-
-* 伝票管理（登録・一覧・詳細・確定・削除）
+* 伝票管理
 * 在庫管理
 * マスタ管理（商品・取引先・社員・配送業者）
 * 集計レポート
-* 各種データのエクスポート
+
+本プロジェクトは、以下の設計思想に基づいて構築されている。
+
+* 状態保持（一覧 → 詳細 → 戻る）
+* UI/UXの統一
+* 明示的で可読性の高い実装
+* APIと画面の責務分離
 
 ---
 
-## 2. 主な機能
+## 2. 技術構成
 
-### ■ 伝票管理
+| 項目     | 内容                                |
+| ------ | --------------------------------- |
+| フロント   | JavaScript（Vanilla / async-await） |
+| バックエンド | CFML（CFC）                         |
+| DB     | MySQL                             |
+| UI     | CSS + SweetAlert2 + Flatpickr     |
 
-* 伝票登録（add_slip）
-* 伝票一覧（検索・ソート・ページング）
-* 伝票詳細（閲覧・修正）
-* 一括確定 / 個別確定
-* CSVエクスポート
+---
 
-### ■ 在庫管理
+## 3. ディレクトリ構成
+
+```plaintext
+hara/
+├── Application.cfc         # アプリケーション設定
+├── init.cfm                # 初期化処理
+├── header.cfm              # 共通ヘッダ
+
+├── css/                    # スタイル
+├── js/                     # 画面ごとのJS
+├── image/                  # アイコン・画像
+
+├── com/                    # 共通CFC
+│   ├── paging.cfc
+│   └── export_db.cfc
+
+├── sh/                     # CSV出力用シェル
+│   └── export_db.sh
+
+├── temp/                   # 一時ファイル
+
+├── doc/                    # ★設計書
+│   ├── README.md
+│   ├── MASTER.md
+│   ├── LOGIN.md
+│   ├── MENU.md
+│   ├── ADMIN.md
+│   ├── ADDSLIP.md
+│   ├── SLIP.md
+│   ├── SLIPLIST.md
+│   ├── SLIPLIST_DT.md
+│   ├── INVENTORY.md
+│   ├── TOTAL_REPORT.md
+│   ├── M_ITEM.md
+│   ├── M_ITEM_DT.md
+│   ├── M_SUPPLIER.md
+│   ├── M_SUPPLIER_DT.md
+│   ├── M_STAFF.md
+│   ├── M_STAFF_DT.md
+│   ├── M_DELIVERY_COMPANY.md
+│   └── M_DELIVERY_COMPANY_DT.md
+
+├── login.cfm / login.cfc
+├── menu.cfm / menu.cfc
+├── admin_setting.cfm / cfc
+
+├── add_slip.cfm / cfc
+├── slip_list.cfm / cfc
+├── slip_list_dt.cfm / cfc
+├── slip_list_export.cfm
+
+├── inventory.cfm / cfc
+
+├── total_report.cfm / cfc
+├── total_report_export.cfm
+
+├── m_item.cfm / cfc
+├── m_item_dt.cfm / cfc
+├── m_item_export.cfm
+
+├── m_supplier.cfm / cfc
+├── m_supplier_dt.cfm / cfc
+├── m_supplier_export.cfm
+
+├── m_staff.cfm / cfc
+├── m_staff_dt.cfm / cfc
+├── m_staff_export.cfm
+
+├── m_delivery_company.cfm / cfc
+├── m_delivery_company_dt.cfm / cfc
+├── m_delivery_company_export.cfm
+
+├── download.cfm
+└── test.cfm
+```
+
+---
+
+## 4. 機能一覧
+
+### 4.1 認証・設定
+
+* ログイン
+* 管理者設定
+
+---
+
+### 4.2 伝票管理
+
+* 伝票登録
+* 伝票一覧
+* 伝票詳細
+* 一括確定
+* CSV出力
+
+---
+
+### 4.3 在庫管理
 
 * 在庫一覧表示
 * 在庫調整
-* 伝票確定時に在庫へ反映
+* 在庫サマリー表示
 
-### ■ マスタ管理
+---
+
+### 4.4 マスタ管理
 
 * 商品マスタ
 * 取引先マスタ
 * 社員マスタ
 * 配送業者マスタ
 
-（一覧・詳細・追加・修正・削除 共通仕様）
+---
 
-### ■ 集計レポート
+### 4.5 集計レポート
 
-* 日別集計
-* 取引先別集計
-* 商品別集計
-* CSVエクスポート
-
-### ■ 管理機能
-
-* 管理者設定（admin_setting）
-* ダウンロード履歴管理
+* 日別
+* 商品別
+* 取引先別
 
 ---
 
-## 3. 技術構成
+## 5. 設計ドキュメント
 
-* ColdFusion（CFML）
-* MySQL
-* JavaScript（Vanilla）
-* SweetAlert2
-* Flatpickr（日付UI）
-* Shell（CSVエクスポート）
+詳細仕様は `doc/` 配下に格納。
 
 ---
 
-## 4. ディレクトリ構成
+### ■ 全体設計
 
-```text
-/
-├── Application.cfc        … アプリケーション設定
-├── init.cfm               … 初期処理
-
-├── header.cfm             … 共通ヘッダー
-
-├── login.cfm / login.cfc  … ログイン
-
-├── menu.cfm / menu.cfc    … メニュー
-
-├── add_slip.*             … 伝票登録
-├── slip_list.*            … 伝票一覧
-├── slip_list_dt.*         … 伝票詳細
-├── slip_list_export.cfm   … 伝票CSV出力
-
-├── inventory.*            … 在庫管理
-
-├── total_report.*         … 集計レポート
-├── total_report_export.cfm
-
-├── m_item.*               … 商品マスタ
-├── m_supplier.*           … 取引先マスタ
-├── m_staff.*              … 社員マスタ
-├── m_delivery_company.*   … 配送業者マスタ
-
-├── admin_setting.*        … 管理者設定
-
-├── com/
-│   ├── export_db.cfc      … CSV出力共通処理
-│   └── paging.cfc         … ページング処理
-
-├── js/
-│   ├── 各画面JS
-│   └── validation-common.js（共通バリデーション）
-
-├── css/
-│   ├── base.css
-│   └── style.css
-
-├── image/                 … アイコン類
-
-├── sh/
-│   └── export_db.sh       … CSV出力シェル
-
-├── doc/                   … 各機能README
-│   ├── README.md
-│   ├── MENU.md
-│   ├── ADDSLIP.md
-│   ├── slip_list.md
-│   ├── slip_list_dt.md
-│   ├── TOTAL_REPORT.md
-│   ├── ADMIN.md
-│   ├── master_common.md
-│   ├── m_staff.md
-│   └── m_supplier.md
-
-├── temp/                  … 一時ファイル
-
-└── test.cfm               … テスト用
-```
+* MASTER.md
+  → マスタ共通仕様
 
 ---
 
-## 5. アーキテクチャ
+### ■ 伝票関連
 
-本システムは以下の構成で統一する。
-
-### ■ 1画面 = 3ファイル構成
-
-* `.cfm` ：画面（HTML）
-* `.cfc` ：API（データ処理）
-* `.js`  ：フロント制御
+* SLIP.md
+* SLIPLIST.md
+* SLIPLIST_DT.md
 
 ---
 
-### ■ 通信方式
+### ■ 在庫
 
-* fetch + async/await を使用
-* returnformat=json を利用
-* レスポンス形式は統一
+* INVENTORY.md
+
+---
+
+### ■ マスタ
+
+* M_ITEM.md / M_ITEM_DT.md
+* M_SUPPLIER.md / M_SUPPLIER_DT.md
+* M_STAFF.md / M_STAFF_DT.md
+* M_DELIVERY_COMPANY.md / M_DELIVERY_COMPANY_DT.md
+
+---
+
+### ■ その他
+
+* LOGIN.md
+* MENU.md
+* ADMIN.md
+* TOTAL_REPORT.md
+
+---
+
+## 6. 共通仕様（重要）
+
+### 6.1 APIレスポンス
 
 ```json
 {
   "status": 0,
   "message": "",
-  "results": {}
+  "results": {},
+  "paging": {}
 }
 ```
 
 ---
 
-### ■ エラーハンドリング
+### 6.2 ステータス
 
-* cfcatch は database のみ使用
-* 必ず cflog を出力
-
----
-
-## 6. UI設計ルール
-
-### ■ header.cfmでボタン制御
-
-各画面で以下のフラグを設定する
-
-* showHomeButton
-* showBackButton
-* showNewButton
-* showEditButton
-* showExportButton
-* showCancelButton
+| status | 意味  |
+| ------ | --- |
+| 0      | 正常  |
+| 1      | エラー |
 
 ---
 
-### ■ 表示モード
+### 6.3 画面モード
 
-```text
-view / edit / add
-```
-
-によって画面制御する
+| モード  | 内容 |
+| ---- | -- |
+| view | 表示 |
+| edit | 編集 |
+| add  | 新規 |
 
 ---
 
-### ■ 状態保持
+### 6.4 Enterキー挙動（統一）
 
-一覧 → 詳細 → 戻る の際は
+* Enter → 次項目へ移動
+* Shift+Enter → 前へ
+* 最後 → 検索ボタン
+* IME中は無効
+* Enterで検索しない
+
+---
+
+### 6.5 状態保持
 
 * 検索条件
 * ソート
-* ページ番号
+* ページ
 
-を必ず保持すること
-
----
-
-## 7. 業務フロー（重要）
-
-### ■ 伝票 → 在庫の流れ
-
-1. 伝票登録（status = 1）
-2. 伝票確定（status = 2）
-3. 在庫へ反映
-
-※未確定状態では在庫に影響しない
+→ hiddenで管理
 
 ---
 
-## 8. エクスポート仕様
+## 7. 特徴
 
-* Shell + MySQLでCSV生成
-* UTF-8 → CP932変換
-* NULLは空文字で出力
+### 7.1 状態保持重視
 
----
-
-## 9. 開発ルール（重要）
-
-* cfparamは禁止（structKeyExistsを使用）
-* URLではなくFormで値を渡す
-* 共通処理はjs / cfcに切り出す
-* UIは既存画面に合わせる（統一最優先）
+一覧 → 詳細 → 戻るで状態維持
 
 ---
 
-## 10. ドキュメント
+### 7.2 UI統一
 
-各機能の詳細は以下を参照
-
-* doc/配下の各.md
+* 全マスタ同一操作
+* 同一レイアウト
 
 ---
 
-## 11. 補足
+### 7.3 明示的実装
 
-本システムは以下を最優先とする
+* cfparam未使用
+* structKeyExists使用
 
-* 可読性
-* 統一性
-* 保守性
+---
+
+### 7.4 シンプル設計
+
+* helper乱用なし
+* 可読性重視
+
+---
+
+## 8. 開発ルール
+
+* APIは必ずJSONで返却
+* status=0を成功とする
+* SQLはバインド変数使用
+* エラーはmessageで返却
+
+---
+
+## 9. 今後拡張
+
+* 在庫履歴管理
+* 権限制御
+* ワークフロー化
+* 一括処理強化
+* API共通化
+
+---
+
+## 10. 補足
+
+本システムは、以下を目的として設計されている。
+
+* 業務効率化
+* 操作ミス防止
+* 拡張性の確保
+* 保守性の向上
 
 ---

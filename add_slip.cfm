@@ -52,19 +52,19 @@
         }
 
         .form-card {
+            margin-bottom: 24px;
+            padding: 24px;
             background-color: #FFFFFF;
             border: 1px solid #CDBFA8;
             border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 24px;
         }
 
         .section-title {
             margin: 0 0 20px 0;
+            padding-bottom: 10px;
             font-size: 20px;
             color: #2E4136;
             border-bottom: 1px solid #E6D8BF;
-            padding-bottom: 10px;
         }
 
         .form-grid {
@@ -74,6 +74,7 @@
         }
 
         .form-row {
+            position: relative;
             display: flex;
             flex-direction: column;
         }
@@ -99,10 +100,10 @@
         .form-select,
         .form-textarea {
             width: 100%;
+            color: #2F2A24;
+            background-color: #FFFFFF;
             border: 1px solid #CDBFA8;
             border-radius: 8px;
-            background-color: #FFFFFF;
-            color: #2F2A24;
             font-size: 14px;
         }
 
@@ -127,6 +128,14 @@
             box-shadow: 0 0 0 1px rgba(63, 91, 75, 0.15);
         }
 
+        .form-input.is-error,
+        .form-select.is-error,
+        .form-textarea.is-error,
+        .flatpickr-input.is-error {
+            border-color: #B84A4A !important;
+            background-color: #FFF8F8 !important;
+        }
+
         .field-error {
             display: none;
             margin-top: 6px;
@@ -138,11 +147,8 @@
             display: block;
         }
 
-        .form-input.is-error,
-        .form-select.is-error,
-        .form-textarea.is-error {
-            border-color: #B84A4A;
-            background-color: #FFF8F8;
+        .readonly-cell {
+            background-color: #F8F4EA;
         }
 
         .item-table-wrap {
@@ -157,10 +163,10 @@
 
         .item-table th,
         .item-table td {
-            border: 1px solid #CDBFA8;
             padding: 8px;
             text-align: left;
             vertical-align: middle;
+            border: 1px solid #CDBFA8;
         }
 
         .item-table th {
@@ -172,9 +178,9 @@
         .item-table td input {
             width: 100%;
             height: 36px;
+            padding: 0 10px;
             border: 1px solid #CDBFA8;
             border-radius: 6px;
-            padding: 0 10px;
             font-size: 14px;
         }
 
@@ -182,10 +188,6 @@
             outline: none;
             border-color: #3F5B4B;
             background-color: #FFFCF4;
-        }
-
-        .readonly-cell {
-            background-color: #F8F4EA;
         }
 
         .table-btn {
@@ -208,6 +210,11 @@
             justify-content: flex-end;
             gap: 12px;
             margin-top: 24px;
+        }
+
+        .action-area.left {
+            justify-content: flex-start;
+            margin-top: 16px;
         }
 
         .action-btn {
@@ -256,94 +263,166 @@
             color: #2E6A3A;
         }
 
-        @media (max-width: 768px) {
-            .content-wrap {
-                padding: 0 16px;
-            }
-
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .action-area {
-                flex-direction: column;
-            }
-
-            .action-btn {
-                width: 100%;
-            }
-        }
-
         .modal-bg {
-          display: none;
-          position: fixed;
-          inset: 0;
-          background-color: rgba(0, 0, 0, 0.35);
-          z-index: 1000;
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background-color: rgba(0, 0, 0, 0.35);
         }
 
         .modal-bg.is-open {
-          display: block;
+            display: block;
         }
 
         .modal-box {
-          width: 90%;
-          max-width: 900px;
-          margin: 60px auto 0;
-          padding: 24px;
-          background-color: #FFFFFF;
-          border: 1px solid #CDBFA8;
-          border-radius: 12px;
+            width: 90%;
+            max-width: 900px;
+            margin: 60px auto 0;
+            padding: 24px;
+            background-color: #FFFFFF;
+            border: 1px solid #CDBFA8;
+            border-radius: 12px;
+        }
+
+        .modal-title {
+            margin: 0 0 20px 0;
+            font-size: 20px;
+            color: #2E4136;
         }
 
         .supplier-modal-box {
-          max-height: 80vh;
-          overflow: hidden;
-          display: flex;
-          flex-direction: column;
+            display: flex;
+            flex-direction: column;
+            max-height: 80vh;
+            overflow: hidden;
         }
 
-        .supplier-search-area {
-          display: flex;
-          align-items: flex-end;
-          gap: 16px;
-          flex-wrap: wrap;
-          margin-bottom: 20px;
+        .supplier-search-line {
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            margin-bottom: 20px;
         }
 
-        .supplier-search-row {
-          min-width: 220px;
-          display: flex;
-          flex-direction: column;
+        .supplier-search-code {
+            width: 220px;
+            flex: 0 0 220px;
+            display: flex;
+            flex-direction: column;
         }
 
-        .supplier-search-row label {
-          margin-bottom: 6px;
-          font-size: 13px;
-          font-weight: bold;
-          color: #2E4136;
+        .supplier-search-name {
+            flex: 1 1 auto;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .supplier-search-code label,
+        .supplier-search-name label {
+            margin-bottom: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #2E4136;
+        }
+
+        .supplier-search-line {
+            display: flex;
+            align-items: end;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .supplier-search-code {
+            width: 220px;
+            flex: 0 0 220px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .supplier-search-name {
+            flex: 1 1 auto;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .supplier-search-code label,
+        .supplier-search-name label {
+            margin-bottom: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #2E4136;
         }
 
         .supplier-search-buttons {
-          display: flex;
-          gap: 10px;
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            height: 40px;
+            padding-bottom: 0;
+        }
+
+        .icon-button {
+            padding: 0;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .search-icon-button {
+            width: 56px;
+            height: 56px;
+            margin-top: -2px;
+        }
+
+        .search-icon-button img {
+            width: 48px;
+            height: 48px;
+            display: block;
+        }
+
+        .clear-icon-button {
+            width: 56px;
+            height: 56px;
+            margin-top: -2px;
+        }
+
+        .clear-icon-button img {
+            width: 35px;
+            height: 35px;
+            display: block;
+        }
+
+        .icon-button:hover {
+            opacity: 0.85;
+        }
+
+        .icon-button:active {
+            transform: scale(0.96);
         }
 
         .supplier-table-wrap {
-          overflow-y: auto;
-          max-height: 420px;
-          border: 1px solid #CDBFA8;
+            max-height: 420px;
+            overflow-y: auto;
+            border: 1px solid #CDBFA8;
         }
 
         .select-supplier-btn {
-          min-width: 70px;
-          height: 32px;
-          border: none;
-          border-radius: 6px;
-          background-color: #3F5B4B;
-          color: #FFFFFF;
-          font-size: 13px;
-          cursor: pointer;
+            min-width: 70px;
+            height: 32px;
+            border: none;
+            border-radius: 6px;
+            background-color: #3F5B4B;
+            color: #FFFFFF;
+            font-size: 13px;
+            cursor: pointer;
         }
 
         .flatpickr-input[readonly],
@@ -367,10 +446,6 @@
             box-shadow: 0 0 0 1px rgba(63, 91, 75, 0.15);
         }
 
-        .form-row {
-            position: relative;
-        }
-
         .form-row:has(.js-date-picker)::after {
             content: "📅";
             position: absolute;
@@ -383,11 +458,11 @@
         }
 
         .flatpickr-calendar {
+            background: #FFFFFF;
+            color: #2F2A24;
             border: 1px solid #CDBFA8;
             border-radius: 12px;
             box-shadow: 0 10px 24px rgba(47, 42, 36, 0.12);
-            background: #FFFFFF;
-            color: #2F2A24;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Yu Gothic", sans-serif;
         }
 
@@ -396,8 +471,8 @@
         }
 
         .flatpickr-months .flatpickr-month {
-            color: #2E4136;
             height: 44px;
+            color: #2E4136;
         }
 
         .flatpickr-current-month {
@@ -407,8 +482,8 @@
 
         .flatpickr-current-month .flatpickr-monthDropdown-months,
         .flatpickr-current-month input.cur-year {
-            font-weight: bold;
             color: #2E4136;
+            font-weight: bold;
         }
 
         .flatpickr-prev-month,
@@ -419,13 +494,13 @@
 
         span.flatpickr-weekday {
             color: #645B50;
-            font-weight: bold;
             font-size: 12px;
+            font-weight: bold;
         }
 
         .flatpickr-day {
-            border-radius: 8px;
             color: #2F2A24;
+            border-radius: 8px;
         }
 
         .flatpickr-day:hover {
@@ -434,8 +509,8 @@
         }
 
         .flatpickr-day.today {
-            border-color: #3F5B4B;
             color: #2E4136;
+            border-color: #3F5B4B;
             font-weight: bold;
         }
 
@@ -485,11 +560,6 @@
             background: #FFFCF4;
             outline: none;
         }
-
-        .flatpickr-input.is-error {
-            border-color: #B84A4A !important;
-            background-color: #FFF8F8 !important;
-        }
     </style>
 </head>
 
@@ -515,29 +585,34 @@
                                 発注日
                                 <span class="required">※必須</span>
                             </label>
-                            <input type="text" id="slip_date" name="slip_date" class="form-input js-required js-date-picker" data-label="発注日" placeholder="発注日を選択">
+                            <input
+                                type="text"
+                                id="slip_date"
+                                name="slip_date"
+                                class="form-input js-required js-date-picker"
+                                data-label="発注日"
+                                placeholder="発注日を選択">
                             <div class="field-error" data-for="slip_date"></div>
                         </div>
 
                         <div class="form-row">
-                          <label class="form-label" for="supplier_display">
-                              取引先
-                              <span class="required">※必須</span>
-                          </label>
+                            <label class="form-label" for="supplier_display">
+                                取引先
+                                <span class="required">※必須</span>
+                            </label>
 
-                          <input
-                              type="text"
-                              id="supplier_display"
-                              class="form-input js-required supplier-open-trigger"
-                              data-label="取引先"
-                              placeholder="取引先を選択"
-                              readonly
-                          >
+                            <input
+                                type="text"
+                                id="supplier_display"
+                                class="form-input js-required supplier-open-trigger"
+                                data-label="取引先"
+                                placeholder="取引先を選択"
+                                readonly>
 
-                          <input type="hidden" id="supplier_code" name="supplier_code">
-                          <input type="hidden" id="supplier_name" name="supplier_name">
+                            <input type="hidden" id="supplier_code" name="supplier_code">
+                            <input type="hidden" id="supplier_name" name="supplier_name">
 
-                          <div class="field-error" data-for="supplier_display"></div>
+                            <div class="field-error" data-for="supplier_display"></div>
                         </div>
 
                         <div class="form-row">
@@ -545,14 +620,18 @@
                                 納品日
                                 <span class="required">※必須</span>
                             </label>
-                            <input type="text" id="delivery_date" name="delivery_date" class="form-input js-required js-date-picker" data-label="納品日" placeholder="納品日を選択">
+                            <input
+                                type="text"
+                                id="delivery_date"
+                                name="delivery_date"
+                                class="form-input js-required js-date-picker"
+                                data-label="納品日"
+                                placeholder="納品日を選択">
                             <div class="field-error" data-for="delivery_date"></div>
                         </div>
 
                         <div class="form-row full">
-                            <label class="form-label" for="memo">
-                                備考
-                            </label>
+                            <label class="form-label" for="memo">備考</label>
                             <textarea id="memo" name="memo" class="form-textarea" maxlength="300"></textarea>
                         </div>
                     </div>
@@ -588,7 +667,7 @@
                         </table>
                     </div>
 
-                    <div class="action-area" style="justify-content: flex-start; margin-top: 16px;">
+                    <div class="action-area left">
                         <button type="button" id="add_row_btn" class="table-btn">行追加</button>
                     </div>
                 </div>
@@ -602,20 +681,42 @@
                     <div class="modal-box supplier-modal-box">
                         <h3 class="modal-title">取引先選択</h3>
 
-                        <div class="supplier-search-area">
-                            <div class="supplier-search-row">
+                        <div class="supplier-search-line">
+                            <div class="supplier-search-code">
                                 <label for="modal_search_supplier_code">取引先コード</label>
-                                <input type="text" id="modal_search_supplier_code" class="form-input" placeholder="取引先コード">
+                                <input
+                                    type="text"
+                                    id="modal_search_supplier_code"
+                                    class="form-input"
+                                    placeholder="取引先コード"
+                                    maxlength="6">
                             </div>
 
-                            <div class="supplier-search-row">
+                            <div class="supplier-search-name">
                                 <label for="modal_search_supplier_name">取引先名</label>
-                                <input type="text" id="modal_search_supplier_name" class="form-input" placeholder="取引先名">
+                                <input
+                                    type="text"
+                                    id="modal_search_supplier_name"
+                                    class="form-input"
+                                    placeholder="取引先名">
                             </div>
 
                             <div class="supplier-search-buttons">
-                                <button type="button" id="modal_supplier_search_btn" class="table-btn">検索</button>
-                                <button type="button" id="modal_supplier_clear_btn" class="table-btn sub">クリア</button>
+                                <button
+                                    type="button"
+                                    class="icon-button search-icon-button"
+                                    id="modal_supplier_search_btn"
+                                    aria-label="検索">
+                                    <img src="#Application.asset_url#/image/search-icon.svg" alt="検索">
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="icon-button clear-icon-button"
+                                    id="modal_supplier_clear_btn"
+                                    aria-label="クリア">
+                                    <img src="#Application.asset_url#/image/clear-icon.svg" alt="クリア">
+                                </button>
                             </div>
                         </div>
 

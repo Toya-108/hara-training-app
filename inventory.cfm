@@ -293,7 +293,10 @@
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(47, 42, 36, 0.35);
+            background:
+                linear-gradient(135deg, rgba(47, 42, 36, 0.50), rgba(63, 91, 75, 0.22));
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
             display: none;
             align-items: center;
             justify-content: center;
@@ -304,45 +307,212 @@
 
         .modal-overlay.is-open {
             display: flex;
+            animation: modalFadeIn 0.2s ease;
         }
 
         .modal-card {
             width: 100%;
-            max-width: 640px;
-            padding: 24px;
+            max-width: 720px;
+            padding: 0;
+            border-radius: 24px;
+            overflow: hidden;
+            background: linear-gradient(180deg, #FFFDF9 0%, #FFF9F0 100%);
+            border: 1px solid rgba(216, 204, 184, 0.95);
+            box-shadow:
+                0 24px 60px rgba(47, 42, 36, 0.22),
+                0 10px 24px rgba(63, 91, 75, 0.10);
+            animation: modalSlideUp 0.24s ease;
         }
 
         .modal-title {
-            margin: 0 0 16px;
-            font-size: 24px;
+            margin: 0;
+            padding: 24px 28px 18px;
+            font-size: 26px;
             color: #2E4136;
             font-weight: 800;
+            letter-spacing: 0.02em;
+            background: linear-gradient(180deg, rgba(247, 241, 227, 0.95) 0%, rgba(255, 252, 247, 0.9) 100%);
+            border-bottom: 1px solid #E8DDCB;
+            position: relative;
+        }
+
+        .modal-title::before {
+            content: "";
+            display: inline-block;
+            width: 6px;
+            height: 28px;
+            border-radius: 999px;
+            background: linear-gradient(180deg, #3F5B4B 0%, #6E8B78 100%);
+            margin-right: 12px;
+            vertical-align: -6px;
         }
 
         .modal-item-info {
-            margin-bottom: 18px;
-            padding: 14px 16px;
-            border-radius: 12px;
-            background: #F7F3EA;
-            border: 1px solid #E2D8C8;
-            line-height: 1.8;
+            margin: 22px 28px 18px;
+            padding: 16px 18px;
+            border-radius: 18px;
+            background: linear-gradient(180deg, #F8F4EC 0%, #FFFDF9 100%);
+            border: 1px solid #E4D8C8;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+            line-height: 1.9;
+        }
+
+        .modal-item-info div {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 4px 0;
+            font-size: 14px;
+            color: #3A342D;
+            border-bottom: 1px dashed rgba(216, 204, 184, 0.65);
+        }
+
+        .modal-item-info div:last-child {
+            border-bottom: none;
+        }
+
+        .modal-item-info strong {
+            min-width: 92px;
+            color: #2E4136;
+            font-weight: 800;
         }
 
         .adjust-form {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 16px;
+            gap: 18px 16px;
+            padding: 0 28px 8px;
+        }
+
+        .adjust-form > div {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
         }
 
         .adjust-form .full-width {
             grid-column: 1 / -1;
         }
 
+        .adjust-form label {
+            font-size: 13px;
+            font-weight: 800;
+            color: #33483B;
+            letter-spacing: 0.02em;
+        }
+
+        .adjust-form input,
+        .adjust-form select,
+        .adjust-form textarea {
+            width: 100%;
+            height: 46px;
+            padding: 0 14px;
+            border: 1px solid #D6C8B4;
+            border-radius: 12px;
+            background: #FFFFFF;
+            font-size: 14px;
+            color: #2F2A24;
+            box-sizing: border-box;
+            transition:
+                border-color 0.18s ease,
+                box-shadow 0.18s ease,
+                background-color 0.18s ease,
+                transform 0.18s ease;
+            box-shadow: 0 1px 2px rgba(47, 42, 36, 0.04);
+        }
+
+        .adjust-form textarea {
+            min-height: 110px;
+            height: 110px;
+            padding: 12px 14px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .adjust-form input:focus,
+        .adjust-form select:focus,
+        .adjust-form textarea:focus {
+            outline: none;
+            border-color: #3F5B4B;
+            background: #FFFDF8;
+            box-shadow:
+                0 0 0 4px rgba(63, 91, 75, 0.12),
+                0 4px 12px rgba(63, 91, 75, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .adjust-form input[readonly] {
+            background: #F3EEE4;
+            color: #6A6257;
+            border-color: #DDD1BE;
+            font-weight: 700;
+            cursor: default;
+        }
+
+        .adjust-form textarea::placeholder {
+            color: #9A9083;
+        }
+
         .modal-actions {
             display: flex;
             justify-content: flex-end;
             gap: 12px;
-            margin-top: 20px;
+            padding: 20px 28px 26px;
+            margin-top: 8px;
+            border-top: 1px solid #EEE3D4;
+            background: rgba(255, 252, 247, 0.85);
+        }
+
+        .modal-actions .action-button {
+            min-width: 132px;
+            height: 46px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            box-shadow: 0 4px 10px rgba(47, 42, 36, 0.08);
+        }
+
+        .modal-actions .action-button.secondary {
+            background: #F3EBDE;
+            color: #3F5B4B;
+            border: 1px solid #D8CCB8;
+        }
+
+        .modal-actions .action-button.primary {
+            background: linear-gradient(180deg, #496755 0%, #3F5B4B 100%);
+            color: #FFFFFF;
+            border: 1px solid #385142;
+        }
+
+        .modal-actions .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(47, 42, 36, 0.13);
+            opacity: 1;
+        }
+
+        .modal-actions .action-button:active {
+            transform: translateY(0);
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes modalSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(14px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
 
         @media (max-width: 1024px) {
@@ -359,8 +529,7 @@
             }
 
             .search-grid,
-            .summary-wrap,
-            .adjust-form {
+            .summary-wrap {
                 grid-template-columns: 1fr;
             }
 
@@ -369,12 +538,55 @@
                 align-items: flex-start;
             }
 
-            .search-actions,
-            .modal-actions {
+            .search-actions {
                 flex-direction: column;
             }
 
             .action-button {
+                width: 100%;
+            }
+
+            .modal-overlay {
+                padding: 14px;
+            }
+
+            .modal-card {
+                max-width: 100%;
+                border-radius: 18px;
+            }
+
+            .modal-title {
+                padding: 20px 20px 16px;
+                font-size: 22px;
+            }
+
+            .modal-item-info {
+                margin: 16px 20px 14px;
+                padding: 14px;
+            }
+
+            .modal-item-info div {
+                display: block;
+                line-height: 1.7;
+            }
+
+            .modal-item-info strong {
+                display: block;
+                min-width: auto;
+                margin-bottom: 2px;
+            }
+
+            .adjust-form {
+                grid-template-columns: 1fr;
+                padding: 0 20px 6px;
+            }
+
+            .modal-actions {
+                flex-direction: column-reverse;
+                padding: 18px 20px 20px;
+            }
+
+            .modal-actions .action-button {
                 width: 100%;
             }
         }
@@ -389,17 +601,17 @@
                 <div class="search-grid">
                     <div class="search-item">
                         <label for="search_item_code">商品コード</label>
-                        <input type="text" id="search_item_code" name="item_code">
+                        <input type="text" id="search_item_code" name="item_code" placeholder="商品コード">
                     </div>
 
                     <div class="search-item">
                         <label for="search_jan_code">JANコード</label>
-                        <input type="text" id="search_jan_code" name="jan_code">
+                        <input type="text" id="search_jan_code" name="jan_code" placeholder="JANコード">
                     </div>
 
                     <div class="search-item">
                         <label for="search_keyword">商品名 / カナ</label>
-                        <input type="text" id="search_keyword" name="keyword">
+                        <input type="text" id="search_keyword" name="keyword" placeholder="商品名 / 商品名(カナ)">
                     </div>
 
                     <div class="search-item">
@@ -426,12 +638,12 @@
 
                     <div class="search-item">
                         <label for="search_qty_from">現在庫数（以上）</label>
-                        <input type="text" id="search_qty_from" name="qty_from" class="num-check" title="現在庫数（以上）">
+                        <input type="text" id="search_qty_from" name="qty_from" class="num-check" title="現在庫数（以上）" placeholder="数値">
                     </div>
 
                     <div class="search-item">
                         <label for="search_qty_to">現在庫数（以下）</label>
-                        <input type="text" id="search_qty_to" name="qty_to" class="num-check" title="現在庫数（以下）">
+                        <input type="text" id="search_qty_to" name="qty_to" class="num-check" title="現在庫数（以下）" placeholder="数値">
                     </div>
 
                     <div class="search-item">
@@ -507,33 +719,35 @@
             <form id="adjust_form">
                 <input type="hidden" id="adjust_item_code" name="item_code">
 
-                <div>
-                    <label for="adjust_type">調整方法</label>
-                    <select id="adjust_type" name="change_type">
-                        <option value="1">加算</option>
-                        <option value="2">減算</option>
-                        <option value="3">直接設定</option>
-                    </select>
-                </div>
+                <div class="adjust-form">
+                    <div>
+                        <label for="adjust_type">調整方法</label>
+                        <select id="adjust_type" name="change_type">
+                            <option value="1">加算</option>
+                            <option value="2">減算</option>
+                            <option value="3">直接設定</option>
+                        </select>
+                    </div>
 
-                <div>
-                    <label for="adjust_qty">数量</label>
-                    <input type="text" id="adjust_qty" name="change_qty" class="num-check" title="調整数量">
-                </div>
+                    <div>
+                        <label for="adjust_qty">数量</label>
+                        <input type="text" id="adjust_qty" name="change_qty" class="num-check" title="調整数量">
+                    </div>
 
-                <div>
-                    <label for="adjust_safety_stock_qty">安全在庫数</label>
-                    <input type="text" id="adjust_safety_stock_qty" name="safety_stock_qty" class="num-check" title="安全在庫数">
-                </div>
+                    <div>
+                        <label for="adjust_safety_stock_qty">安全在庫数</label>
+                        <input type="text" id="adjust_safety_stock_qty" name="safety_stock_qty" class="num-check" title="安全在庫数">
+                    </div>
 
-                <div>
-                    <label for="adjust_current_qty_preview">現在庫数</label>
-                    <input type="text" id="adjust_current_qty_preview" readonly>
-                </div>
+                    <div>
+                        <label for="adjust_current_qty_preview">現在庫数</label>
+                        <input type="text" id="adjust_current_qty_preview" readonly>
+                    </div>
 
-                <div class="full-width">
-                    <label for="adjust_reason">理由</label>
-                    <textarea id="adjust_reason" name="reason" placeholder="棚卸差異、受入反映、破損調整など"></textarea>
+                    <div class="full-width">
+                        <label for="adjust_reason">理由</label>
+                        <textarea id="adjust_reason" name="reason" placeholder="棚卸差異、受入反映、破損調整など"></textarea>
+                    </div>
                 </div>
             </form>
 

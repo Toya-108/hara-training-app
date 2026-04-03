@@ -36,7 +36,7 @@
     <cfset showBackButton = true>
 
     <!--- ★ここがポイント --->
-    <cfif slipStatus EQ "2">
+    <cfif slipStatus neq "1">
         <cfset showEditButton = false> <!-- 確定なら非表示 -->
     <cfelse>
         <cfif session.authorityLevel eq 9>

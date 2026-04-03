@@ -80,9 +80,11 @@
     <cfset pageTitle = "取引先マスタ詳細">
     <cfset pageHeading = "取引先マスタ詳細">
     <cfset showBackButton = true>
-    <cfset showNewButton = true>
-    <cfset showEditButton = true>
-    <cfset showTrashButton = true>
+    <cfif session.authorityLevel eq 9>
+        <cfset showNewButton = true>
+        <cfset showEditButton = true>
+        <cfset showTrashButton = true>
+    </cfif>
 <cfelseif displayMode eq "edit">
     <cfset pageTitle = "取引先マスタ修正">
     <cfset pageHeading = "取引先マスタ修正">

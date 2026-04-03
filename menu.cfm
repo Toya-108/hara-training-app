@@ -450,7 +450,7 @@
                 <img src="#Application.asset_url#/image/hara-logiapp-logo.svg" alt="Hara LogiApp ロゴ">
                 <div>
                     <h1 class="app-name">Hara LogiApp</h1>
-                    <p class="app-text">物流・業務管理アプリケーション</p>
+                    <p class="app-text">伝票管理アプリケーション</p>
                 </div>
             </div>
 
@@ -491,12 +491,12 @@
                     <span class="menu-text">伝票一覧</span>
                 </button>
 
-                <button type="button" class="menu-button" id="inventory_button">
+                <button type="button" class="#addSlipButtonClass#" id="inventory_button">
                     <img src="#Application.asset_url#/image/inventory-icon.svg" alt="在庫管理" class="menu-icon">
                     <span class="menu-text">在庫管理</span>
                 </button>
 
-                <button type="button" class="menu-button" id="total_report_button">
+                <button type="button" class="#addSlipButtonClass#" id="total_report_button">
                     <img src="#Application.asset_url#/image/total-report-icon.svg" alt="集計レポート" class="menu-icon">
                     <span class="menu-text">集計レポート</span>
                 </button>
@@ -564,6 +564,7 @@
                 <button type="button" class="master-button" id="item-master-button">商品マスタ</button>
                 <button type="button" class="master-button" id="supplier-master-button">取引先マスタ</button>
                 <button type="button" class="master-button" id="staff-master-button">社員マスタ</button>
+                <button type="button" class="master-button" id="delivery-master-button">配送業者マスタ</button>
 
                 <button type="button" class="close-button" id="close_modal_button">閉じる</button>
             </div>

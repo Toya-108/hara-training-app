@@ -320,7 +320,7 @@ function renderItemTable(responseData) {
 
   tableBody.innerHTML = "";
 
-  if (!responseData || responseData.status !== 1) {
+  if (!responseData || responseData.status == 1) {
     const message = responseData && responseData.message
       ? responseData.message
       : "データ取得に失敗しました。";

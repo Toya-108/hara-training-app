@@ -1,4 +1,4 @@
-<cfcomponent displayname="slip_list_dt" output="false">
+<cfcomponent>
 
     <cffunction name="getSlipDetail" access="remote" returntype="any" returnformat="json" output="false">
         <cfset var result = {} />
@@ -183,10 +183,6 @@
                 <cfset status = val(requestData.status) />
             </cfif>
 
-            <cfif status NEQ 1 AND status NEQ 2>
-                <cfset status = 1 />
-            </cfif>
-
             <cfif structKeyExists(requestData, "slip_date")>
                 <cfset slipDate = trim(requestData.slip_date) />
             </cfif>
@@ -355,9 +351,9 @@
                             <cfqueryparam value="#nowDt#" cfsqltype="cf_sql_timestamp">,
                             <cfqueryparam value="#staffCode#" cfsqltype="cf_sql_varchar">,
                             <cfqueryparam value="#staffName#" cfsqltype="cf_sql_varchar">,
-                            <cfqueryparam value="#nowDt#" cfsqltype="cf_sql_timestamp">,
-                            <cfqueryparam value="#staffCode#" cfsqltype="cf_sql_varchar">,
-                            <cfqueryparam value="#staffName#" cfsqltype="cf_sql_varchar">
+                            NULL,
+                            NULL,
+                            NULL
                         )
                     </cfquery>
                 <cfelse>
@@ -454,9 +450,9 @@
                                 <cfqueryparam value="#nowDt#" cfsqltype="cf_sql_timestamp">,
                                 <cfqueryparam value="#staffCode#" cfsqltype="cf_sql_varchar">,
                                 <cfqueryparam value="#staffName#" cfsqltype="cf_sql_varchar">,
-                                <cfqueryparam value="#nowDt#" cfsqltype="cf_sql_timestamp">,
-                                <cfqueryparam value="#staffCode#" cfsqltype="cf_sql_varchar">,
-                                <cfqueryparam value="#staffName#" cfsqltype="cf_sql_varchar">
+                                NULL,
+                                NULL,
+                                NULL
                             )
                         </cfquery>
                     </cfif>
@@ -636,9 +632,9 @@
                             NOW(),
                             <cfqueryparam value="#arguments.staffCode#" cfsqltype="cf_sql_varchar">,
                             <cfqueryparam value="#arguments.staffName#" cfsqltype="cf_sql_varchar">,
-                            NOW(),
-                            <cfqueryparam value="#arguments.staffCode#" cfsqltype="cf_sql_varchar">,
-                            <cfqueryparam value="#arguments.staffName#" cfsqltype="cf_sql_varchar">
+                            NULL,
+                            NULL,
+                            NULL
                         )
                     </cfquery>
 

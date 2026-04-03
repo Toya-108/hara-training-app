@@ -315,7 +315,7 @@ function loadSupplierList(page) {
       return response.json();
     })
     .then(function (data) {
-      if (!data || Number(data.status) !== 1) {
+      if (!data || Number(data.status) === 1) {
         throw new Error(data && data.message ? data.message : "取引先一覧の取得に失敗しました。");
       }
 

@@ -200,7 +200,7 @@
 
         .paging_btn:disabled {
             opacity: 0.5;
-            cursor: not-allowed;
+            cursor: default;
         }
 
         .page_number_text {

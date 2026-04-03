@@ -138,7 +138,7 @@
                 LIMIT #startRow#, #pageSize#
             </cfquery>
 
-            <cfset result["status"] = 1>
+            <cfset result["status"] = 0>
             <cfset result["message"] = "商品一覧を取得しました。">
             <cfset result["results"] = []>
 
@@ -161,7 +161,7 @@
 
             <cfcatch>
                 <cflog file="HARA_TRAINING_APP" type="Error" text="商品一覧取得エラー #cfcatch.message# #cfcatch.detail#">
-                <cfset result["status"] = 0>
+                <cfset result["status"] = 1>
                 <cfset result["message"] = "商品一覧の取得中にエラーが発生しました。">
             </cfcatch>
         </cftry>

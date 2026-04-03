@@ -11,8 +11,8 @@
 </cfif>
 
 <cfset pageTitle = "基本設定">
-<cfset showHomeButton = false>
-<cfset showBackButton = true>
+<cfset showHomeButton = true>
+<cfset showBackButton = false>
 <cfset showNewButton = false>
 <cfset showEditButton = false>
 <cfset showImportButton = false>
