@@ -1,0 +1,21 @@
+<svg width="72" height="72" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+
+    <!-- 伝票 -->
+    <rect x="4" y="2" width="42" height="56" rx="7" fill="#F6F1E7" stroke="#E2D8C7" stroke-width="2"/>
+
+    <!-- 上ライン -->
+    <rect x="10" y="10" width="20" height="3" rx="1.5" fill="#4B6F5C"/>
+
+    <!-- 内容 -->
+    <rect x="10" y="18" width="26" height="3" rx="1.5" fill="#9FB2A6"/>
+    <rect x="10" y="25" width="22" height="3" rx="1.5" fill="#9FB2A6"/>
+    <rect x="10" y="32" width="18" height="3" rx="1.5" fill="#9FB2A6"/>
+
+    <!-- バッジ -->
+    <circle cx="52" cy="52" r="14" fill="#4B6F5C"/>
+
+    <!-- 矢印 -->
+    <path d="M52 44V58" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M46 52L52 59L58 52" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+</svg>

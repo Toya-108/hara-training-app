@@ -57,6 +57,10 @@
 
         .user-area {
             position: relative;
+            margin-left: auto;
+        }
+
+        .user-area-trigger {
             display: flex;
             align-items: center;
             gap: 10px;
@@ -65,8 +69,14 @@
             background-color: #F5EEDC;
             border: 1px solid #E0D5C3;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-            margin-left: auto;
             height: 56px;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+        }
+
+        .user-area-trigger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(46, 65, 54, 0.10);
+            opacity: 0.96;
         }
 
         .staff-name {
@@ -74,6 +84,7 @@
             font-weight: bold;
             color: #2E4136;
             line-height: 1;
+            white-space: nowrap;
         }
 
         .detail-button {
@@ -159,7 +170,7 @@
             width: 230px;
             height: 150px;
             border: none;
-            border-radius: 16px;
+            border-radius: 14px;
             background-color: #3F5B4B;
             color: #FFFFFF;
             cursor: pointer;
@@ -169,7 +180,6 @@
             justify-content: center;
             padding: 20px;
             transition: opacity 0.15s ease, transform 0.15s ease;
-            border-radius: 14px;
             box-shadow: 0 8px 18px rgba(46, 65, 54, 0.10);
         }
 
@@ -180,7 +190,6 @@
 
         .menu-button.disabled-button {
             opacity: 0.55 !important;
-            /* cursor: not-allowed; */
         }
 
         .menu-button.disabled-button:hover {
@@ -444,7 +453,6 @@
 <cfoutput>
 <body>
     <div class="page">
-
         <header class="header">
             <div class="logo-area">
                 <img src="#Application.asset_url#/image/hara-logiapp-logo.svg" alt="Hara LogiApp ロゴ">
@@ -455,16 +463,18 @@
             </div>
 
             <div class="user-area">
-                <div class="staff-name">#session.staffName#</div>
+                <div class="user-area-trigger" id="user_area_trigger">
+                    <div class="staff-name">#session.staffName#</div>
 
-                <button type="button" class="detail-button" id="detail_button">
-                    <img
-                        src="#Application.asset_url#/image/arrow-down-icon.svg"
-                        data-down="#Application.asset_url#/image/arrow-down-icon.svg"
-                        data-up="#Application.asset_url#/image/arrow-up-icon.svg"
-                        id="arrow_icon"
-                        alt="メニュー開閉">
-                </button>
+                    <button type="button" class="detail-button" id="detail_button">
+                        <img
+                            src="#Application.asset_url#/image/arrow-down-icon.svg"
+                            data-down="#Application.asset_url#/image/arrow-down-icon.svg"
+                            data-up="#Application.asset_url#/image/arrow-up-icon.svg"
+                            id="arrow_icon"
+                            alt="メニュー開閉">
+                    </button>
+                </div>
 
                 <div class="user-menu" id="user_menu">
                     <button type="button" class="logout-button" id="logout-button">
@@ -481,6 +491,11 @@
 
         <main class="main">
             <div class="menu-grid">
+                <button type="button" class="#addSlipButtonClass#" id="slip_receive_button">
+                    <img src="#Application.asset_url#/image/slip-receive-icon.svg" alt="伝票受信" class="menu-icon">
+                    <span class="menu-text">伝票受信</span>
+                </button>
+
                 <button type="button" class="#addSlipButtonClass#" id="add_slip_button">
                     <img src="#Application.asset_url#/image/slip-entry-icon.svg" alt="伝票登録" class="menu-icon">
                     <span class="menu-text">伝票登録</span>
@@ -510,7 +525,6 @@
                     <img src="#Application.asset_url#/image/admin-icon.svg" alt="基本設定" class="menu-icon">
                     <span class="menu-text">基本設定</span>
                 </button>
-
             </div>
 
             <section class="dashboard">
@@ -571,7 +585,7 @@
         </div>
     </div>
 
-    <script src="#application.asset_url#/js/menu.js?20260402_1"></script>
+    <script src="#Application.asset_url#/js/menu.js?20260402_1"></script>
 </body>
 </cfoutput>
 </html>
